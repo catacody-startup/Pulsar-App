@@ -34,18 +34,23 @@ export function useSpaceWeather(nowMs: number, replayStartMs: number | null): Sp
     if (replayStartMs !== null) return;
     const controller = new AbortController();
     const start = donkiDate(nowMs - LIVE_DAYS * 86_400_000);
-    Promise.all(
+    // Each kind on its own: if one fails, the others still show.
+    Promise.allSettled(
       KINDS.map(async (kind) => {
         const res = await fetch(`/api/donki/${kind}?startDate=${start}&endDate=${today}`, { signal: controller.signal });
         if (!res.ok) throw new Error(`DONKI ${kind}: HTTP ${res.status}`);
         const text = await res.text();
         return [kind, text.trim() ? JSON.parse(text) : []] as const;
       }),
-    )
-      .then((entries) => setLive({ status: 'ok', events: parseDonki(Object.fromEntries(entries) as DonkiResponses) }))
-      .catch((err: unknown) => {
-        if ((err as Error).name !== 'AbortError') setLive((prev) => ({ status: prev.events.length ? 'ok' : 'error', events: prev.events }));
-      });
+    ).then((results) => {
+      if (controller.signal.aborted) return;
+      const loaded = results.flatMap((r) => (r.status === 'fulfilled' ? [r.value] : []));
+      if (loaded.length === 0) {
+        setLive((prev) => ({ status: prev.events.length ? 'ok' : 'error', events: prev.events }));
+        return;
+      }
+      setLive({ status: 'ok', events: parseDonki(Object.fromEntries(loaded) as DonkiResponses) });
+    });
     return () => controller.abort();
     // Refetch once per hour (the server caches DONKI for an hour too).
   }, [replayStartMs, today, hour]);
