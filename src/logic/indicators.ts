@@ -3,7 +3,8 @@
  * summaries into ok / watch / act, naming the rule (and so the source) behind it.
  */
 import { RULES, THRESHOLDS, type RuleId } from '../config/thresholds';
-import type { CrewProfile, IndicatorId, SolSummary, Status, VitalsReading } from './types';
+import { lowAnswers, wellbeingScore } from './checkin';
+import type { CheckIn, CheckInAnswers, CrewProfile, IndicatorId, SolSummary, Status, VitalsReading } from './types';
 
 export interface IndicatorResult {
   id: IndicatorId;
@@ -19,6 +20,10 @@ export interface IndicatorResult {
   average?: number;
   /** For exercise: minutes so far in the sol in progress. */
   today?: number;
+  /** For wellbeing: the check-in evaluated and whether today's is done. */
+  checkIn?: CheckIn;
+  checkedInToday?: boolean;
+  low?: (keyof CheckInAnswers)[];
 }
 
 export interface EvaluationInput {
@@ -27,6 +32,8 @@ export interface EvaluationInput {
   recent: readonly VitalsReading[];
   /** Recent sols, oldest first; the last one is the sol in progress. */
   sols: readonly SolSummary[];
+  /** Daily check-ins, one per sol, oldest first. */
+  checkIns?: readonly CheckIn[];
 }
 
 const STATUS_RANK: Record<Status, number> = { ok: 0, watch: 1, act: 2 };
@@ -145,8 +152,26 @@ export function evaluateExercise(sols: readonly SolSummary[]): IndicatorResult {
   return result('exercise', 'exercise.ok', minutes, extra);
 }
 
+export function evaluateWellbeing(checkIns: readonly CheckIn[], currentSol: number): IndicatorResult {
+  const t = THRESHOLDS.wellbeing;
+  const recent = checkIns.filter((c) => c.localSol <= currentSol && c.localSol >= currentSol - t.maxAgeSols);
+  const latest = recent.at(-1);
+  const checkedInToday = latest?.localSol === currentSol;
+  if (!latest) return result('wellbeing', 'wellbeing.pending', Number.NaN, { checkedInToday });
+  const low = lowAnswers(latest);
+  const extra = { checkIn: latest, checkedInToday, low };
+  const value = wellbeingScore(latest);
+  if (low.length > 0) {
+    const previous = checkIns.find((c) => c.localSol === latest.localSol - 1);
+    const persistent = previous !== undefined && lowAnswers(previous).length > 0;
+    return result('wellbeing', persistent ? 'wellbeing.persistent' : 'wellbeing.low', value, extra);
+  }
+  return result('wellbeing', 'wellbeing.ok', value, extra);
+}
+
 /** Every indicator, in display order. */
-export function evaluateIndicators({ crew, recent, sols }: EvaluationInput): IndicatorResult[] {
+export function evaluateIndicators({ crew, recent, sols, checkIns = [] }: EvaluationInput): IndicatorResult[] {
+  const currentSol = sols.at(-1)?.localSol ?? Number.NaN;
   return [
     evaluateHeartRate(crew, recent),
     evaluateSpo2(recent),
@@ -154,6 +179,7 @@ export function evaluateIndicators({ crew, recent, sols }: EvaluationInput): Ind
     evaluateRadiation(recent),
     evaluateSleep(sols),
     evaluateExercise(sols),
+    evaluateWellbeing(checkIns, currentSol),
   ];
 }
 

@@ -199,7 +199,15 @@ describe('with the simulator', () => {
 
   it('a normal evening is all good', () => {
     const rs = evaluate([]);
-    expect(rs.map((r) => r.id)).toEqual(['heartRate', 'spo2', 'bloodPressure', 'radiation', 'sleep', 'exercise']);
+    expect(rs.map((r) => r.id)).toEqual([
+      'heartRate',
+      'spo2',
+      'bloodPressure',
+      'radiation',
+      'sleep',
+      'exercise',
+      'wellbeing',
+    ]);
     expect(worstStatus(rs.map((r) => r.status))).toBe('ok');
   });
 

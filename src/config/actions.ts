@@ -164,6 +164,24 @@ export const ACTIONS: Record<AlertRuleId, Action> = {
     ],
     sources: ['ochmo-tb-031'],
   },
+  'wellbeing.low': {
+    title: 'Not feeling great today',
+    steps: [
+      'Talk with a crewmate you trust, or with the commander.',
+      'Make room for something you enjoy: music, a message home, time at the window or with the plants.',
+      'Keep your sleep and exercise routine: both help mood.',
+    ],
+    sources: ['ochmo-tb-016'],
+  },
+  'wellbeing.persistent': {
+    title: 'Low wellbeing two sols in a row',
+    steps: [
+      'Tell the crew medical officer today.',
+      'Ask for a private psychological conference (PPC) with the behavioral health team on Earth.',
+      'Lighten today’s plan if you can, and do the next check-in tomorrow.',
+    ],
+    sources: ['ochmo-tb-016'],
+  },
 };
 
 /** Shown under "What do I do now?" when there are no alerts. */

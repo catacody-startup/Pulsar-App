@@ -47,6 +47,10 @@ export const THRESHOLDS = {
     /** A night this short is like a night without sleep. */
     almostNoneHours: 3,
   },
+  wellbeing: {
+    /** Check-ins older than this many sols no longer count. */
+    maxAgeSols: 1,
+  },
   exercise: {
     prescribedMinutes: 90,
     minimumMinutes: 60,
@@ -243,6 +247,34 @@ export const RULES = {
     text: `Sessions missed ${T.exercise.missedSolsInARow} sols in a row (under ${T.exercise.missedBelowMinutes} min each).`,
     sources: ['ochmo-tb-031', 'hrr'],
     basis: 'Pulsar cut-off; aerobic capacity, muscle strength and bone density must be maintained in-mission [V1 4003, 4024, 4027].',
+  },
+
+  // Wellbeing (daily check-in)
+  'wellbeing.pending': {
+    indicator: 'wellbeing',
+    status: 'ok',
+    text: 'No recent check-in: answer today’s four questions.',
+    sources: ['ochmo-tb-016'],
+  },
+  'wellbeing.ok': {
+    indicator: 'wellbeing',
+    status: 'ok',
+    text: 'Check-in answers in a good range.',
+    sources: ['ochmo-tb-016'],
+  },
+  'wellbeing.low': {
+    indicator: 'wellbeing',
+    status: 'watch',
+    text: 'Low answers in the last check-in (mood, stress, sleep or isolation).',
+    sources: ['ochmo-tb-016', 'hrr'],
+    basis: 'Pulsar cut-off: 1–2 on mood or sleep, 4–5 on stress or isolation.',
+  },
+  'wellbeing.persistent': {
+    indicator: 'wellbeing',
+    status: 'act',
+    text: 'Low answers two sols in a row.',
+    sources: ['ochmo-tb-016', 'hrr'],
+    basis: 'Pulsar cut-off: a low check-in that repeats the next sol.',
   },
 } satisfies Record<string, Rule>;
 

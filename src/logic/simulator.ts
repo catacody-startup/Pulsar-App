@@ -6,6 +6,7 @@
  * Every value is a pure function of (crew member, events, minute), so any
  * window of history can be computed on its own, in any order, on any device.
  */
+import { CHECKIN } from '../config/checkin';
 import { MISSION } from '../config/mission';
 import { SIMULATOR, type SimulatorParams } from '../config/simulator';
 import {
@@ -17,6 +18,7 @@ import {
 import { hashString, random01, randomSigned, smoothNoise } from './random';
 import type {
   Activity,
+  CheckIn,
   CrewProfile,
   EventKind,
   SimEvent,
@@ -51,7 +53,7 @@ export interface SimulatorOptions {
 }
 
 /** Noise channels: each one gets its own seed so they don't move together. */
-const CHANNEL = { plan: 1, heartRate: 2, spo2: 3, systolic: 4, diastolic: 5, dose: 6 } as const;
+const CHANNEL = { plan: 1, heartRate: 2, spo2: 3, systolic: 4, diastolic: 5, dose: 6, checkIn: 7 } as const;
 
 /** Trapezoid 0→1→0 of an event at minute `t`. */
 export function eventEnvelope(
@@ -291,6 +293,37 @@ export function createSimulator(options: SimulatorOptions) {
     };
   }
 
+  /**
+   * The check-in the simulated crew member answered on a past sol, at the local
+   * hour set in the config. Sleep quality follows the hours slept that night.
+   */
+  function simulatedCheckIn(localSol: number): CheckIn {
+    const c = params.checkIn;
+    const t = floorToMinute(msAt(localSol + CHECKIN.simulatedHour / 24));
+    const worse = eventLevel('lowMood', t);
+    const vary = (k: number) => randomSigned(seed, CHANNEL.checkIn, localSol, k) * c.jitter;
+    const scale = (v: number) => Math.min(5, Math.max(1, Math.round(v)));
+    const sleep = summarizeSol(localSol).sleepHours;
+    const sleepQuality = c.sleepQualityByHours.find((s) => sleep >= s.hours)?.answer ?? 1;
+    return {
+      localSol,
+      t,
+      mood: scale(c.mood + vary(1) - worse),
+      stress: scale(c.stress + vary(2) + worse),
+      sleepQuality: scale(sleepQuality),
+      isolation: scale(c.isolation + vary(3) + worse),
+      simulated: true,
+    };
+  }
+
+  /** Simulated check-ins of the `count` sols before the current one, oldest first. */
+  function pastCheckIns(nowMs: number, count: number): CheckIn[] {
+    const current = Math.floor(lsdAt(nowMs));
+    const out: CheckIn[] = [];
+    for (let s = current - count; s < current; s++) out.push(simulatedCheckIn(s));
+    return out;
+  }
+
   /** Summaries of the last `count` sols, oldest first; the last one is the sol in progress. */
   function recentSols(nowMs: number, count: number): SolSummary[] {
     const current = Math.floor(lsdAt(nowMs));
@@ -308,6 +341,8 @@ export function createSimulator(options: SimulatorOptions) {
     recentReadings,
     summarizeSol,
     recentSols,
+    simulatedCheckIn,
+    pastCheckIns,
     localSolAt: (ms: number) => Math.floor(lsdAt(ms)),
     missionSolAt: (ms: number) => missionSol(ms, landingMs, eastLongitudeDeg),
   };

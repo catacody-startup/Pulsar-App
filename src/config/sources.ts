@@ -40,6 +40,12 @@ export const SOURCES = {
       'NASA-STD-3001 Technical Brief: Exercise Overview (OCHMO-TB-031, 2023). In-flight prescription: ~30 min of interval or steady-state aerobic exercise and 30–60 min of load-bearing resistive training; [V1 4003] aerobic capacity, [V1 4024] muscle strength and [V1 4027] bone density must be maintained.',
     url: 'https://www.nasa.gov/wp-content/uploads/2023/12/ochmo-tb-031-exercise-overview.pdf',
   },
+  'ochmo-tb-016': {
+    short: 'NASA OCHMO-TB-016',
+    title:
+      'NASA-STD-3001 Technical Brief: Behavioral Health and Performance (OCHMO-TB-016, Rev B, 2023). Missions beyond 6 months or beyond low Earth orbit need minimally obtrusive measures of psychological and behavioral state; [V1 6004] behavioral health support, [V1 6010] private psychological conferences (PPCs).',
+    url: 'https://www.nasa.gov/wp-content/uploads/2023/12/ochmo-tb-016-behavioral-health.pdf',
+  },
   'hrr': {
     short: 'NASA Human Research Roadmap',
     title:

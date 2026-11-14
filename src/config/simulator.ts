@@ -67,6 +67,21 @@ export const SIMULATOR = {
     noise: { slow: 0.02, fast: 0.01, jitter: 0.01 }, // fraction of the dose rate
   },
 
+  /** Answers of the simulated daily check-in on past sols (1–5), before variation. */
+  checkIn: {
+    mood: 4,
+    stress: 2,
+    isolation: 2,
+    /** Up to this much up or down, deterministic per sol. */
+    jitter: 0.6,
+    /** Sleep quality from the hours slept that night: at or above each value, that answer. */
+    sleepQualityByHours: [
+      { hours: 7, answer: 4 },
+      { hours: 5, answer: 3 },
+      { hours: 0, answer: 2 },
+    ],
+  },
+
   /** Periods of the two smooth-noise components, minutes. */
   noisePeriods: { slow: 45, fast: 8 },
 
@@ -82,6 +97,8 @@ export const SIMULATOR = {
     sleepLoss: { rampUpMin: 0, rampDownMin: 0 },
     // the exercise sessions inside the event don't happen
     skipExercise: { rampUpMin: 0, rampDownMin: 0 },
+    // intensity = points the check-in answers get worse (mood, stress, isolation)
+    lowMood: { rampUpMin: 0, rampDownMin: 0 },
   } satisfies Record<EventKind, EventShape>,
 };
 

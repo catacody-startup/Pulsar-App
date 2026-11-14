@@ -61,6 +61,13 @@ export const SCENARIOS: readonly Scenario[] = [
     description: 'No exercise for the last two sols.',
     events: [{ kind: 'skipExercise', solsAgo: 2, durationMin: 3 * 25 * 60, intensity: 1 }],
   },
+  {
+    id: 'isolation',
+    label: 'Feeling isolated',
+    description: 'The last two check-ins came back low: low mood, stress and loneliness.',
+    // From the start of the sol before yesterday to the start of today: covers both check-ins.
+    events: [{ kind: 'lowMood', solsAgo: 2, durationMin: 2 * 1479, intensity: 2 }],
+  },
 ];
 
 export const DEFAULT_SCENARIO_ID = 'nominal';

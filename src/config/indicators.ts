@@ -8,6 +8,7 @@ export const INDICATORS: Record<IndicatorId, { label: string; inSentence: string
   radiation: { label: 'Radiation', inSentence: 'radiation', unit: 'µGy/h' },
   sleep: { label: 'Sleep last night', inSentence: 'sleep', unit: 'h' },
   exercise: { label: 'Exercise last sol', inSentence: 'exercise', unit: 'min' },
+  wellbeing: { label: 'Wellbeing', inSentence: 'wellbeing', unit: '/ 5' },
 };
 
 export const STATUS_LABEL: Record<Status, string> = {

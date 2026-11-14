@@ -11,7 +11,8 @@ export function formatIndicatorValue(r: IndicatorResult): string {
       return `${r.value}/${r.value2 ?? '–'}`;
     case 'radiation':
     case 'sleep':
-      return r.value.toFixed(1);
+    case 'wellbeing':
+      return Number.isNaN(r.value) ? '–' : r.value.toFixed(1);
     default:
       return String(r.value);
   }
@@ -42,6 +43,12 @@ function detail({ result: r, age, dose }: Props): string | null {
       return r.average === undefined ? null : `${THRESHOLDS.sleep.debtNights}-night average: ${r.average.toFixed(1)} h`;
     case 'exercise':
       return `Today so far: ${r.today ?? 0} of ${THRESHOLDS.exercise.prescribedMinutes} min`;
+    case 'wellbeing': {
+      if (!r.checkIn) return 'Check-in pending';
+      const c = r.checkIn;
+      const answers = `Mood ${c.mood} · stress ${c.stress} · sleep ${c.sleepQuality} · isolation ${c.isolation}`;
+      return r.checkedInToday ? `Today: ${answers}` : `Last sol: ${answers} · today’s pending`;
+    }
   }
 }
 

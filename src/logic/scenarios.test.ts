@@ -19,6 +19,7 @@ function evaluateScenario(id: string, at: number) {
     crew,
     recent: sim.recentReadings(at, EVALUATION_WINDOW_MINUTES),
     sols: sim.recentSols(at, EVALUATION_SOLS),
+    checkIns: sim.pastCheckIns(at, EVALUATION_SOLS),
   });
 }
 
@@ -53,6 +54,7 @@ describe('scenarios', () => {
     ['fever', 'heartRate', 'watch'],
     ['sleepless', 'sleep', 'act'],
     ['missed-workouts', 'exercise', 'act'],
+    ['isolation', 'wellbeing', 'act'],
   ] as const)('%s shows up on %s as %s', (id, indicator, status) => {
     for (const hour of [10.5, 20]) {
       const results = evaluateScenario(id, atLocalHour(hour));

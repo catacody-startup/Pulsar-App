@@ -1,11 +1,13 @@
 import { useMemo } from 'react';
 import { CREW, DEFAULT_CREW_ID } from './config/crew';
 import { MISSION } from './config/mission';
+import { CheckInForm } from './components/CheckInForm';
 import { DemoBar } from './components/DemoBar';
 import { IndicatorCard } from './components/IndicatorCard';
 import { StatusHero } from './components/StatusHero';
 import { Trends } from './components/Trends';
 import { WhatNow } from './components/WhatNow';
+import { useCheckIns } from './hooks/useCheckIns';
 import { useMinuteClock } from './hooks/useMinuteClock';
 import { useScenario } from './hooks/useScenario';
 import {
@@ -15,6 +17,7 @@ import {
   overallStatus,
 } from './logic/indicators';
 import { buildAlerts } from './logic/alerts';
+import { mergeCheckIns } from './logic/checkin';
 import { formatMarsClock, localMeanSolarHours } from './logic/marsTime';
 import { missionDose } from './logic/missionDose';
 import { nextPlanItem } from './logic/plan';
@@ -42,7 +45,12 @@ export function App() {
   }, [scenario, anchorMs]);
   const recent = useMemo(() => sim.recentReadings(now, EVALUATION_WINDOW_MINUTES), [sim, now]);
   const sols = useMemo(() => sim.recentSols(now, EVALUATION_SOLS), [sim, now]);
-  const indicators = useMemo(() => evaluateIndicators({ crew, recent, sols }), [recent, sols]);
+  const { checkIns: answered, save: saveCheckIn } = useCheckIns(crew.id);
+  const checkIns = useMemo(
+    () => mergeCheckIns(sim.pastCheckIns(now, EVALUATION_SOLS), answered),
+    [sim, now, answered],
+  );
+  const indicators = useMemo(() => evaluateIndicators({ crew, recent, sols, checkIns }), [recent, sols, checkIns]);
   const overall = overallStatus(indicators);
   const dose = missionDose(now);
   const reading = recent.at(-1)!;
@@ -51,6 +59,7 @@ export function App() {
   const clock = formatMarsClock(hour);
   const alerts = buildAlerts(indicators);
   const today = sim.localSolAt(now);
+  const todaysCheckIn = answered.find((c) => c.localSol === today);
   const next = nextPlanItem(hour, sim.solPlan(today), sim.solPlan(today + 1));
 
   return (
@@ -78,6 +87,14 @@ export function App() {
             {indicators.map((r) => (
               <IndicatorCard key={r.id} result={r} age={crew.age} dose={dose} />
             ))}
+            <div className="sm:col-span-2">
+              <CheckInForm
+                today={todaysCheckIn}
+                missionSol={sol}
+                eastLongitudeDeg={MISSION.site.eastLongitudeDeg}
+                onSave={(answers) => saveCheckIn(answers, today, Date.now())}
+              />
+            </div>
           </div>
         </section>
         <Trends sim={sim} now={now} />
