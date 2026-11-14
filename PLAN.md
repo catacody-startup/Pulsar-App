@@ -11,7 +11,7 @@ Reglas de trabajo:
 
 Vite + React + TypeScript + Tailwind + Vitest. README, este plan y la guía para agentes. Logo (`public/pulsar.svg` y PNG), licencia Apache 2.0 e infra: publicada en https://pulsar.catacody.com con `bash /root/services/app-pulsar/scripts/deploy.sh`.
 
-## Etapa 1 — Núcleo del brief y datos de NASA
+## Etapa 1 — Núcleo del brief y datos de NASA ✅
 
 Responde "¿estoy bien?" y "¿qué hago ahora?" para un astronauta en Marte. Un commit por feature, en este orden:
 
@@ -25,7 +25,7 @@ Responde "¿estoy bien?" y "¿qué hago ahora?" para un astronauta en Marte. Un 
 8. ✅ **Dosis real de Marte:** las series del RAD de Curiosity (PDS) alimentan la radiación del simulador, en vez de una cifra fija. Soles 1780–1830 (agosto–septiembre 2017) del dataset MSL-M-RAD-3-RDR-V1.0, detector E (parecido al tejido), en promedios de media hora marciana (`scripts/rad/`: `fetch.sh` baja y extrae, `build.mjs` arma `src/data/radGale.json`). El sol y la hora local de cada observación salen de su hora UTC con Mars24, como en la app: la hora marciana que trae el archivo del RAD no sigue la hora solar media de Gale. Cada sol del hábitat repite uno de los soles tranquilos (1780–1810) a la misma hora local; el fondo medido (≈11,2 µGy/h) es la línea base de los umbrales. El escenario *Solar storm* ahora repite el evento real del 10/9/2017, que en Gale arranca a las 15:30 UTC junto con la fulguración X8.2 (pico ≈24 µGy/h, 2,2× el fondo) y en los datos se ve después el descenso Forbush.
 9. ✅ **Tormentas solares reales (DONKI):** eventos de partículas solares (SEP), tormentas geomagnéticas (GST), eyecciones de masa coronal (CME) y choques interplanetarios (IPS) de los últimos 30 días, en vivo por el proxy de Nginx (`/api/donki/…`, key en el servidor, caché de 1 h que sirve la copia vieja si la API corta). Las CME con llegada pronosticada a Marte (modelo WSA-ENLIL) se marcan y, si llegan en menos de 72 h, *What do I do now?* muestra un aviso. En el escenario *Solar storm* el panel muestra el registro de DONKI de esos días con el reloj en el momento equivalente de 2017: la fulguración X8.2 y la CME de 2650 km/s del 10/9 (llegada a Marte pronosticada para el 13/9, de refilón), las SEP en la Tierra y, en Gale, lo que midió el RAD. Recorte guardado en `src/data/donkiSep2017.json` (`scripts/donki/snapshot.mjs`).
 10. ✅ **Página About con References:** qué es Pulsar, qué datos de NASA usa y para qué, la tabla con todos los umbrales (regla, estado, fuente y si el corte es decisión de Pulsar, generada de `src/config/thresholds.ts`) y las referencias completas con link. En `/about` (Nginx ya devuelve `index.html` para cualquier ruta).
-11. **(Opcional) Signos vitales calibrados con OSDR**, solo si aparece un dataset con signos vitales de astronautas que sirva.
+11. **(Opcional) Signos vitales calibrados con OSDR**, solo si aparece un dataset con signos vitales de astronautas que sirva. Por ahora no: lo público de Inspiration4 en OSDR son datos ómicos y análisis clínicos, y no se encontró una serie abierta de frecuencia cardíaca o SpO₂ de astronautas. Queda pendiente.
 
 Infra aparte, en `_docker_infra`: ✅ el proxy de DONKI en el Nginx de `app-pulsar`, con la key en `app-pulsar/.env` (fuera de git; mientras no esté, `DEMO_KEY`, que tiene pocos pedidos por hora).
 
@@ -47,7 +47,7 @@ Inglés y español, funciona sin conexión e instalable, guion de la demo.
 
 ## Pendientes del equipo
 
-- Pedir la key gratis en https://api.nasa.gov (nombre y mail, llega al instante) y pasarla para DONKI. Hasta entonces, `DEMO_KEY`.
+- Pedir la key gratis en https://api.nasa.gov (nombre y mail, llega al instante) y ponerla en `/root/services/app-pulsar/.env` (`NASA_API_KEY=…`, después `docker compose up -d` en esa carpeta). Hasta entonces, `DEMO_KEY`: con pocos pedidos por hora, el panel de clima espacial en vivo puede quedar sin datos (la repetición de 2017 no depende de la API).
 - Confirmar que todo el equipo está registrado en la misma locación.
 - Al final: la página del proyecto en inglés y subir el video a YouTube (ver *Video demo*).
 

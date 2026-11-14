@@ -5,9 +5,43 @@ NASA Space Apps Challenge 2026 · Challenge: *Create Health Monitoring Software 
 
 > **Prototype – not for medical use.**
 
-On the way to Mars, help can be up to 20 minutes away, so astronauts have to notice health changes themselves. Pulsar answers two questions on every screen: **"Am I OK?"** and **"What do I do now?"**
+On the way to Mars, help can be up to 20 minutes away, so astronauts have to notice health changes themselves. Pulsar answers two questions on one screen: **"Am I OK?"** and **"What do I do now?"**
 
-Work in progress: built during the hackathon (14–15 November 2026), in stages (see `PLAN.md`, in Spanish).
+**Live app:** https://pulsar.catacody.com · **About, thresholds and references:** https://pulsar.catacody.com/about
+
+Built during the hackathon (14–15 November 2026), in stages (see `PLAN.md`, in Spanish).
+
+## What it does
+
+- **Am I OK?** One overall answer (*All good / Attention / Act now*) from seven indicators: heart rate, SpO₂, blood pressure, radiation, sleep, exercise and wellbeing. Every threshold cites its source (NASA-STD-3001 technical briefs, WHO, ACC/AHA, ACSM); where a cut-off is Pulsar's own choice, the app says so.
+- **What do I do now?** Each alert comes with concrete steps the crew can take without waiting for Earth: put on an oxygen mask, go to the storm shelter, stop exercising, talk to the crew medical officer, ask for a private psychological conference…
+- **Trends** over 24 hours and 7 days with the normal range marked, on Mars local time.
+- **Daily wellbeing check-in**: four questions, under a minute.
+- **Real radiation from Mars**: the habitat sits in Gale Crater and its dose rate is the one NASA's Curiosity rover measured there with its RAD instrument.
+- **Real space weather**: coronal mass ejections forecast to reach Mars, solar particle events and geomagnetic storms from NASA DONKI, with a heads-up before a CME arrives.
+- **Demo scenarios** (outside the astronaut's interface): a real solar storm (the event of 10 September 2017, as RAD measured it), low cabin oxygen, fever, a sleepless night, missed workouts and feeling isolated. They can be shared as links, e.g. https://pulsar.catacody.com/?scenario=solar-storm
+
+Vital signs come from a deterministic simulator (the same data on every device); radiation and space weather are real NASA data.
+
+## NASA data and documents
+
+| Resource | How Pulsar uses it |
+|---|---|
+| [MSL RAD, NASA PDS PPI](https://pds-ppi.igpp.ucla.edu/data/MSL-M-RAD-3-RDR-V1.0/) | Dose rate of Curiosity's tissue-like detector at Gale Crater, sols 1780–1830 (Aug–Sep 2017): background and the solar particle event of 10 Sep 2017 |
+| [DONKI](https://kauai.ccmc.gsfc.nasa.gov/DONKI/) via [api.nasa.gov](https://api.nasa.gov) | CMEs (with WSA-ENLIL arrival forecasts at Mars), SEPs, geomagnetic storms and interplanetary shocks |
+| [NASA-STD-3001](https://www.nasa.gov/ofo/chief-health-medical-officer/nasa-space-flight-human-system-standard/) and its technical briefs | Thresholds and actions: radiation (OCHMO-TB-020), atmosphere (TB-003), sleep, exercise (TB-031), behavioral health (TB-016) |
+| [Human Research Roadmap](https://humanresearchroadmap.nasa.gov) | The spaceflight health risks behind each indicator |
+| [Mars24](https://www.giss.nasa.gov/tools/mars24/help/algorithm.html) (NASA GISS) | Mission sol and local mean solar time at Gale Crater |
+
+The full list of references is on the app's About page.
+
+## How it is built
+
+- A static React app; thresholds, recommendation texts and simulator parameters live in `src/config/`, pure logic with unit tests in `src/logic/`.
+- The server (Nginx) proxies DONKI and adds the NASA API key, so the key never reaches the browser; responses are cached for an hour.
+- Data pipelines, kept in the repo with their outputs:
+  - `scripts/rad/fetch.sh 1780 1830` streams the RAD files from the PDS (~86 MB per sol) and keeps one line per observation in `scripts/rad/raw/`; `node scripts/rad/build.mjs` averages them every half hour of Mars local time into `src/data/radGale.json`.
+  - `node scripts/donki/snapshot.mjs` saves DONKI's record of September 2017 to `src/data/donkiSep2017.json`, used by the storm replay and the tests.
 
 ## Development
 
@@ -15,17 +49,17 @@ Requires Node 18 or newer.
 
 ```bash
 npm install
-npm run dev        # http://localhost:5173
+npm run dev        # http://localhost:5173 (DONKI needs the server proxy; the rest works locally)
 npm test           # unit tests (Vitest)
 npm run build      # type-check + production build in dist/
 ```
 
 ## Stack
 
-React 19, TypeScript, Vite 6, Tailwind CSS 3, Vitest.
+React 19, TypeScript, Vite 6, Tailwind CSS 3, Vitest. Charts are hand-made SVG.
 
 ## License
 
 Pulsar is released under the [Apache License 2.0](LICENSE), the default license of the NASA Space Apps Challenge for original content.
 
-Third-party software used to build it, all under OSI-approved licenses: React, Vite, Tailwind CSS, PostCSS, Autoprefixer and Vitest (MIT), and TypeScript (Apache-2.0). Data sources and references are listed in the app's *About* page as they are added.
+Third-party software used to build it, all under OSI-approved licenses: React, Vite, Tailwind CSS, PostCSS, Autoprefixer and Vitest (MIT), and TypeScript (Apache-2.0). NASA data are public; their sources are listed above and in the app's About page.
