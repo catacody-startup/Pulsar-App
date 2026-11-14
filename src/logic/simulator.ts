@@ -8,13 +8,16 @@
  */
 import { CHECKIN } from '../config/checkin';
 import { MISSION } from '../config/mission';
+import { RAD_REPLAY, RAD_SERIES } from '../config/radiation';
 import { SIMULATOR, type SimulatorParams } from '../config/simulator';
 import {
   localSolDate,
   MARS_HOUR_IN_MINUTES,
   missionSol,
   msAtLocalSolDate,
+  SOL_IN_EARTH_DAYS,
 } from './marsTime';
+import { radDoseRateAt, type RadSeries } from './radSeries';
 import { hashString, random01, randomSigned, smoothNoise } from './random';
 import type {
   Activity,
@@ -47,6 +50,8 @@ export interface SolPlan {
 export interface SimulatorOptions {
   crew: CrewProfile;
   events?: readonly SimEvent[];
+  /** Measured dose-rate series and how to replay it (defaults: RAD at Gale). */
+  radiation?: { series: RadSeries; replay: typeof RAD_REPLAY };
   eastLongitudeDeg?: number;
   landingMs?: number;
   params?: SimulatorParams;
@@ -85,6 +90,7 @@ export function createSimulator(options: SimulatorOptions) {
     eastLongitudeDeg = MISSION.site.eastLongitudeDeg,
     landingMs = MISSION.landingMs,
     params = SIMULATOR,
+    radiation = { series: RAD_SERIES, replay: RAD_REPLAY },
   } = options;
   const seed = hashString(crew.id);
   const { schedule } = crew;
@@ -138,6 +144,33 @@ export function createSimulator(options: SimulatorOptions) {
       if (e.kind === 'solarStorm') factor += (e.intensity - 1) * eventEnvelope(e, t, shape.rampUpMin, shape.rampDownMin);
     }
     return factor;
+  }
+
+  /**
+   * Background dose rate: the habitat sol replays one of the quiet sols measured
+   * by RAD at Gale, at the same local time. Synthetic model where RAD has no data.
+   */
+  function backgroundDoseRate(localSol: number, hour: number, minute: number): number {
+    const { from, to } = radiation.replay.quietSols;
+    const length = to - from + 1;
+    const curiositySol = from + (((localSol % length) + length) % length);
+    const measured = radDoseRateAt(radiation.series, curiositySol + hour / 24);
+    if (measured !== null) return measured;
+    const rad = params.radiation;
+    return (
+      rad.baseDoseRate *
+      (1 + rad.diurnalAmplitude * wave(hour, rad.diurnalPeakHour) + noise(CHANNEL.dose, minute, rad.noise))
+    );
+  }
+
+  /** During a replay event, the dose rate RAD measured that long after the 2017 onset. */
+  function replayedDoseRate(t: number): number | null {
+    for (const e of events) {
+      if (e.kind !== 'sepReplay' || eventEnvelope(e, t, 0, 0) === 0) continue;
+      const elapsedSols = (t - e.start) / (SOL_IN_EARTH_DAYS * 86_400_000);
+      return radDoseRateAt(radiation.series, radiation.replay.sep2017Onset + elapsedSols);
+    }
+    return null;
   }
 
   function isAwakeByEvent(t: number): boolean {
@@ -222,11 +255,7 @@ export function createSimulator(options: SimulatorOptions) {
     const diastolic =
       crew.baseline.diastolic + blend(bp.diastolicOffset) + noise(CHANNEL.diastolic, minute, bp.diastolicNoise);
 
-    const rad = params.radiation;
-    const doseRate =
-      rad.baseDoseRate *
-      (1 + rad.diurnalAmplitude * wave(hour, rad.diurnalPeakHour) + noise(CHANNEL.dose, minute, rad.noise)) *
-      stormFactor(t);
+    const doseRate = (replayedDoseRate(t) ?? backgroundDoseRate(where.localSol, hour, minute)) * stormFactor(t);
 
     return {
       t,

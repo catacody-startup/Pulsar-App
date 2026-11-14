@@ -54,8 +54,9 @@ export const SIMULATOR = {
 
   radiation: {
     /**
-     * Absorbed dose rate on the surface of Gale Crater measured by Curiosity's RAD.
-     * The habitat gets the same dose as the surface: no extra shielding modeled.
+     * The habitat's dose rate is the one Curiosity's RAD measured at Gale Crater
+     * (config/radiation.ts): no extra shielding modeled. The figures below are
+     * only a fallback for times the RAD series doesn't cover.
      */
     baseDoseRate: GALE_SURFACE_RADIATION.absorbedDoseRate, // µGy/h
     /**
@@ -87,8 +88,10 @@ export const SIMULATOR = {
 
   /** Shape of each event (ramp up and down, minutes) and its side effects. */
   events: {
-    // intensity = peak dose-rate multiplier
+    // intensity = peak dose-rate multiplier (synthetic storm)
     solarStorm: { rampUpMin: 45, rampDownMin: 480 },
+    // the dose rate follows the solar particle event measured by RAD (config/radiation.ts)
+    sepReplay: { rampUpMin: 0, rampDownMin: 0 },
     // intensity = SpO₂ points lost; the heart compensates
     lowOxygen: { rampUpMin: 15, rampDownMin: 20, heartRatePerPoint: 1.5 },
     // intensity = extra bpm (fever, infection); blood pressure follows a little

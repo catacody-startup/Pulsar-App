@@ -2,7 +2,9 @@ import { describe, expect, it } from 'vitest';
 import { CREW } from '../config/crew';
 import { HISTORY_MINUTES, SIMULATOR } from '../config/simulator';
 import { MISSION } from '../config/mission';
-import { msAtLocalSolDate } from './marsTime';
+import { RAD_BACKGROUND_DOSE_RATE, RAD_REPLAY, RAD_SERIES } from '../config/radiation';
+import { msAtLocalSolDate, SOL_IN_EARTH_DAYS } from './marsTime';
+import { radDoseRateAt } from './radSeries';
 import { createSimulator, eventEnvelope, floorToMinute, MINUTE_MS } from './simulator';
 import type { SimEvent, VitalsReading } from './types';
 
@@ -40,8 +42,9 @@ describe('simulator', () => {
       expect(r.systolic).toBeLessThan(170);
       expect(r.diastolic).toBeGreaterThan(55);
       expect(r.diastolic).toBeLessThan(90);
-      expect(r.doseRate).toBeGreaterThan(7);
-      expect(r.doseRate).toBeLessThan(10.5);
+      // Quiet sols measured by RAD: within -25% and +20% of their mean.
+      expect(r.doseRate).toBeGreaterThan(RAD_BACKGROUND_DOSE_RATE * 0.75);
+      expect(r.doseRate).toBeLessThan(RAD_BACKGROUND_DOSE_RATE * 1.2);
     }
   });
 
@@ -78,9 +81,10 @@ describe('simulator', () => {
       expect(s.sleepHours).toBeGreaterThan(4);
       expect(s.sleepHours).toBeLessThan(10);
       expect(s.exerciseMinutes).toBeLessThanOrEqual(130);
-      // 0.21 mGy per Earth day (Curiosity RAD) ≈ 0.216 mGy per sol.
-      expect(s.doseMilliGray).toBeGreaterThan(0.2);
-      expect(s.doseMilliGray).toBeLessThan(0.23);
+      // The RAD background over one sol (24.66 h).
+      const perSol = (RAD_BACKGROUND_DOSE_RATE * SOL_IN_EARTH_DAYS * 24) / 1000;
+      expect(s.doseMilliGray).toBeGreaterThan(perSol * 0.93);
+      expect(s.doseMilliGray).toBeLessThan(perSol * 1.07);
     }
   });
 
@@ -113,6 +117,17 @@ describe('simulated events', () => {
     const ratio = meanOf(window(withEvent('solarStorm', 20)), 'doseRate') / meanOf(window(calm), 'doseRate');
     expect(ratio).toBeGreaterThan(19.5);
     expect(ratio).toBeLessThan(20.5);
+  });
+
+  it('replaying the September 2017 event follows what RAD measured', () => {
+    const replay = createSimulator({ crew, events: [{ kind: 'sepReplay', start, durationMin: 3 * 24 * 60, intensity: 1 }] });
+    // Six Earth hours after the onset.
+    const t = start + 6 * HOUR_MS;
+    const expected = radDoseRateAt(RAD_SERIES, RAD_REPLAY.sep2017Onset + 6 / 24 / SOL_IN_EARTH_DAYS)!;
+    expect(replay.readingAt(t).doseRate).toBeCloseTo(expected, 1);
+    expect(replay.readingAt(t).doseRate / RAD_BACKGROUND_DOSE_RATE).toBeGreaterThan(2);
+    // Outside the event, back to the background.
+    expect(replay.readingAt(start - HOUR_MS)).toEqual(calm.readingAt(start - HOUR_MS));
   });
 
   it('low oxygen drops SpO₂ and speeds up the heart', () => {

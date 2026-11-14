@@ -74,6 +74,12 @@ export const SOURCES = {
     title:
       'Tanaka H, Monahan KD, Seals DR. Age-predicted maximal heart rate revisited. J Am Coll Cardiol 2001;37:153–156. Maximum heart rate ≈ 208 − 0.7 × age.',
   },
+  'msl-rad-pds': {
+    short: 'MSL RAD (NASA PDS)',
+    title:
+      'Mars Science Laboratory Radiation Assessment Detector (RAD) Reduced Data Records, MSL-M-RAD-3-RDR-V1.0, NASA Planetary Data System, Planetary Plasma Interactions node. Total dose rate of detector E (plastic, tissue-like), sols 1780–1830 (August–September 2017), averaged by Pulsar every half hour of Mars local time.',
+    url: 'https://pds-ppi.igpp.ucla.edu/data/MSL-M-RAD-3-RDR-V1.0/',
+  },
   'hassler-2014': {
     short: 'Hassler 2014 (RAD)',
     title:

@@ -33,9 +33,10 @@ export const SCENARIOS: readonly Scenario[] = [
   },
   {
     id: 'solar-storm',
-    label: 'Solar storm',
-    description: 'A solar particle event reached Mars 40 minutes ago: the dose rate in the habitat is climbing to 3× normal.',
-    events: [{ kind: 'solarStorm', startMinutesAgo: 40, durationMin: 18 * 60, intensity: 3 }],
+    label: 'Solar storm (real data)',
+    description:
+      'Replay of the solar particle event of 10 September 2017 as Curiosity’s RAD measured it at Gale Crater, starting 6 hours ago.',
+    events: [{ kind: 'sepReplay', startMinutesAgo: 6 * 60, durationMin: 3 * 24 * 60, intensity: 1 }],
   },
   {
     id: 'low-oxygen',

@@ -1,5 +1,5 @@
 import type { IndicatorId, Status } from '../logic/types';
-import { GALE_SURFACE_RADIATION } from './radiation';
+import { RAD_BACKGROUND_DOSE_RATE } from './radiation';
 import type { SourceId } from './sources';
 
 /**
@@ -32,8 +32,8 @@ export const THRESHOLDS = {
   },
   radiation: {
     windowMinutes: 15,
-    /** Normal dose rate of the habitat, µGy/h. */
-    baselineDoseRate: GALE_SURFACE_RADIATION.absorbedDoseRate,
+    /** Normal dose rate of the habitat, µGy/h: background measured by RAD on quiet sols. */
+    baselineDoseRate: RAD_BACKGROUND_DOSE_RATE,
     /** Multiples of the baseline: above the daily cycle of a few %, and a storm under way. */
     elevatedFactor: 1.25,
     stormFactor: 2,
@@ -182,14 +182,14 @@ export const RULES = {
   'radiation.normal': {
     indicator: 'radiation',
     status: 'ok',
-    text: 'Normal background of the Martian surface (galactic cosmic rays).',
-    sources: ['hassler-2014', 'ochmo-tb-020'],
+    text: 'Normal background of Gale Crater measured by Curiosity (galactic cosmic rays).',
+    sources: ['msl-rad-pds', 'hassler-2014', 'ochmo-tb-020'],
   },
   'radiation.elevated': {
     indicator: 'radiation',
     status: 'watch',
     text: `Dose rate ${T.radiation.elevatedFactor}× the normal background or more.`,
-    sources: ['ochmo-tb-020', 'hassler-2014'],
+    sources: ['ochmo-tb-020', 'msl-rad-pds'],
     basis: 'Pulsar cut-off, above the daily cycle of a few percent (Rafkin 2014); NASA requires alerting the crew when levels are expected to exceed acceptable values [V2 6100].',
   },
   'radiation.storm': {
