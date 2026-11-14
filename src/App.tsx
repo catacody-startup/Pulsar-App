@@ -1,15 +1,18 @@
 import { useMemo } from 'react';
+import { SPACE_WEATHER_HEADS_UP } from './config/actions';
 import { CREW, DEFAULT_CREW_ID } from './config/crew';
 import { MISSION } from './config/mission';
 import { CheckInForm } from './components/CheckInForm';
 import { DemoBar } from './components/DemoBar';
 import { IndicatorCard } from './components/IndicatorCard';
+import { SpaceWeatherPanel } from './components/SpaceWeatherPanel';
 import { StatusHero } from './components/StatusHero';
 import { Trends } from './components/Trends';
 import { WhatNow } from './components/WhatNow';
 import { useCheckIns } from './hooks/useCheckIns';
 import { useMinuteClock } from './hooks/useMinuteClock';
 import { useScenario } from './hooks/useScenario';
+import { useSpaceWeather } from './hooks/useSpaceWeather';
 import {
   evaluateIndicators,
   EVALUATION_SOLS,
@@ -18,6 +21,7 @@ import {
 } from './logic/indicators';
 import { buildAlerts } from './logic/alerts';
 import { mergeCheckIns } from './logic/checkin';
+import { upcomingMarsArrivals } from './logic/donki';
 import { formatMarsClock, localMeanSolarHours } from './logic/marsTime';
 import { missionDose } from './logic/missionDose';
 import { nextPlanItem } from './logic/plan';
@@ -39,10 +43,15 @@ const ACTIVITY_LABEL: Record<Activity, string> = {
 export function App() {
   const now = useMinuteClock();
   const { scenario, anchorMs, choose } = useScenario();
-  const sim = useMemo(() => {
-    const events = resolveScenario(scenario, anchorMs, calendar, MISSION.site.eastLongitudeDeg);
-    return createSimulator({ crew, events });
-  }, [scenario, anchorMs]);
+  const events = useMemo(
+    () => resolveScenario(scenario, anchorMs, calendar, MISSION.site.eastLongitudeDeg),
+    [scenario, anchorMs],
+  );
+  const sim = useMemo(() => createSimulator({ crew, events }), [events]);
+  const replay = events.find((e) => e.kind === 'sepReplay');
+  const weather = useSpaceWeather(now, replay ? replay.start : null);
+  const [cme] = upcomingMarsArrivals(weather.events, weather.now, SPACE_WEATHER_HEADS_UP.withinHours);
+  const cmeInHours = cme ? Math.max(1, Math.round((cme.marsArrival! - weather.now) / 3_600_000)) : undefined;
   const recent = useMemo(() => sim.recentReadings(now, EVALUATION_WINDOW_MINUTES), [sim, now]);
   const sols = useMemo(() => sim.recentSols(now, EVALUATION_SOLS), [sim, now]);
   const { checkIns: answered, save: saveCheckIn } = useCheckIns(crew.id);
@@ -78,7 +87,7 @@ export function App() {
           {ACTIVITY_LABEL[reading.activity]}
         </p>
         <StatusHero overall={overall} total={indicators.length} />
-        <WhatNow alerts={alerts} next={next} />
+        <WhatNow alerts={alerts} next={next} cmeInHours={cmeInHours} />
         <section aria-labelledby="indicators">
           <h2 id="indicators" className="mb-2 text-sm text-slate-400">
             Indicators · vitals update every minute (simulated)
@@ -97,6 +106,7 @@ export function App() {
             </div>
           </div>
         </section>
+        <SpaceWeatherPanel weather={weather} />
         <Trends sim={sim} now={now} />
       </main>
       <footer className="border-t border-slate-800 px-4 py-2 text-xs text-slate-400">

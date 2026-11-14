@@ -1,0 +1,920 @@
+{
+ "source": "NASA DONKI (Space Weather Database Of Notifications, Knowledge, Information), via api.nasa.gov",
+ "range": {
+  "startDate": "2017-09-04",
+  "endDate": "2017-09-20"
+ },
+ "CME": [
+  {
+   "activityID": "2017-09-04T19:39:00-CME-001",
+   "startTime": "2017-09-04T19:39Z",
+   "sourceLocation": "S10W14",
+   "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/CME/12987/-1",
+   "cmeAnalyses": [
+    {
+     "isMostAccurate": true,
+     "speed": 710,
+     "type": "C",
+     "enlilList": [
+      {
+       "estimatedShockArrivalTime": "2017-09-07T03:45Z",
+       "impactList": []
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "activityID": "2017-09-04T20:36:00-CME-001",
+   "startTime": "2017-09-04T20:36Z",
+   "sourceLocation": "S10W14",
+   "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/CME/12989/-1",
+   "cmeAnalyses": [
+    {
+     "isMostAccurate": false,
+     "speed": 1550,
+     "type": "O",
+     "enlilList": [
+      {
+       "estimatedShockArrivalTime": "2017-09-06T14:51Z",
+       "impactList": []
+      }
+     ]
+    },
+    {
+     "isMostAccurate": true,
+     "speed": 1114,
+     "type": "O",
+     "enlilList": [
+      {
+       "estimatedShockArrivalTime": "2017-09-07T03:45Z",
+       "impactList": []
+      }
+     ]
+    },
+    {
+     "isMostAccurate": false,
+     "speed": 1323,
+     "type": "O",
+     "enlilList": []
+    }
+   ]
+  },
+  {
+   "activityID": "2017-09-06T10:00:00-CME-001",
+   "startTime": "2017-09-06T10:00Z",
+   "sourceLocation": "S09W88",
+   "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/CME/13026/-1",
+   "cmeAnalyses": [
+    {
+     "isMostAccurate": true,
+     "speed": 260,
+     "type": "S",
+     "enlilList": [
+      {
+       "estimatedShockArrivalTime": "2017-09-08T18:35Z",
+       "impactList": [
+        {
+         "location": "STEREO B",
+         "arrivalTime": "2017-09-08T22:41Z",
+         "isGlancingBlow": false
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "activityID": "2017-09-06T12:24:00-CME-001",
+   "startTime": "2017-09-06T12:24Z",
+   "sourceLocation": "S7W33",
+   "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/CME/13013/-1",
+   "cmeAnalyses": [
+    {
+     "isMostAccurate": false,
+     "speed": 1816,
+     "type": "O",
+     "enlilList": []
+    },
+    {
+     "isMostAccurate": false,
+     "speed": 1881,
+     "type": "O",
+     "enlilList": [
+      {
+       "estimatedShockArrivalTime": "2017-09-08T18:27Z",
+       "impactList": []
+      }
+     ]
+    },
+    {
+     "isMostAccurate": false,
+     "speed": 1430,
+     "type": "O",
+     "enlilList": [
+      {
+       "estimatedShockArrivalTime": "2017-09-08T18:49Z",
+       "impactList": []
+      }
+     ]
+    },
+    {
+     "isMostAccurate": true,
+     "speed": 1238,
+     "type": "O",
+     "enlilList": [
+      {
+       "estimatedShockArrivalTime": "2017-09-08T18:35Z",
+       "impactList": [
+        {
+         "location": "STEREO B",
+         "arrivalTime": "2017-09-08T22:41Z",
+         "isGlancingBlow": false
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "isMostAccurate": true,
+     "speed": 1636,
+     "type": "O",
+     "enlilList": []
+    }
+   ]
+  },
+  {
+   "activityID": "2017-09-06T13:09:00-CME-001",
+   "startTime": "2017-09-06T13:09Z",
+   "sourceLocation": "S07W91",
+   "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/CME/13028/-1",
+   "cmeAnalyses": [
+    {
+     "isMostAccurate": true,
+     "speed": 1178,
+     "type": "O",
+     "enlilList": [
+      {
+       "estimatedShockArrivalTime": "2017-09-08T18:35Z",
+       "impactList": [
+        {
+         "location": "STEREO B",
+         "arrivalTime": "2017-09-08T22:41Z",
+         "isGlancingBlow": false
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "activityID": "2017-09-07T10:48:00-CME-001",
+   "startTime": "2017-09-07T10:48Z",
+   "sourceLocation": "",
+   "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/CME/13047/-1",
+   "cmeAnalyses": [
+    {
+     "isMostAccurate": true,
+     "speed": 597,
+     "type": "C",
+     "enlilList": [
+      {
+       "estimatedShockArrivalTime": null,
+       "impactList": []
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "activityID": "2017-09-07T15:12:00-CME-001",
+   "startTime": "2017-09-07T15:12Z",
+   "sourceLocation": "",
+   "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/CME/13049/-1",
+   "cmeAnalyses": [
+    {
+     "isMostAccurate": false,
+     "speed": 560,
+     "type": "C",
+     "enlilList": []
+    },
+    {
+     "isMostAccurate": true,
+     "speed": 477,
+     "type": "S",
+     "enlilList": [
+      {
+       "estimatedShockArrivalTime": null,
+       "impactList": []
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "activityID": "2017-09-07T22:54:00-CME-001",
+   "startTime": "2017-09-07T22:54Z",
+   "sourceLocation": "",
+   "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/CME/13079/-1",
+   "cmeAnalyses": [
+    {
+     "isMostAccurate": true,
+     "speed": 282,
+     "type": "S",
+     "enlilList": []
+    }
+   ]
+  },
+  {
+   "activityID": "2017-09-07T23:36:00-CME-001",
+   "startTime": "2017-09-07T23:36Z",
+   "sourceLocation": "S15W50",
+   "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/CME/13069/-1",
+   "cmeAnalyses": [
+    {
+     "isMostAccurate": true,
+     "speed": 395,
+     "type": "S",
+     "enlilList": []
+    }
+   ]
+  },
+  {
+   "activityID": "2017-09-08T04:17:00-CME-001",
+   "startTime": "2017-09-08T04:17Z",
+   "sourceLocation": "S07W55",
+   "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/CME/13071/-1",
+   "cmeAnalyses": [
+    {
+     "isMostAccurate": true,
+     "speed": 442,
+     "type": "S",
+     "enlilList": []
+    }
+   ]
+  },
+  {
+   "activityID": "2017-09-08T07:24:00-CME-001",
+   "startTime": "2017-09-08T07:24Z",
+   "sourceLocation": "S10W58",
+   "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/CME/13073/-1",
+   "cmeAnalyses": [
+    {
+     "isMostAccurate": true,
+     "speed": 450,
+     "type": "S",
+     "enlilList": []
+    }
+   ]
+  },
+  {
+   "activityID": "2017-09-09T16:48:00-CME-001",
+   "startTime": "2017-09-09T16:48Z",
+   "sourceLocation": "S09W79",
+   "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/CME/13089/-1",
+   "cmeAnalyses": [
+    {
+     "isMostAccurate": false,
+     "speed": 406,
+     "type": "S",
+     "enlilList": []
+    },
+    {
+     "isMostAccurate": true,
+     "speed": 465,
+     "type": "S",
+     "enlilList": [
+      {
+       "estimatedShockArrivalTime": null,
+       "impactList": []
+      },
+      {
+       "estimatedShockArrivalTime": "2017-09-13T02:00Z",
+       "impactList": [
+        {
+         "location": "Mars",
+         "arrivalTime": "2017-09-13T22:00Z",
+         "isGlancingBlow": true
+        },
+        {
+         "location": "STEREO B",
+         "arrivalTime": "2017-09-11T20:09Z",
+         "isGlancingBlow": false
+        }
+       ]
+      },
+      {
+       "estimatedShockArrivalTime": "2017-09-13T02:00Z",
+       "impactList": [
+        {
+         "location": "Dawn",
+         "arrivalTime": "2017-09-14T20:52Z",
+         "isGlancingBlow": false
+        },
+        {
+         "location": "STEREO B",
+         "arrivalTime": "2017-09-11T20:31Z",
+         "isGlancingBlow": false
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "activityID": "2017-09-09T23:12:00-CME-001",
+   "startTime": "2017-09-09T23:12Z",
+   "sourceLocation": "N02W92",
+   "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/CME/13095/-1",
+   "cmeAnalyses": [
+    {
+     "isMostAccurate": true,
+     "speed": 333,
+     "type": "S",
+     "enlilList": [
+      {
+       "estimatedShockArrivalTime": null,
+       "impactList": []
+      },
+      {
+       "estimatedShockArrivalTime": "2017-09-13T02:00Z",
+       "impactList": [
+        {
+         "location": "Mars",
+         "arrivalTime": "2017-09-13T22:00Z",
+         "isGlancingBlow": true
+        },
+        {
+         "location": "STEREO B",
+         "arrivalTime": "2017-09-11T20:09Z",
+         "isGlancingBlow": false
+        }
+       ]
+      },
+      {
+       "estimatedShockArrivalTime": "2017-09-13T02:00Z",
+       "impactList": [
+        {
+         "location": "Dawn",
+         "arrivalTime": "2017-09-14T20:52Z",
+         "isGlancingBlow": false
+        },
+        {
+         "location": "STEREO B",
+         "arrivalTime": "2017-09-11T20:31Z",
+         "isGlancingBlow": false
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "activityID": "2017-09-10T16:09:00-CME-001",
+   "startTime": "2017-09-10T16:09Z",
+   "sourceLocation": "S09W91",
+   "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/CME/13107/-1",
+   "cmeAnalyses": [
+    {
+     "isMostAccurate": false,
+     "speed": 1670,
+     "type": "O",
+     "enlilList": [
+      {
+       "estimatedShockArrivalTime": "2017-09-13T04:00Z",
+       "impactList": [
+        {
+         "location": "Mars",
+         "arrivalTime": "2017-09-14T10:00Z",
+         "isGlancingBlow": true
+        },
+        {
+         "location": "STEREO B",
+         "arrivalTime": "2017-09-12T05:12Z",
+         "isGlancingBlow": false
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "isMostAccurate": true,
+     "speed": 2650,
+     "type": "R",
+     "enlilList": [
+      {
+       "estimatedShockArrivalTime": "2017-09-13T02:00Z",
+       "impactList": [
+        {
+         "location": "Mars",
+         "arrivalTime": "2017-09-13T22:00Z",
+         "isGlancingBlow": true
+        },
+        {
+         "location": "STEREO B",
+         "arrivalTime": "2017-09-11T20:09Z",
+         "isGlancingBlow": false
+        }
+       ]
+      },
+      {
+       "estimatedShockArrivalTime": "2017-09-13T02:00Z",
+       "impactList": [
+        {
+         "location": "Dawn",
+         "arrivalTime": "2017-09-14T20:52Z",
+         "isGlancingBlow": false
+        },
+        {
+         "location": "STEREO B",
+         "arrivalTime": "2017-09-11T20:31Z",
+         "isGlancingBlow": false
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "isMostAccurate": true,
+     "speed": 2314,
+     "type": "R",
+     "enlilList": []
+    }
+   ]
+  },
+  {
+   "activityID": "2017-09-11T13:34:00-CME-001",
+   "startTime": "2017-09-11T13:34Z",
+   "sourceLocation": "S8W110",
+   "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/CME/13123/-1",
+   "cmeAnalyses": []
+  },
+  {
+   "activityID": "2017-09-12T08:09:00-CME-001",
+   "startTime": "2017-09-12T08:09Z",
+   "sourceLocation": "N09E49",
+   "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/CME/13125/-1",
+   "cmeAnalyses": [
+    {
+     "isMostAccurate": true,
+     "speed": 450,
+     "type": "S",
+     "enlilList": [
+      {
+       "estimatedShockArrivalTime": null,
+       "impactList": []
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "activityID": "2017-09-12T14:48:00-CME-001",
+   "startTime": "2017-09-12T14:48Z",
+   "sourceLocation": "",
+   "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/CME/13139/-1",
+   "cmeAnalyses": [
+    {
+     "isMostAccurate": true,
+     "speed": 358,
+     "type": "S",
+     "enlilList": []
+    }
+   ]
+  },
+  {
+   "activityID": "2017-09-12T20:42:00-CME-001",
+   "startTime": "2017-09-12T20:42Z",
+   "sourceLocation": "",
+   "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/CME/13137/-1",
+   "cmeAnalyses": [
+    {
+     "isMostAccurate": true,
+     "speed": 741,
+     "type": "C",
+     "enlilList": []
+    }
+   ]
+  },
+  {
+   "activityID": "2017-09-13T18:00:00-CME-001",
+   "startTime": "2017-09-13T18:00Z",
+   "sourceLocation": "",
+   "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/CME/13147/-1",
+   "cmeAnalyses": [
+    {
+     "isMostAccurate": true,
+     "speed": 300,
+     "type": "S",
+     "enlilList": []
+    }
+   ]
+  },
+  {
+   "activityID": "2017-09-16T12:24:00-CME-001",
+   "startTime": "2017-09-16T12:24Z",
+   "sourceLocation": "",
+   "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/CME/13167/-1",
+   "cmeAnalyses": [
+    {
+     "isMostAccurate": true,
+     "speed": 551,
+     "type": "C",
+     "enlilList": [
+      {
+       "estimatedShockArrivalTime": null,
+       "impactList": [
+        {
+         "location": "STEREO A",
+         "arrivalTime": "2017-09-19T21:00Z",
+         "isGlancingBlow": true
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "activityID": "2017-09-16T17:12:00-CME-001",
+   "startTime": "2017-09-16T17:12Z",
+   "sourceLocation": "",
+   "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/CME/13175/-1",
+   "cmeAnalyses": [
+    {
+     "isMostAccurate": true,
+     "speed": 412,
+     "type": "S",
+     "enlilList": []
+    }
+   ]
+  },
+  {
+   "activityID": "2017-09-17T12:09:00-CME-001",
+   "startTime": "2017-09-17T12:09Z",
+   "sourceLocation": "S15E40",
+   "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/CME/13173/-1",
+   "cmeAnalyses": [
+    {
+     "isMostAccurate": true,
+     "speed": 1404,
+     "type": "O",
+     "enlilList": [
+      {
+       "estimatedShockArrivalTime": null,
+       "impactList": [
+        {
+         "location": "Spitzer",
+         "arrivalTime": "2017-09-20T00:00Z",
+         "isGlancingBlow": true
+        },
+        {
+         "location": "STEREO A",
+         "arrivalTime": "2017-09-19T08:12Z",
+         "isGlancingBlow": false
+        }
+       ]
+      },
+      {
+       "estimatedShockArrivalTime": null,
+       "impactList": [
+        {
+         "location": "Juno",
+         "arrivalTime": "2017-10-01T12:00Z",
+         "isGlancingBlow": true
+        },
+        {
+         "location": "STEREO A",
+         "arrivalTime": "2017-09-19T08:13Z",
+         "isGlancingBlow": false
+        }
+       ]
+      },
+      {
+       "estimatedShockArrivalTime": null,
+       "impactList": [
+        {
+         "location": "Spitzer",
+         "arrivalTime": "2017-09-19T21:47Z",
+         "isGlancingBlow": false
+        },
+        {
+         "location": "STEREO A",
+         "arrivalTime": "2017-09-19T05:49Z",
+         "isGlancingBlow": false
+        }
+       ]
+      },
+      {
+       "estimatedShockArrivalTime": null,
+       "impactList": [
+        {
+         "location": "Spitzer",
+         "arrivalTime": "2017-09-19T23:05Z",
+         "isGlancingBlow": false
+        },
+        {
+         "location": "STEREO A",
+         "arrivalTime": "2017-09-19T05:53Z",
+         "isGlancingBlow": false
+        }
+       ]
+      },
+      {
+       "estimatedShockArrivalTime": null,
+       "impactList": [
+        {
+         "location": "Mars",
+         "arrivalTime": "2017-09-23T06:00Z",
+         "isGlancingBlow": true
+        },
+        {
+         "location": "Spitzer",
+         "arrivalTime": "2017-09-19T22:00Z",
+         "isGlancingBlow": true
+        },
+        {
+         "location": "STEREO A",
+         "arrivalTime": "2017-09-19T06:32Z",
+         "isGlancingBlow": false
+        }
+       ]
+      },
+      {
+       "estimatedShockArrivalTime": null,
+       "impactList": [
+        {
+         "location": "Juno",
+         "arrivalTime": "2017-10-01T00:00Z",
+         "isGlancingBlow": true
+        },
+        {
+         "location": "Mars",
+         "arrivalTime": "2017-09-23T06:00Z",
+         "isGlancingBlow": true
+        },
+        {
+         "location": "Spitzer",
+         "arrivalTime": "2017-09-19T22:00Z",
+         "isGlancingBlow": true
+        },
+        {
+         "location": "STEREO A",
+         "arrivalTime": "2017-09-19T06:31Z",
+         "isGlancingBlow": false
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "activityID": "2017-09-17T14:24:00-CME-001",
+   "startTime": "2017-09-17T14:24Z",
+   "sourceLocation": "",
+   "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/CME/13180/-1",
+   "cmeAnalyses": [
+    {
+     "isMostAccurate": true,
+     "speed": 899,
+     "type": "C",
+     "enlilList": [
+      {
+       "estimatedShockArrivalTime": null,
+       "impactList": [
+        {
+         "location": "Mars",
+         "arrivalTime": "2017-09-23T06:00Z",
+         "isGlancingBlow": true
+        },
+        {
+         "location": "Spitzer",
+         "arrivalTime": "2017-09-19T22:00Z",
+         "isGlancingBlow": true
+        },
+        {
+         "location": "STEREO A",
+         "arrivalTime": "2017-09-19T06:32Z",
+         "isGlancingBlow": false
+        }
+       ]
+      },
+      {
+       "estimatedShockArrivalTime": null,
+       "impactList": [
+        {
+         "location": "Juno",
+         "arrivalTime": "2017-10-01T00:00Z",
+         "isGlancingBlow": true
+        },
+        {
+         "location": "Mars",
+         "arrivalTime": "2017-09-23T06:00Z",
+         "isGlancingBlow": true
+        },
+        {
+         "location": "Spitzer",
+         "arrivalTime": "2017-09-19T22:00Z",
+         "isGlancingBlow": true
+        },
+        {
+         "location": "STEREO A",
+         "arrivalTime": "2017-09-19T06:31Z",
+         "isGlancingBlow": false
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "SEP": [
+  {
+   "sepID": "2017-09-04T22:56:00-SEP-001",
+   "eventTime": "2017-09-04T22:56Z",
+   "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/SEP/13004/-1",
+   "instruments": [
+    {
+     "displayName": "MODEL: REleASE:SOHO/EPHIN 15.8-39.8 MeV"
+    }
+   ]
+  },
+  {
+   "sepID": "2017-09-04T23:52:00-SEP-001",
+   "eventTime": "2017-09-04T23:52Z",
+   "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/SEP/13000/-1",
+   "instruments": [
+    {
+     "displayName": "SOHO: COSTEP 15.8-39.8 MeV"
+    }
+   ]
+  },
+  {
+   "sepID": "2017-09-05T00:30:00-SEP-001",
+   "eventTime": "2017-09-05T00:30Z",
+   "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/SEP/12984/-1",
+   "instruments": [
+    {
+     "displayName": "GOES13: SEM/EPS >10 MeV"
+    }
+   ]
+  },
+  {
+   "sepID": "2017-09-06T23:30:00-SEP-001",
+   "eventTime": "2017-09-06T23:30Z",
+   "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/SEP/13081/-1",
+   "instruments": [
+    {
+     "displayName": "SOHO: COSTEP 15.8-39.8 MeV"
+    }
+   ]
+  },
+  {
+   "sepID": "2017-09-06T23:45:00-SEP-001",
+   "eventTime": "2017-09-06T23:45Z",
+   "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/SEP/13036/-1",
+   "instruments": [
+    {
+     "displayName": "GOES13: SEM/EPS >10 MeV"
+    }
+   ]
+  },
+  {
+   "sepID": "2017-09-10T16:25:00-SEP-001",
+   "eventTime": "2017-09-10T16:25Z",
+   "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/SEP/13101/-1",
+   "instruments": [
+    {
+     "displayName": "GOES13: SEM/EPS >100 MeV"
+    }
+   ]
+  },
+  {
+   "sepID": "2017-09-10T16:45:00-SEP-001",
+   "eventTime": "2017-09-10T16:45Z",
+   "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/SEP/13104/-1",
+   "instruments": [
+    {
+     "displayName": "GOES13: SEM/EPS >10 MeV"
+    }
+   ]
+  },
+  {
+   "sepID": "2017-09-10T20:00:00-SEP-001",
+   "eventTime": "2017-09-10T20:00Z",
+   "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/SEP/13112/-1",
+   "instruments": [
+    {
+     "displayName": "SOHO: COSTEP 15.8-39.8 MeV"
+    }
+   ]
+  },
+  {
+   "sepID": "2017-09-13T05:33:00-SEP-001",
+   "eventTime": "2017-09-13T05:33Z",
+   "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/SEP/13134/-1",
+   "instruments": [
+    {
+     "displayName": "STEREO A: IMPACT 13-100 MeV"
+    }
+   ]
+  },
+  {
+   "sepID": "2017-09-17T23:40:00-SEP-001",
+   "eventTime": "2017-09-17T23:40Z",
+   "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/SEP/13186/-1",
+   "instruments": [
+    {
+     "displayName": "STEREO A: IMPACT 13-100 MeV"
+    }
+   ]
+  }
+ ],
+ "GST": [
+  {
+   "gstID": "2017-09-07T21:00:00-GST-001",
+   "startTime": "2017-09-07T21:00Z",
+   "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/GST/13054/-1",
+   "allKpIndex": [
+    {
+     "observedTime": "2017-09-08T00:00Z",
+     "kpIndex": 8
+    },
+    {
+     "observedTime": "2017-09-08T03:00Z",
+     "kpIndex": 8
+    }
+   ]
+  },
+  {
+   "gstID": "2017-09-08T12:00:00-GST-001",
+   "startTime": "2017-09-08T12:00Z",
+   "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/GST/13066/-1",
+   "allKpIndex": [
+    {
+     "observedTime": "2017-09-08T15:00Z",
+     "kpIndex": 8
+    },
+    {
+     "observedTime": "2017-09-08T18:00Z",
+     "kpIndex": 7
+    },
+    {
+     "observedTime": "2017-09-08T21:00Z",
+     "kpIndex": 6
+    }
+   ]
+  },
+  {
+   "gstID": "2017-09-14T15:00:00-GST-001",
+   "startTime": "2017-09-14T15:00Z",
+   "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/GST/13150/-1",
+   "allKpIndex": [
+    {
+     "observedTime": "2017-09-14T18:00Z",
+     "kpIndex": 6
+    },
+    {
+     "observedTime": "2017-09-15T03:00Z",
+     "kpIndex": 6
+    },
+    {
+     "observedTime": "2017-09-16T06:00Z",
+     "kpIndex": 6
+    }
+   ]
+  }
+ ],
+ "IPS": [
+  {
+   "activityID": "2017-09-06T23:08:00-IPS-001",
+   "location": "Earth",
+   "eventTime": "2017-09-06T23:08Z",
+   "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/IPS/13033/-1"
+  },
+  {
+   "activityID": "2017-09-07T22:30:00-IPS-001",
+   "location": "Earth",
+   "eventTime": "2017-09-07T22:30Z",
+   "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/IPS/13051/-1"
+  },
+  {
+   "activityID": "2017-09-12T19:26:00-IPS-001",
+   "location": "Earth",
+   "eventTime": "2017-09-12T19:26Z",
+   "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/IPS/13132/-1"
+  },
+  {
+   "activityID": "2017-09-19T02:30:00-IPS-001",
+   "location": "STEREO A",
+   "eventTime": "2017-09-19T02:30Z",
+   "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/IPS/13197/-1"
+  }
+ ]
+}

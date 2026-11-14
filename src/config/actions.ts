@@ -184,6 +184,19 @@ export const ACTIONS: Record<AlertRuleId, Action> = {
   },
 };
 
+/** Heads-up when DONKI forecasts a CME reaching Mars soon. */
+export const SPACE_WEATHER_HEADS_UP = {
+  /** How far ahead a forecast arrival is worth a heads-up, hours. */
+  withinHours: 72,
+  title: (hours: number) => `CME forecast to reach Mars in about ${hours} h`,
+  steps: [
+    'Plan EVAs so they end well before the arrival.',
+    'Check that the storm shelter is stocked and clear.',
+    'Watch the radiation reading: Pulsar tells you if it rises.',
+  ],
+  sources: ['donki', 'ochmo-tb-020'] as SourceId[],
+};
+
 /** Shown under "What do I do now?" when there are no alerts. */
 export const NO_ALERTS_TEXT = 'Nothing to act on. Keep to your plan.';
 

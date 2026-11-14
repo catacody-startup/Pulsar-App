@@ -6,6 +6,7 @@ import {
   marsSolDate,
   missionSol,
   msAtLocalSolDate,
+  msAtMissionSolDate,
   SOL_IN_EARTH_DAYS,
 } from './marsTime';
 
@@ -38,6 +39,14 @@ describe('marsTime', () => {
     expect(missionSol(landing, landing, GALE_EAST_LON)).toBe(0);
     const startOfLandingSol = msAtLocalSolDate(Math.floor(localSolDate(landing, GALE_EAST_LON)), GALE_EAST_LON);
     expect(missionSol(startOfLandingSol + 10 * SOL_MS + 1000, landing, GALE_EAST_LON)).toBe(10);
+  });
+
+  it('turns a mission sol date back into Earth time', () => {
+    const landing = Date.parse('2012-08-06T05:17:57Z');
+    // Curiosity sol 1812 began on 10 September 2017 (UTC), around 03:20.
+    const t = msAtMissionSolDate(1812, landing, GALE_EAST_LON);
+    expect(missionSol(t + 1000, landing, GALE_EAST_LON)).toBe(1812);
+    expect(new Date(t).toISOString().slice(0, 10)).toBe('2017-09-10');
   });
 
   it('formats the time of sol', () => {

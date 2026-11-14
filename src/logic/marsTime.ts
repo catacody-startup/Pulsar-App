@@ -49,6 +49,11 @@ export function missionSol(ms: number, landingMs: number, eastLongitudeDeg: numb
   );
 }
 
+/** Earth time (ms) of a mission sol date (sol + fraction of sol) counted from `landingMs`. */
+export function msAtMissionSolDate(solDate: number, landingMs: number, eastLongitudeDeg: number): number {
+  return msAtLocalSolDate(solDate + Math.floor(localSolDate(landingMs, eastLongitudeDeg)), eastLongitudeDeg);
+}
+
 /** "HH:MM" for a time of sol given in Mars hours. */
 export function formatMarsClock(hours: number): string {
   const totalMinutes = Math.floor((((hours % 24) + 24) % 24) * 60);

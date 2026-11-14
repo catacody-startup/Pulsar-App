@@ -46,6 +46,12 @@ export const SOURCES = {
       'NASA-STD-3001 Technical Brief: Behavioral Health and Performance (OCHMO-TB-016, Rev B, 2023). Missions beyond 6 months or beyond low Earth orbit need minimally obtrusive measures of psychological and behavioral state; [V1 6004] behavioral health support, [V1 6010] private psychological conferences (PPCs).',
     url: 'https://www.nasa.gov/wp-content/uploads/2023/12/ochmo-tb-016-behavioral-health.pdf',
   },
+  'donki': {
+    short: 'NASA DONKI',
+    title:
+      'NASA Space Weather Database Of Notifications, Knowledge, Information (DONKI), Community Coordinated Modeling Center: coronal mass ejections with WSA-ENLIL arrival forecasts (including Mars), solar energetic particle events, geomagnetic storms and interplanetary shocks. Accessed through api.nasa.gov.',
+    url: 'https://kauai.ccmc.gsfc.nasa.gov/DONKI/',
+  },
   'hrr': {
     short: 'NASA Human Research Roadmap',
     title:
