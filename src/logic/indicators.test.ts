@@ -15,6 +15,7 @@ import {
   EVALUATION_SOLS,
   EVALUATION_WINDOW_MINUTES,
   maxHeartRate,
+  overallStatus,
   worstStatus,
 } from './indicators';
 import { createSimulator, floorToMinute, MINUTE_MS } from './simulator';
@@ -62,6 +63,27 @@ describe('rules', () => {
     expect(worstStatus(['ok', 'watch', 'ok'])).toBe('watch');
     expect(worstStatus(['watch', 'act', 'ok'])).toBe('act');
     expect(worstStatus([])).toBe('ok');
+  });
+});
+
+describe('overall status', () => {
+  it('answers with the worst indicator and lists the flagged ones, most urgent first', () => {
+    const results = [
+      evaluateHeartRate(crew, readings()),
+      evaluateSpo2(readings({ spo2: 93 })),
+      evaluateRadiation(readings({ doseRate: THRESHOLDS.radiation.baselineDoseRate * 3 })),
+    ];
+    const overall = overallStatus(results);
+    expect(overall.status).toBe('act');
+    expect(overall.flagged.map((r) => r.id)).toEqual(['radiation', 'spo2']);
+    expect(overallStatus([evaluateHeartRate(crew, readings())])).toEqual({ status: 'ok', flagged: [] });
+  });
+
+  it('reports last nights and today’s exercise as context', () => {
+    // The last 7 nights: 7, 8, 9, 6, 7, 8, 9.
+    expect(evaluateSleep(sols([6, 7, 8, 9, 6, 7, 8, 9])).average).toBe(7.7);
+    const progress = sols([8, 8, 8], [90, 90, 40]);
+    expect(evaluateExercise(progress).today).toBe(40);
   });
 });
 

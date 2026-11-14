@@ -17,7 +17,7 @@ Responde "¿estoy bien?" y "¿qué hago ahora?" para un astronauta en Marte. Un 
 
 1. ✅ **Tripulante simulado:** modelo de datos y simulador determinista (lecturas cada minuto, historia de 7 días). El hábitat está en el cráter Gale (donde mide el RAD) y el día sigue la hora solar local de Marte (algoritmo Mars24); el simulador acepta eventos (tormenta solar, falta de oxígeno, enfermedad, noche sin dormir) para las demos.
 2. ✅ **Umbrales con fuente y semáforo por indicador:** frecuencia cardíaca, SpO₂, presión, radiación, sueño y ejercicio. Cada umbral cita de dónde sale (NASA-STD-3001 y sus technical briefs, Human Research Roadmap, OMS, ACC/AHA, ACSM); cuando un corte es decisión de Pulsar, la regla lo dice (`basis` en `src/config/thresholds.ts`).
-3. **Panel "¿estoy bien?":** estado general (*All good / Attention / Act now*) y una tarjeta por indicador.
+3. ✅ **Panel "¿estoy bien?":** estado general (*All good / Attention / Act now*) y una tarjeta por indicador. La de radiación suma la dosis estimada de la misión (crucero + superficie, medidas del RAD) contra el límite de carrera de 600 mSv.
 4. **Alertas con una acción concreta** cada una.
 5. **Tendencias** de 24 h y 7 días, con el rango normal marcado.
 6. **Check-in diario** de bienestar (ánimo, estrés, sueño, aislamiento).

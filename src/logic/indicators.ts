@@ -15,6 +15,10 @@ export interface IndicatorResult {
   value2?: number;
   /** For radiation: dose rate ÷ normal background. */
   ratio?: number;
+  /** For sleep: average of the last nights, h. */
+  average?: number;
+  /** For exercise: minutes so far in the sol in progress. */
+  today?: number;
 }
 
 export interface EvaluationInput {
@@ -115,13 +119,14 @@ export function evaluateSleep(sols: readonly SolSummary[]): IndicatorResult {
   if (!last) throw new Error('No complete night to evaluate');
   const hours = last.sleepHours;
   const recentNights = nights.slice(-t.debtNights);
-  const average = mean(recentNights.map((s) => s.sleepHours));
-  if (hours < t.almostNoneHours) return result('sleep', 'sleep.none', hours);
+  const average = Math.round(mean(recentNights.map((s) => s.sleepHours)) * 10) / 10;
+  const extra = { average };
+  if (hours < t.almostNoneHours) return result('sleep', 'sleep.none', hours, extra);
   if (recentNights.length >= t.debtNights && average <= t.debtAverageHours) {
-    return result('sleep', 'sleep.debt', hours);
+    return result('sleep', 'sleep.debt', hours, extra);
   }
-  if (hours < t.recommendedHours) return result('sleep', 'sleep.short', hours);
-  return result('sleep', 'sleep.ok', hours);
+  if (hours < t.recommendedHours) return result('sleep', 'sleep.short', hours, extra);
+  return result('sleep', 'sleep.ok', hours, extra);
 }
 
 export function evaluateExercise(sols: readonly SolSummary[]): IndicatorResult {
@@ -133,9 +138,11 @@ export function evaluateExercise(sols: readonly SolSummary[]): IndicatorResult {
   const lastFew = done.slice(-t.missedSolsInARow);
   const missedInARow =
     lastFew.length === t.missedSolsInARow && lastFew.every((s) => s.exerciseMinutes < t.missedBelowMinutes);
-  if (missedInARow) return result('exercise', 'exercise.missed', minutes);
-  if (minutes < t.minimumMinutes) return result('exercise', 'exercise.short', minutes);
-  return result('exercise', 'exercise.ok', minutes);
+  const current = sols.at(-1);
+  const extra = { today: current && !current.complete ? current.exerciseMinutes : 0 };
+  if (missedInARow) return result('exercise', 'exercise.missed', minutes, extra);
+  if (minutes < t.minimumMinutes) return result('exercise', 'exercise.short', minutes, extra);
+  return result('exercise', 'exercise.ok', minutes, extra);
 }
 
 /** Every indicator, in display order. */
@@ -148,6 +155,20 @@ export function evaluateIndicators({ crew, recent, sols }: EvaluationInput): Ind
     evaluateSleep(sols),
     evaluateExercise(sols),
   ];
+}
+
+export interface Overall {
+  status: Status;
+  /** Indicators that are not ok, the most urgent first. */
+  flagged: IndicatorResult[];
+}
+
+/** "Am I OK?": the worst status and what caused it. */
+export function overallStatus(results: readonly IndicatorResult[]): Overall {
+  const flagged = results
+    .filter((r) => r.status !== 'ok')
+    .sort((a, b) => STATUS_RANK[b.status] - STATUS_RANK[a.status]);
+  return { status: worstStatus(results.map((r) => r.status)), flagged };
 }
 
 /** How many minutes of readings `evaluateIndicators` needs. */

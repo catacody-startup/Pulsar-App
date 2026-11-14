@@ -13,4 +13,6 @@ export const MISSION = {
   },
   /** Fictional landing date of the crew; the landing sol is sol 0. */
   landingMs: Date.parse('2026-05-04T00:00:00Z'),
+  /** Days of the cruise from Earth to Mars before landing (fictional, a fast transfer). */
+  transitDays: 180,
 } as const;

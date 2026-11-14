@@ -1,10 +1,17 @@
 import { useMemo } from 'react';
 import { CREW, DEFAULT_CREW_ID } from './config/crew';
 import { MISSION } from './config/mission';
-import { IndicatorTile } from './components/IndicatorTile';
+import { IndicatorCard } from './components/IndicatorCard';
+import { StatusHero } from './components/StatusHero';
 import { useMinuteClock } from './hooks/useMinuteClock';
-import { evaluateIndicators, EVALUATION_SOLS, EVALUATION_WINDOW_MINUTES } from './logic/indicators';
+import {
+  evaluateIndicators,
+  EVALUATION_SOLS,
+  EVALUATION_WINDOW_MINUTES,
+  overallStatus,
+} from './logic/indicators';
 import { formatMarsClock, localMeanSolarHours } from './logic/marsTime';
+import { missionDose } from './logic/missionDose';
 import { createSimulator } from './logic/simulator';
 import type { Activity } from './logic/types';
 
@@ -23,6 +30,8 @@ export function App() {
   const recent = useMemo(() => sim.recentReadings(now, EVALUATION_WINDOW_MINUTES), [sim, now]);
   const sols = useMemo(() => sim.recentSols(now, EVALUATION_SOLS), [sim, now]);
   const indicators = useMemo(() => evaluateIndicators({ crew, recent, sols }), [recent, sols]);
+  const overall = overallStatus(indicators);
+  const dose = missionDose(now);
   const reading = recent.at(-1)!;
   const sol = sim.missionSolAt(now);
   const clock = formatMarsClock(localMeanSolarHours(now, MISSION.site.eastLongitudeDeg));
@@ -36,22 +45,21 @@ export function App() {
           Sol {sol} · {clock} <span className="text-slate-500">LMST · {MISSION.site.name}</span>
         </p>
       </header>
-      <main className="mx-auto w-full max-w-5xl flex-1 space-y-6 px-4 py-6">
-        <section>
-          <h2 className="text-xl font-semibold">{crew.name}</h2>
-          <p className="text-sm text-slate-400">
-            {crew.role} · {ACTIVITY_LABEL[reading.activity]}
-          </p>
-        </section>
+      <main className="mx-auto w-full max-w-5xl flex-1 space-y-5 px-4 py-5">
+        <p className="text-sm text-slate-400">
+          <span className="font-medium text-slate-200">{crew.name}</span> · {crew.role} ·{' '}
+          {ACTIVITY_LABEL[reading.activity]}
+        </p>
+        <StatusHero overall={overall} total={indicators.length} />
         <section aria-labelledby="indicators">
-          <h3 id="indicators" className="mb-2 text-sm text-slate-400">
+          <h2 id="indicators" className="mb-2 text-sm text-slate-400">
             Indicators · vitals update every minute (simulated)
-          </h3>
-          <dl className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          </h2>
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {indicators.map((r) => (
-              <IndicatorTile key={r.id} result={r} />
+              <IndicatorCard key={r.id} result={r} age={crew.age} dose={dose} />
             ))}
-          </dl>
+          </div>
         </section>
       </main>
       <footer className="border-t border-slate-800 px-4 py-2 text-xs text-slate-400">

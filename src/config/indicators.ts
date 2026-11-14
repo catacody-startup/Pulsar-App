@@ -15,3 +15,10 @@ export const STATUS_LABEL: Record<Status, string> = {
   watch: 'Attention',
   act: 'Act now',
 };
+
+/** Answer to "Am I OK?" for each overall status. */
+export const OVERALL_ANSWER: Record<Status, (flagged: string[], total: number) => string> = {
+  ok: (_, total) => `Yes. All ${total} indicators are in range.`,
+  watch: (flagged) => `Mostly. Keep an eye on: ${flagged.join(', ')}.`,
+  act: (flagged) => `Not right now. Needs action: ${flagged.join(', ')}.`,
+};

@@ -74,6 +74,12 @@ export const SOURCES = {
       "Hassler DM et al. Mars' Surface Radiation Environment Measured with the Mars Science Laboratory's Curiosity Rover. Science 2014;343:1244797. Gale Crater surface: 0.21 ± 0.04 mGy/day absorbed dose, 0.64 ± 0.12 mSv/day dose equivalent.",
     url: 'https://doi.org/10.1126/science.1244797',
   },
+  'zeitlin-2013': {
+    short: 'Zeitlin 2013 (RAD)',
+    title:
+      'Zeitlin C et al. Measurements of Energetic Particle Radiation in Transit to Mars on the Mars Science Laboratory. Science 2013;340:1080–1084. Cruise dose equivalent: 1.84 ± 0.33 mSv/day.',
+    url: 'https://doi.org/10.1126/science.1235989',
+  },
   'rafkin-2014': {
     short: 'Rafkin 2014 (RAD)',
     title:
