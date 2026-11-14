@@ -9,7 +9,7 @@ Reglas de trabajo:
 
 ## Etapa 0 — Base ✅
 
-Vite + React + TypeScript + Tailwind + Vitest. README, este plan y la guía para agentes.
+Vite + React + TypeScript + Tailwind + Vitest. README, este plan y la guía para agentes. Logo (`public/pulsar.svg` y PNG), licencia Apache 2.0 e infra: publicada en https://pulsar.catacody.com con `bash /root/services/app-pulsar/scripts/deploy.sh`.
 
 ## Etapa 1 — Núcleo del brief y datos de NASA
 
@@ -22,11 +22,11 @@ Responde "¿estoy bien?" y "¿qué hago ahora?" para un astronauta en Marte. Un 
 5. **Tendencias** de 24 h y 7 días, con el rango normal marcado.
 6. **Check-in diario** de bienestar (ánimo, estrés, sueño, aislamiento).
 7. **Dosis real de Marte:** las series del RAD de Curiosity (PDS) alimentan la radiación del simulador, en vez de una cifra fija.
-8. **Tormentas solares reales (DONKI):** eventos de partículas solares (SEP), tormentas geomagnéticas (GST) y eyecciones de masa coronal (CME). La key queda en el servidor (proxy de Nginx con caché), nunca en el navegador. Para la demo, se reproduce un evento histórico fuerte.
+8. **Tormentas solares reales (DONKI):** eventos de partículas solares (SEP), tormentas geomagnéticas (GST) y eyecciones de masa coronal (CME). La key queda en el servidor (proxy de Nginx con caché), nunca en el navegador. Para la demo, se reproduce un evento histórico fuerte: candidato, el de septiembre de 2017, que el RAD habría medido en la superficie de Marte (verificar en DONKI y en los datos del RAD antes de usarlo).
 9. **Página About con References:** fuentes de datos y documentos.
 10. **(Opcional) Signos vitales calibrados con OSDR**, solo si aparece un dataset con signos vitales de astronautas que sirva.
 
-Infra aparte, en `_docker_infra`: Nginx en `app-pulsar`, proxy de DONKI y deploy con tests + build en Docker.
+Infra aparte, en `_docker_infra`: el proxy de DONKI en el Nginx de `app-pulsar`, con la key en `app-pulsar/.env` (fuera de git).
 
 ## Etapa 2 — Tripulación y servidor del hábitat
 
@@ -43,6 +43,13 @@ Modo *Mars delay* (demora de la señal del día), reporte para control de misió
 ## Etapa 5 — Pulido
 
 Inglés y español, funciona sin conexión e instalable, guion de la demo.
+
+## Pendientes del equipo
+
+- Pedir la key gratis en https://api.nasa.gov (nombre y mail, llega al instante) y pasarla para DONKI. Hasta entonces, `DEMO_KEY`.
+- Hacer público el repo `catacody-startup/Pulsar-App` (GitHub → Settings → Change visibility) antes del primer *Submit for Judging*.
+- Confirmar que todo el equipo está registrado en la misma locación.
+- Al final: video de hasta 30 s, subido a YouTube (público o no listado), y la página del proyecto en inglés.
 
 ## Recursos de NASA
 
