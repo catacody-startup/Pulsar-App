@@ -37,7 +37,7 @@ export interface CrewProfile {
 }
 
 /** Things that can happen to the crew or the habitat during a simulation. */
-export type EventKind = 'solarStorm' | 'lowOxygen' | 'illness' | 'sleepLoss';
+export type EventKind = 'solarStorm' | 'lowOxygen' | 'illness' | 'sleepLoss' | 'skipExercise';
 
 export interface SimEvent {
   kind: EventKind;
@@ -47,7 +47,7 @@ export interface SimEvent {
   /**
    * Peak strength, in the kind's own unit:
    * solarStorm = dose-rate multiplier, lowOxygen = SpO₂ points lost,
-   * illness = extra heart beats per minute, sleepLoss = unused (1).
+   * illness = extra heart beats per minute, sleepLoss and skipExercise = unused (1).
    */
   intensity: number;
 }

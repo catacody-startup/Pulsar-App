@@ -18,13 +18,14 @@ Responde "¿estoy bien?" y "¿qué hago ahora?" para un astronauta en Marte. Un 
 1. ✅ **Tripulante simulado:** modelo de datos y simulador determinista (lecturas cada minuto, historia de 7 días). El hábitat está en el cráter Gale (donde mide el RAD) y el día sigue la hora solar local de Marte (algoritmo Mars24); el simulador acepta eventos (tormenta solar, falta de oxígeno, enfermedad, noche sin dormir) para las demos.
 2. ✅ **Umbrales con fuente y semáforo por indicador:** frecuencia cardíaca, SpO₂, presión, radiación, sueño y ejercicio. Cada umbral cita de dónde sale (NASA-STD-3001 y sus technical briefs, Human Research Roadmap, OMS, ACC/AHA, ACSM); cuando un corte es decisión de Pulsar, la regla lo dice (`basis` en `src/config/thresholds.ts`).
 3. ✅ **Panel "¿estoy bien?":** estado general (*All good / Attention / Act now*) y una tarjeta por indicador. La de radiación suma la dosis estimada de la misión (crucero + superficie, medidas del RAD) contra el límite de carrera de 600 mSv.
-4. **Alertas con una acción concreta** cada una.
-5. **Tendencias** de 24 h y 7 días, con el rango normal marcado.
-6. **Check-in diario** de bienestar (ánimo, estrés, sueño, aislamiento).
-7. **Dosis real de Marte:** las series del RAD de Curiosity (PDS) alimentan la radiación del simulador, en vez de una cifra fija.
-8. **Tormentas solares reales (DONKI):** eventos de partículas solares (SEP), tormentas geomagnéticas (GST) y eyecciones de masa coronal (CME). La key queda en el servidor (proxy de Nginx con caché), nunca en el navegador. Para la demo, se reproduce un evento histórico fuerte: candidato, el de septiembre de 2017, que el RAD habría medido en la superficie de Marte (verificar en DONKI y en los datos del RAD antes de usarlo).
-9. **Página About con References:** fuentes de datos y documentos.
-10. **(Opcional) Signos vitales calibrados con OSDR**, solo si aparece un dataset con signos vitales de astronautas que sirva.
+4. ✅ **Escenarios para la demo:** un selector (fuera de la interfaz del astronauta) inyecta eventos al simulador: tormenta solar, falta de oxígeno en la cabina, fiebre, noche sin dormir y entrenamientos salteados. Queda en la URL (`?scenario=solar-storm`) para compartir la demo con un link.
+5. **Alertas con una acción concreta** cada una.
+6. **Tendencias** de 24 h y 7 días, con el rango normal marcado.
+7. **Check-in diario** de bienestar (ánimo, estrés, sueño, aislamiento).
+8. **Dosis real de Marte:** las series del RAD de Curiosity (PDS) alimentan la radiación del simulador, en vez de una cifra fija.
+9. **Tormentas solares reales (DONKI):** eventos de partículas solares (SEP), tormentas geomagnéticas (GST) y eyecciones de masa coronal (CME). La key queda en el servidor (proxy de Nginx con caché), nunca en el navegador. Para la demo, se reproduce un evento histórico fuerte: candidato, el de septiembre de 2017, que el RAD habría medido en la superficie de Marte (verificar en DONKI y en los datos del RAD antes de usarlo).
+10. **Página About con References:** fuentes de datos y documentos.
+11. **(Opcional) Signos vitales calibrados con OSDR**, solo si aparece un dataset con signos vitales de astronautas que sirva.
 
 Infra aparte, en `_docker_infra`: el proxy de DONKI en el Nginx de `app-pulsar`, con la key en `app-pulsar/.env` (fuera de git).
 

@@ -80,6 +80,8 @@ export const SIMULATOR = {
     illness: { rampUpMin: 120, rampDownMin: 180, systolicPerBeat: 0.4 },
     // the crew member stays awake through the planned sleep
     sleepLoss: { rampUpMin: 0, rampDownMin: 0 },
+    // the exercise sessions inside the event don't happen
+    skipExercise: { rampUpMin: 0, rampDownMin: 0 },
   } satisfies Record<EventKind, EventShape>,
 };
 

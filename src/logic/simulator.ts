@@ -159,7 +159,9 @@ export function createSimulator(options: SimulatorOptions) {
       (hour < plan.wakeHour && hour >= previous.bedtimeHour - 24) || hour >= plan.bedtimeHour;
     if (asleep) return isAwakeByEvent(t) ? 'rest' : 'sleep';
     const exerciseEnd = plan.exerciseStartHour + plan.exerciseMinutes / MARS_HOUR_IN_MINUTES;
-    if (plan.exerciseMinutes > 0 && hour >= plan.exerciseStartHour && hour < exerciseEnd) return 'exercise';
+    if (plan.exerciseMinutes > 0 && hour >= plan.exerciseStartHour && hour < exerciseEnd) {
+      return eventLevel('skipExercise', t) > 0 ? 'rest' : 'exercise';
+    }
     if (hour >= schedule.workStartHour && hour < schedule.workEndHour) return 'work';
     return 'rest';
   }

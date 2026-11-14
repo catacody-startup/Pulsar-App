@@ -1,9 +1,11 @@
 import { useMemo } from 'react';
 import { CREW, DEFAULT_CREW_ID } from './config/crew';
 import { MISSION } from './config/mission';
+import { DemoBar } from './components/DemoBar';
 import { IndicatorCard } from './components/IndicatorCard';
 import { StatusHero } from './components/StatusHero';
 import { useMinuteClock } from './hooks/useMinuteClock';
+import { useScenario } from './hooks/useScenario';
 import {
   evaluateIndicators,
   EVALUATION_SOLS,
@@ -12,10 +14,13 @@ import {
 } from './logic/indicators';
 import { formatMarsClock, localMeanSolarHours } from './logic/marsTime';
 import { missionDose } from './logic/missionDose';
+import { resolveScenario } from './logic/scenarios';
 import { createSimulator } from './logic/simulator';
 import type { Activity } from './logic/types';
 
 const crew = CREW.find((c) => c.id === DEFAULT_CREW_ID) ?? CREW[0]!;
+/** Calendar and daily plans only: they don't depend on events. */
+const calendar = createSimulator({ crew });
 
 const ACTIVITY_LABEL: Record<Activity, string> = {
   sleep: 'Asleep',
@@ -26,7 +31,11 @@ const ACTIVITY_LABEL: Record<Activity, string> = {
 
 export function App() {
   const now = useMinuteClock();
-  const sim = useMemo(() => createSimulator({ crew }), []);
+  const { scenario, anchorMs, choose } = useScenario();
+  const sim = useMemo(() => {
+    const events = resolveScenario(scenario, anchorMs, calendar, MISSION.site.eastLongitudeDeg);
+    return createSimulator({ crew, events });
+  }, [scenario, anchorMs]);
   const recent = useMemo(() => sim.recentReadings(now, EVALUATION_WINDOW_MINUTES), [sim, now]);
   const sols = useMemo(() => sim.recentSols(now, EVALUATION_SOLS), [sim, now]);
   const indicators = useMemo(() => evaluateIndicators({ crew, recent, sols }), [recent, sols]);
@@ -45,6 +54,7 @@ export function App() {
           Sol {sol} · {clock} <span className="text-slate-500">LMST · {MISSION.site.name}</span>
         </p>
       </header>
+      <DemoBar scenario={scenario} onChoose={choose} />
       <main className="mx-auto w-full max-w-5xl flex-1 space-y-5 px-4 py-5">
         <p className="text-sm text-slate-400">
           <span className="font-medium text-slate-200">{crew.name}</span> · {crew.role} ·{' '}
