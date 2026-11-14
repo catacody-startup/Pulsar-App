@@ -4,6 +4,7 @@ import { MISSION } from './config/mission';
 import { DemoBar } from './components/DemoBar';
 import { IndicatorCard } from './components/IndicatorCard';
 import { StatusHero } from './components/StatusHero';
+import { WhatNow } from './components/WhatNow';
 import { useMinuteClock } from './hooks/useMinuteClock';
 import { useScenario } from './hooks/useScenario';
 import {
@@ -12,8 +13,10 @@ import {
   EVALUATION_WINDOW_MINUTES,
   overallStatus,
 } from './logic/indicators';
+import { buildAlerts } from './logic/alerts';
 import { formatMarsClock, localMeanSolarHours } from './logic/marsTime';
 import { missionDose } from './logic/missionDose';
+import { nextPlanItem } from './logic/plan';
 import { resolveScenario } from './logic/scenarios';
 import { createSimulator } from './logic/simulator';
 import type { Activity } from './logic/types';
@@ -43,7 +46,11 @@ export function App() {
   const dose = missionDose(now);
   const reading = recent.at(-1)!;
   const sol = sim.missionSolAt(now);
-  const clock = formatMarsClock(localMeanSolarHours(now, MISSION.site.eastLongitudeDeg));
+  const hour = localMeanSolarHours(now, MISSION.site.eastLongitudeDeg);
+  const clock = formatMarsClock(hour);
+  const alerts = buildAlerts(indicators);
+  const today = sim.localSolAt(now);
+  const next = nextPlanItem(hour, sim.solPlan(today), sim.solPlan(today + 1));
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -61,6 +68,7 @@ export function App() {
           {ACTIVITY_LABEL[reading.activity]}
         </p>
         <StatusHero overall={overall} total={indicators.length} />
+        <WhatNow alerts={alerts} next={next} />
         <section aria-labelledby="indicators">
           <h2 id="indicators" className="mb-2 text-sm text-slate-400">
             Indicators · vitals update every minute (simulated)

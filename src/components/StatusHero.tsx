@@ -10,7 +10,7 @@ interface Props {
 /** The answer to "Am I OK?", visible at a glance. */
 export function StatusHero({ overall, total }: Props) {
   const style = STATUS_STYLE[overall.status];
-  const flagged = overall.flagged.map((r) => INDICATORS[r.id].label.toLowerCase());
+  const flagged = overall.flagged.map((r) => INDICATORS[r.id].inSentence);
   return (
     <section aria-labelledby="am-i-ok" className={`rounded-xl border px-5 py-4 ${style.panel}`}>
       <h2 id="am-i-ok" className="text-xs font-medium uppercase tracking-widest text-slate-400">

@@ -19,7 +19,7 @@ Responde "¿estoy bien?" y "¿qué hago ahora?" para un astronauta en Marte. Un 
 2. ✅ **Umbrales con fuente y semáforo por indicador:** frecuencia cardíaca, SpO₂, presión, radiación, sueño y ejercicio. Cada umbral cita de dónde sale (NASA-STD-3001 y sus technical briefs, Human Research Roadmap, OMS, ACC/AHA, ACSM); cuando un corte es decisión de Pulsar, la regla lo dice (`basis` en `src/config/thresholds.ts`).
 3. ✅ **Panel "¿estoy bien?":** estado general (*All good / Attention / Act now*) y una tarjeta por indicador. La de radiación suma la dosis estimada de la misión (crucero + superficie, medidas del RAD) contra el límite de carrera de 600 mSv.
 4. ✅ **Escenarios para la demo:** un selector (fuera de la interfaz del astronauta) inyecta eventos al simulador: tormenta solar, falta de oxígeno en la cabina, fiebre, noche sin dormir y entrenamientos salteados. Queda en la URL (`?scenario=solar-storm`) para compartir la demo con un link.
-5. **Alertas con una acción concreta** cada una.
+5. ✅ **Alertas con una acción concreta** cada una: sección *What do I do now?* con pasos que la tripulación puede hacer sin esperar a la Tierra (textos en `src/config/actions.ts`, con fuente cuando la hay). Sin alertas, muestra lo próximo del plan del sol.
 6. **Tendencias** de 24 h y 7 días, con el rango normal marcado.
 7. **Check-in diario** de bienestar (ánimo, estrés, sueño, aislamiento).
 8. **Dosis real de Marte:** las series del RAD de Curiosity (PDS) alimentan la radiación del simulador, en vez de una cifra fija.
