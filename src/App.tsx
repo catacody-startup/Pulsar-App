@@ -4,6 +4,7 @@ import { MISSION } from './config/mission';
 import { DemoBar } from './components/DemoBar';
 import { IndicatorCard } from './components/IndicatorCard';
 import { StatusHero } from './components/StatusHero';
+import { Trends } from './components/Trends';
 import { WhatNow } from './components/WhatNow';
 import { useMinuteClock } from './hooks/useMinuteClock';
 import { useScenario } from './hooks/useScenario';
@@ -79,6 +80,7 @@ export function App() {
             ))}
           </div>
         </section>
+        <Trends sim={sim} now={now} />
       </main>
       <footer className="border-t border-slate-800 px-4 py-2 text-xs text-slate-400">
         Prototype – not for medical use.
