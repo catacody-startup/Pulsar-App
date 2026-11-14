@@ -35,8 +35,8 @@ export const SCENARIOS: readonly Scenario[] = [
     id: 'solar-storm',
     label: 'Solar storm (real data)',
     description:
-      'Replay of the solar particle event of 10 September 2017 as Curiosity’s RAD measured it at Gale Crater, starting 6 hours ago.',
-    events: [{ kind: 'sepReplay', startMinutesAgo: 6 * 60, durationMin: 3 * 24 * 60, intensity: 1 }],
+      'Replay of the solar particle event of 10 September 2017 as Curiosity’s RAD measured it at Gale Crater, starting 8 hours ago.',
+    events: [{ kind: 'sepReplay', startMinutesAgo: 8 * 60, durationMin: 3 * 24 * 60, intensity: 1 }],
   },
   {
     id: 'low-oxygen',

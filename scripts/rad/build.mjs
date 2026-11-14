@@ -19,16 +19,33 @@ const OUT = path.join(DIR, '..', '..', 'src', 'data', 'radGale.json');
 const BINS = 48;
 const STANDARD_DURATIONS = [481, 961];
 
+// El sol y la hora local salen de la hora UTC de cada observación con el mismo
+// algoritmo Mars24 que usa la app (src/logic/marsTime.ts): la hora marciana que
+// trae el archivo del RAD no sigue la hora solar media local de Gale.
+const GALE_EAST_LON = 137.4417;
+const CURIOSITY_LANDING_MS = Date.parse('2012-08-06T05:17:57Z');
+const localSolDate = (ms) =>
+  ((ms + 69_184) / 86_400_000 + 2_440_587.5 - 2_405_522.0028779) / 1.0274912517 + GALE_EAST_LON / 360;
+const LANDING_SOL = Math.floor(localSolDate(CURIOSITY_LANDING_MS));
+function curiosityLocalTime(ms) {
+  const lsd = localSolDate(ms);
+  return { sol: Math.floor(lsd) - LANDING_SOL, hours: (lsd - Math.floor(lsd)) * 24 };
+}
+/** "2017-253 04:24:11" (año, día del año, hora UTC) → ms. */
+function parseUtc(text) {
+  const [date, clock] = text.split(' ');
+  const [year, doy] = date.split('-').map(Number);
+  const [h, m, s] = clock.split(':').map(Number);
+  return Date.UTC(year, 0, doy, h, m, s);
+}
+
 const files = fs.readdirSync(RAW).filter((f) => /^sol-\d+\.csv$/.test(f));
 const bySol = new Map();
 for (const f of files) {
   for (const line of fs.readFileSync(path.join(RAW, f), 'utf8').split('\n')) {
     if (!line.trim()) continue;
-    const [, mars, duration, , doseE] = line.split(',');
-    const [solText, clock] = mars.split(' ');
-    const [h, m, s] = clock.split(':').map(Number);
-    const sol = Number(solText);
-    const hours = h + m / 60 + s / 3600;
+    const [utc, , duration, , doseE] = line.split(',');
+    const { sol, hours } = curiosityLocalTime(parseUtc(utc));
     const bin = Math.min(BINS - 1, Math.floor((hours / 24) * BINS));
     const dose = Number(doseE);
     const weight = Number(duration);

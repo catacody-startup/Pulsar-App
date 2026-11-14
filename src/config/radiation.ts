@@ -30,14 +30,21 @@ export const CRUISE_RADIATION = {
  */
 export const RAD_SERIES: RadSeries = radGale;
 
+/** Curiosity landed at Gale on 6 August 2012 (its sol 0). */
+export const CURIOSITY_LANDING_MS = Date.parse('2012-08-06T05:17:57Z');
+
 export const RAD_REPLAY = {
   /**
    * Quiet sols (no solar particle event) that the habitat's background cycles
    * through: each habitat sol replays one of them at the same local time.
    */
   quietSols: { from: 1780, to: 1810 },
-  /** Onset of the solar particle event of 10 September 2017 at Gale (Curiosity sol date). */
-  sep2017Onset: 1812 + 12 / 24,
+  /**
+   * Onset of the solar particle event of 10 September 2017 at Gale (Curiosity sol
+   * date): the dose starts rising around 06:00 LMST, 15:30 UTC, as the X8.2 flare
+   * that launched it began.
+   */
+  sep2017Onset: 1812 + 6 / 24,
 };
 
 /** Normal background: mean dose rate of the quiet sols, µGy/h. */

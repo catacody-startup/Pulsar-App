@@ -37,7 +37,7 @@ describe('scenarios', () => {
   it('anchor relative times at the moment they are chosen', () => {
     const at = atLocalHour(14);
     const [storm] = resolveScenario(scenario('solar-storm'), at, base, LON);
-    expect(storm!.start).toBe(floorToMinute(at) - 6 * 60 * MINUTE_MS);
+    expect(storm!.start).toBe(floorToMinute(at) - 8 * 60 * MINUTE_MS);
   });
 
   it('a sleepless night covers the last night that is over', () => {
