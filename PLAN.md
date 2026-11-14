@@ -16,7 +16,7 @@ Vite + React + TypeScript + Tailwind + Vitest. README, este plan y la guía para
 Responde "¿estoy bien?" y "¿qué hago ahora?" para un astronauta en Marte. Un commit por feature, en este orden:
 
 1. ✅ **Tripulante simulado:** modelo de datos y simulador determinista (lecturas cada minuto, historia de 7 días). El hábitat está en el cráter Gale (donde mide el RAD) y el día sigue la hora solar local de Marte (algoritmo Mars24); el simulador acepta eventos (tormenta solar, falta de oxígeno, enfermedad, noche sin dormir) para las demos.
-2. **Umbrales con fuente y semáforo por indicador:** frecuencia cardíaca, SpO₂, presión, radiación, sueño y ejercicio. Cada umbral cita de dónde sale (NASA-STD-3001, Human Research Roadmap).
+2. ✅ **Umbrales con fuente y semáforo por indicador:** frecuencia cardíaca, SpO₂, presión, radiación, sueño y ejercicio. Cada umbral cita de dónde sale (NASA-STD-3001 y sus technical briefs, Human Research Roadmap, OMS, ACC/AHA, ACSM); cuando un corte es decisión de Pulsar, la regla lo dice (`basis` en `src/config/thresholds.ts`).
 3. **Panel "¿estoy bien?":** estado general (*All good / Attention / Act now*) y una tarjeta por indicador.
 4. **Alertas con una acción concreta** cada una.
 5. **Tendencias** de 24 h y 7 días, con el rango normal marcado.

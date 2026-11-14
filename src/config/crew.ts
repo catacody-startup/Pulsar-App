@@ -9,15 +9,17 @@ export const CREW: readonly CrewProfile[] = [
     id: 'lucia',
     name: 'Lucía Ferreira',
     role: 'Flight engineer',
-    baseline: { restingHeartRate: 61, spo2: 97.6, systolic: 116, diastolic: 74 },
+    age: 38,
+    baseline: { restingHeartRate: 61, spo2: 97.6, systolic: 114, diastolic: 72 },
     schedule: {
       wakeHour: 6.75,
       bedtimeHour: 22.75,
       workStartHour: 8,
       workEndHour: 19,
       exerciseStartHour: 16,
-      // Around two hours a day, like crews on the ISS (aerobic + resistive).
-      exerciseMinutes: 105,
+      // ~30 min aerobic + ~60 min resistive, the in-flight prescription in
+      // NASA's Exercise Overview technical brief (OCHMO-TB-031).
+      exerciseMinutes: 90,
     },
   },
 ];

@@ -1,4 +1,5 @@
 import type { Activity, EventKind } from '../logic/types';
+import { GALE_SURFACE_RADIATION } from './radiation';
 
 /** Ramp up and down of an event (minutes) plus its side effects. */
 interface EventShape {
@@ -20,7 +21,7 @@ export const SIMULATOR = {
     wakeJitterHours: 0.35,
     bedtimeJitterHours: 0.5,
     /** Chance of a late night (extra work, insomnia) and how much later lights go out. */
-    lateNightChance: 0.15,
+    lateNightChance: 0.1,
     lateNightDelayHours: [1.5, 2.75] as const,
     exerciseStartJitterHours: 0.75,
     exerciseMinutesJitter: 20,
@@ -31,7 +32,7 @@ export const SIMULATOR = {
   },
 
   heartRate: {
-    offset: { sleep: -7, rest: 0, work: 8, exercise: 62 } satisfies Record<Activity, number>,
+    offset: { sleep: -6, rest: 0, work: 8, exercise: 62 } satisfies Record<Activity, number>,
     /** Circadian swing (bpm) and the local hour of its peak. */
     circadianAmplitude: 3,
     circadianPeakHour: 16,
@@ -53,12 +54,10 @@ export const SIMULATOR = {
 
   radiation: {
     /**
-     * Absorbed dose rate on the surface of Gale Crater: 0.21 ± 0.04 mGy/day
-     * (Hassler et al. 2014, Science 343, "Mars' Surface Radiation Environment
-     * Measured with the Mars Science Laboratory's Curiosity Rover").
+     * Absorbed dose rate on the surface of Gale Crater measured by Curiosity's RAD.
      * The habitat gets the same dose as the surface: no extra shielding modeled.
      */
-    baseDoseRate: 210 / 24, // µGy/h
+    baseDoseRate: GALE_SURFACE_RADIATION.absorbedDoseRate, // µGy/h
     /**
      * Daily cycle of a few percent, higher in the afternoon when the atmosphere
      * above the crater is thinner (Rafkin et al. 2014, JGR Planets 119).

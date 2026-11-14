@@ -1,7 +1,9 @@
 import { useMemo } from 'react';
 import { CREW, DEFAULT_CREW_ID } from './config/crew';
 import { MISSION } from './config/mission';
+import { IndicatorTile } from './components/IndicatorTile';
 import { useMinuteClock } from './hooks/useMinuteClock';
+import { evaluateIndicators, EVALUATION_SOLS, EVALUATION_WINDOW_MINUTES } from './logic/indicators';
 import { formatMarsClock, localMeanSolarHours } from './logic/marsTime';
 import { createSimulator } from './logic/simulator';
 import type { Activity } from './logic/types';
@@ -15,23 +17,13 @@ const ACTIVITY_LABEL: Record<Activity, string> = {
   exercise: 'Exercising',
 };
 
-function Stat({ label, value, unit }: { label: string; value: string | number; unit?: string }) {
-  return (
-    <div className="rounded-lg border border-slate-800 bg-slate-900/60 px-4 py-3">
-      <dt className="text-xs uppercase tracking-wide text-slate-400">{label}</dt>
-      <dd className="mt-1 text-2xl font-semibold tabular-nums">
-        {value}
-        {unit && <span className="ml-1 text-sm font-normal text-slate-400">{unit}</span>}
-      </dd>
-    </div>
-  );
-}
-
 export function App() {
   const now = useMinuteClock();
   const sim = useMemo(() => createSimulator({ crew }), []);
-  const reading = sim.readingAt(now);
-  const lastSol = useMemo(() => sim.summarizeSol(sim.localSolAt(now) - 1), [sim, now]);
+  const recent = useMemo(() => sim.recentReadings(now, EVALUATION_WINDOW_MINUTES), [sim, now]);
+  const sols = useMemo(() => sim.recentSols(now, EVALUATION_SOLS), [sim, now]);
+  const indicators = useMemo(() => evaluateIndicators({ crew, recent, sols }), [recent, sols]);
+  const reading = recent.at(-1)!;
   const sol = sim.missionSolAt(now);
   const clock = formatMarsClock(localMeanSolarHours(now, MISSION.site.eastLongitudeDeg));
 
@@ -44,32 +36,21 @@ export function App() {
           Sol {sol} · {clock} <span className="text-slate-500">LMST · {MISSION.site.name}</span>
         </p>
       </header>
-      <main className="mx-auto w-full max-w-3xl flex-1 space-y-6 px-4 py-6">
+      <main className="mx-auto w-full max-w-5xl flex-1 space-y-6 px-4 py-6">
         <section>
           <h2 className="text-xl font-semibold">{crew.name}</h2>
           <p className="text-sm text-slate-400">
             {crew.role} · {ACTIVITY_LABEL[reading.activity]}
           </p>
         </section>
-        <section aria-labelledby="live">
-          <h3 id="live" className="mb-2 text-sm text-slate-400">
-            Live readings · one per minute (simulated)
+        <section aria-labelledby="indicators">
+          <h3 id="indicators" className="mb-2 text-sm text-slate-400">
+            Indicators · vitals update every minute (simulated)
           </h3>
-          <dl className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-            <Stat label="Heart rate" value={reading.heartRate} unit="bpm" />
-            <Stat label="SpO₂" value={reading.spo2} unit="%" />
-            <Stat label="Blood pressure" value={`${reading.systolic}/${reading.diastolic}`} unit="mmHg" />
-            <Stat label="Radiation" value={reading.doseRate.toFixed(1)} unit="µGy/h" />
-          </dl>
-        </section>
-        <section aria-labelledby="last-sol">
-          <h3 id="last-sol" className="mb-2 text-sm text-slate-400">
-            Last sol · Sol {lastSol.missionSol}
-          </h3>
-          <dl className="grid grid-cols-3 gap-3">
-            <Stat label="Sleep" value={lastSol.sleepHours.toFixed(1)} unit="h" />
-            <Stat label="Exercise" value={lastSol.exerciseMinutes} unit="min" />
-            <Stat label="Dose" value={lastSol.doseMilliGray.toFixed(3)} unit="mGy" />
+          <dl className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {indicators.map((r) => (
+              <IndicatorTile key={r.id} result={r} />
+            ))}
           </dl>
         </section>
       </main>

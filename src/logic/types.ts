@@ -30,6 +30,8 @@ export interface CrewProfile {
   id: string;
   name: string;
   role: string;
+  /** Years; sets the age-predicted maximum heart rate. */
+  age: number;
   baseline: CrewBaseline;
   schedule: CrewSchedule;
 }
@@ -76,4 +78,11 @@ export interface SolSummary {
   doseMilliGray: number;
   /** False while the sol is still in progress. */
   complete: boolean;
+  /** True once the night that ends this sol is over (past the planned wake-up). */
+  nightComplete: boolean;
 }
+
+/** Traffic light of an indicator: all good, attention, act now. */
+export type Status = 'ok' | 'watch' | 'act';
+
+export type IndicatorId = 'heartRate' | 'spo2' | 'bloodPressure' | 'radiation' | 'sleep' | 'exercise';

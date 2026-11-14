@@ -256,8 +256,20 @@ export function createSimulator(options: SimulatorOptions) {
     return count;
   }
 
+  // Summaries of finished sols never change: computed once.
+  const finishedSols = new Map<number, SolSummary>();
+
   /** Day-level indicators of a local sol, counting only what happened before `untilMs`. */
   function summarizeSol(localSol: number, untilMs = Number.POSITIVE_INFINITY): SolSummary {
+    const finished = msAt(localSol + 1) <= untilMs;
+    const cached = finished ? finishedSols.get(localSol) : undefined;
+    if (cached) return cached;
+    const summary = computeSolSummary(localSol, untilMs);
+    if (finished) finishedSols.set(localSol, summary);
+    return summary;
+  }
+
+  function computeSolSummary(localSol: number, untilMs: number): SolSummary {
     const start = msAt(localSol);
     const end = Math.min(msAt(localSol + 1), untilMs);
     // The night that ends this sol: from 18:00 of the previous sol to 12:00 of this one.
@@ -272,6 +284,8 @@ export function createSimulator(options: SimulatorOptions) {
       exerciseMinutes: countMinutes(start, end, 'exercise'),
       doseMilliGray: round(doseMicroGray / 1000, 3),
       complete: msAt(localSol + 1) <= untilMs,
+      // Sleep ends at the planned wake-up: from then on the night's count is final.
+      nightComplete: msAt(localSol + solPlan(localSol).wakeHour / 24) <= untilMs,
     };
   }
 
