@@ -1,0 +1,87 @@
+import type { Activity, EventKind } from '../logic/types';
+
+/** Ramp up and down of an event (minutes) plus its side effects. */
+interface EventShape {
+  rampUpMin: number;
+  rampDownMin: number;
+  [effect: string]: number;
+}
+
+/** How many minutes of history the app keeps and shows: 7 Earth days. */
+export const HISTORY_MINUTES = 7 * 24 * 60;
+
+/**
+ * Parameters of the simulated crew member. Offsets are added to the
+ * crew member's baseline; noise amplitudes are the peak of each component.
+ */
+export const SIMULATOR = {
+  /** Day-to-day variation of the schedule (deterministic per sol). */
+  schedule: {
+    wakeJitterHours: 0.35,
+    bedtimeJitterHours: 0.5,
+    /** Chance of a late night (extra work, insomnia) and how much later lights go out. */
+    lateNightChance: 0.15,
+    lateNightDelayHours: [1.5, 2.75] as const,
+    exerciseStartJitterHours: 0.75,
+    exerciseMinutesJitter: 20,
+    /** Chance of skipping the exercise session. */
+    skipExerciseChance: 0.1,
+    /** Warm-up and cool-down at the start and end of each session, minutes. */
+    exerciseRampMinutes: 6,
+  },
+
+  heartRate: {
+    offset: { sleep: -7, rest: 0, work: 8, exercise: 62 } satisfies Record<Activity, number>,
+    /** Circadian swing (bpm) and the local hour of its peak. */
+    circadianAmplitude: 3,
+    circadianPeakHour: 16,
+    noise: { slow: 3, fast: 1.5, jitter: 1 },
+  },
+
+  spo2: {
+    offset: { sleep: -1, rest: 0, work: 0, exercise: -1 } satisfies Record<Activity, number>,
+    noise: { slow: 0.6, fast: 0.3, jitter: 0.4 },
+  },
+
+  bloodPressure: {
+    // Nocturnal dipping while asleep; systolic rises with exercise, diastolic barely moves.
+    systolicOffset: { sleep: -11, rest: 0, work: 4, exercise: 32 } satisfies Record<Activity, number>,
+    diastolicOffset: { sleep: -7, rest: 0, work: 3, exercise: 3 } satisfies Record<Activity, number>,
+    systolicNoise: { slow: 4, fast: 2, jitter: 1.5 },
+    diastolicNoise: { slow: 3, fast: 1.5, jitter: 1 },
+  },
+
+  radiation: {
+    /**
+     * Absorbed dose rate on the surface of Gale Crater: 0.21 ± 0.04 mGy/day
+     * (Hassler et al. 2014, Science 343, "Mars' Surface Radiation Environment
+     * Measured with the Mars Science Laboratory's Curiosity Rover").
+     * The habitat gets the same dose as the surface: no extra shielding modeled.
+     */
+    baseDoseRate: 210 / 24, // µGy/h
+    /**
+     * Daily cycle of a few percent, higher in the afternoon when the atmosphere
+     * above the crater is thinner (Rafkin et al. 2014, JGR Planets 119).
+     */
+    diurnalAmplitude: 0.03,
+    diurnalPeakHour: 16,
+    noise: { slow: 0.02, fast: 0.01, jitter: 0.01 }, // fraction of the dose rate
+  },
+
+  /** Periods of the two smooth-noise components, minutes. */
+  noisePeriods: { slow: 45, fast: 8 },
+
+  /** Shape of each event (ramp up and down, minutes) and its side effects. */
+  events: {
+    // intensity = peak dose-rate multiplier
+    solarStorm: { rampUpMin: 45, rampDownMin: 480 },
+    // intensity = SpO₂ points lost; the heart compensates
+    lowOxygen: { rampUpMin: 15, rampDownMin: 20, heartRatePerPoint: 1.5 },
+    // intensity = extra bpm (fever, infection); blood pressure follows a little
+    illness: { rampUpMin: 120, rampDownMin: 180, systolicPerBeat: 0.4 },
+    // the crew member stays awake through the planned sleep
+    sleepLoss: { rampUpMin: 0, rampDownMin: 0 },
+  } satisfies Record<EventKind, EventShape>,
+};
+
+export type SimulatorParams = typeof SIMULATOR;
