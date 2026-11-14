@@ -23,3 +23,9 @@ npm run build      # type-check + production build in dist/
 ## Stack
 
 React 19, TypeScript, Vite 6, Tailwind CSS 3, Vitest.
+
+## License
+
+Pulsar is released under the [Apache License 2.0](LICENSE), the default license of the NASA Space Apps Challenge for original content.
+
+Third-party software used to build it, all under OSI-approved licenses: React, Vite, Tailwind CSS, PostCSS, Autoprefixer and Vitest (MIT), and TypeScript (Apache-2.0). Data sources and references are listed in the app's *About* page as they are added.

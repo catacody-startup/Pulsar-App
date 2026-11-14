@@ -4,6 +4,7 @@
   "version": "0.0.1",
   "type": "module",
   "description": "Pulsar – health self-monitoring for astronauts on long-duration missions (NASA Space Apps Challenge 2026, team CataCody).",
+  "license": "Apache-2.0",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
