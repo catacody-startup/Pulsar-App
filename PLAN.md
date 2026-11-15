@@ -47,6 +47,10 @@ Cada uno entra con la cara y solo cambia lo suyo (check-in, acciones). Todos ven
 
 Modo *Mars delay* (demora de la señal del día), reporte para control de misión (PDF) y envío periódico a la Tierra.
 
+1. ✅ **Demora de la señal del día:** posiciones de la Tierra y Marte con los elementos keplerianos aproximados del JPL (Standish, tabla 1, 1800–2050; probado contra los acercamientos de 2003, 2018 y 2020 con error < 0,001 UA). La página de la tripulación muestra el enlace con la Tierra (ida, ida y vuelta, distancia) y, con una alerta de *actuar ya*, *What do I do now?* recuerda que la respuesta de control de misión tarda al menos la ida y vuelta del día.
+2. **Control de misión** (`/earth`): la tripulación vista desde la Tierra, con la demora del día, y los envíos periódicos del hábitat.
+3. **Reporte en PDF** para control de misión.
+
 ## Etapa 5 — Pulido
 
 Inglés y español, funciona sin conexión e instalable, guion de la demo.

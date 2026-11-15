@@ -19,6 +19,7 @@ import { upcomingMarsArrivals } from './logic/donki';
 import { crewFeed, currentActionsDone } from './logic/habitat';
 import { formatMarsClock, localMeanSolarHours, SOL_IN_EARTH_DAYS } from './logic/marsTime';
 import { missionDose } from './logic/missionDose';
+import { signalDelay } from './logic/planets';
 import { parseRoute, routePath, type Route } from './logic/route';
 import { resolveScenario } from './logic/scenarios';
 import { createSimulator } from './logic/simulator';
@@ -71,6 +72,7 @@ export function App() {
     [habitat.data, now],
   );
   const dose = missionDose(now);
+  const delay = useMemo(() => signalDelay(now), [now]);
   const sol = calendar.missionSolAt(now);
   const clock = formatMarsClock(localMeanSolarHours(now, MISSION.site.eastLongitudeDeg));
   const navPage = route.page === 'member' || route.page === 'notFound' ? 'crew' : route.page;
@@ -147,6 +149,7 @@ export function App() {
             done={done}
             feed={feed}
             signedInAs={session?.crewId ?? null}
+            delay={delay}
             hrefOf={(crewId) => routePath({ page: 'member', crewId })}
             onOpen={(crewId) => go({ page: 'member', crewId })}
           />
@@ -164,6 +167,7 @@ export function App() {
             checkInWaiting={habitat.checkInWaitingFor.has(route.crewId)}
             done={done[route.crewId] ?? {}}
             signedInAs={session?.crewId ?? null}
+            roundTripSeconds={delay.roundTripSeconds}
             onSignIn={() => go({ page: 'signIn' })}
             onDone={(rule) => session && habitat.markDone(session.token, route.crewId, rule, Date.now())}
             onUndo={(rule) => session && habitat.undoDone(session.token, route.crewId, rule)}

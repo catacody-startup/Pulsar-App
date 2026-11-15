@@ -21,6 +21,7 @@ Built during the hackathon (14–15 November 2026), in stages (see `PLAN.md`, in
 - **Trends** over 24 hours and 7 days with the normal range marked, on Mars local time.
 - **Daily wellbeing check-in**: four questions, under a minute.
 - **Real radiation from Mars**: the habitat sits in Gale Crater and its dose rate is the one NASA's Curiosity rover measured there with its RAD instrument.
+- **Far from Earth**: today's signal delay between the habitat and mission control (from NASA JPL planet positions), so the crew knows how soon an answer can arrive.
 - **Real space weather**: coronal mass ejections forecast to reach Mars, solar particle events and geomagnetic storms from NASA DONKI, with a heads-up before a CME arrives.
 - **Demo scenarios** (outside the astronaut's interface): a real solar storm (the event of 10 September 2017, as RAD measured it), low cabin oxygen, fever, a sleepless night, missed workouts and feeling isolated. They can be shared as links, e.g. https://pulsar.catacody.com/?scenario=solar-storm
 
@@ -35,6 +36,7 @@ Vital signs come from a deterministic simulator (the same data on every device);
 | [NASA-STD-3001](https://www.nasa.gov/ofo/chief-health-medical-officer/nasa-space-flight-human-system-standard/) and its technical briefs | Thresholds and actions: radiation (OCHMO-TB-020), atmosphere (TB-003), sleep, exercise (TB-031), behavioral health (TB-016) |
 | [Human Research Roadmap](https://humanresearchroadmap.nasa.gov) | The spaceflight health risks behind each indicator |
 | [Mars24](https://www.giss.nasa.gov/tools/mars24/help/algorithm.html) (NASA GISS) | Mission sol and local mean solar time at Gale Crater |
+| [Approximate planet positions](https://ssd.jpl.nasa.gov/planets/approx_pos.html) (NASA JPL SSD) | Earth–Mars distance and the signal delay of the day |
 
 The full list of references is on the app's About page.
 

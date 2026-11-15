@@ -21,6 +21,10 @@ const DATA_SOURCES: { id: SourceId; use: string }[] = [
   },
   { id: 'hrr', use: 'The spaceflight health risks each indicator tracks.' },
   { id: 'mars24', use: 'Mars time: mission sol and local mean solar time at Gale Crater.' },
+  {
+    id: 'jpl-approx-pos',
+    use: 'Where Earth and Mars are today, and so how long a signal takes between the habitat and mission control (and the soonest an answer can arrive).',
+  },
 ];
 
 const ORDER: IndicatorId[] = ['heartRate', 'spo2', 'bloodPressure', 'radiation', 'sleep', 'exercise', 'wellbeing'];
@@ -53,9 +57,10 @@ export function About() {
           <strong>What do I do now?</strong>
         </p>
         <p>
-          It follows a crew member living in a habitat in {MISSION.site.name}, where NASA’s Curiosity rover has measured the
+          It follows a crew of four living in a habitat in {MISSION.site.name}, where NASA’s Curiosity rover has measured the
           radiation since 2012: heart rate, blood oxygen and blood pressure every minute, radiation, sleep, exercise and a
-          daily wellbeing check-in. Each indicator gets a traffic light (all good, attention, act now) from thresholds with a
+          daily wellbeing check-in. A server on the habitat’s network keeps the crew’s data, so every tablet and phone sees
+          the same; each crew member signs in with their face and changes only their own data. Each indicator gets a traffic light (all good, attention, act now) from thresholds with a
           cited source, and each alert comes with concrete steps the crew can take without waiting for Earth.
         </p>
         <p className="rounded-lg border border-watch/50 bg-watch/10 px-4 py-2 text-sm">

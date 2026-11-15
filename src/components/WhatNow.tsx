@@ -4,6 +4,7 @@ import { INDICATORS, STATUS_LABEL } from '../config/indicators';
 import { SOURCES } from '../config/sources';
 import type { Alert } from '../logic/alerts';
 import { formatMarsClock, localMeanSolarHours } from '../logic/marsTime';
+import { formatDuration } from '../logic/planets';
 import type { PlanItem } from '../logic/plan';
 import { STATUS_STYLE } from './status';
 
@@ -18,6 +19,8 @@ interface Props {
   canAct: boolean;
   onDone: (rule: string) => void;
   onUndo: (rule: string) => void;
+  /** Earth–habitat round trip today, seconds: the soonest mission control can answer. */
+  roundTripSeconds: number;
 }
 
 /** Heads-up before a CME forecast by DONKI reaches Mars. */
@@ -102,7 +105,7 @@ function AlertCard({ alert, doneAt, canAct, onDone, onUndo }: AlertCardProps) {
 }
 
 /** The answer to "What do I do now?": one concrete action per alert. */
-export function WhatNow({ alerts, next, cmeInHours, done, canAct, onDone, onUndo }: Props) {
+export function WhatNow({ alerts, next, cmeInHours, done, canAct, onDone, onUndo, roundTripSeconds }: Props) {
   return (
     <section aria-labelledby="what-now" className="space-y-2">
       <h2 id="what-now" className="text-xs font-medium uppercase tracking-widest text-slate-400">
@@ -126,6 +129,12 @@ export function WhatNow({ alerts, next, cmeInHours, done, canAct, onDone, onUndo
             onUndo={() => onUndo(a.rule)}
           />
         ))
+      )}
+      {alerts.some((a) => a.status === 'act') && (
+        <p className="px-1 text-xs text-slate-400">
+          An answer from mission control takes at least {formatDuration(roundTripSeconds)} today (signal there and back):
+          act now with your crew and the crew medical officer.
+        </p>
       )}
       {/* After the alerts: a forecast is less urgent than what is happening now. */}
       {cmeInHours !== undefined && <HeadsUp hours={cmeInHours} />}

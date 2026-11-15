@@ -4,8 +4,10 @@ import type { Assessment } from '../logic/assess';
 import type { MissionDose } from '../logic/missionDose';
 import type { Status } from '../logic/types';
 import type { FeedItem } from '../logic/habitat';
+import type { SignalDelay } from '../logic/planets';
 import { CrewCard } from './CrewCard';
 import { CrewFeed } from './CrewFeed';
+import { EarthLink } from './EarthLink';
 import { IndicatorCard } from './IndicatorCard';
 import { SpaceWeatherPanel } from './SpaceWeatherPanel';
 import { HeadsUp } from './WhatNow';
@@ -19,6 +21,7 @@ interface Props {
   done: Record<string, Record<string, number>>;
   feed: FeedItem[];
   signedInAs: string | null;
+  delay: SignalDelay;
   hrefOf: (crewId: string) => string;
   onOpen: (crewId: string) => void;
 }
@@ -26,7 +29,8 @@ interface Props {
 const ORDER: Status[] = ['act', 'watch', 'ok'];
 
 /** The whole crew at a glance, and the habitat they share. */
-export function CrewPage({ assessments, dose, weather, cmeInHours, done, feed, signedInAs, hrefOf, onOpen }: Props) {
+export function CrewPage(props: Props) {
+  const { assessments, dose, weather, cmeInHours, done, feed, signedInAs, delay, hrefOf, onOpen } = props;
   const counts = ORDER.map((s) => [s, assessments.filter((a) => a.overall.status === s).length] as const).filter(
     ([, n]) => n > 0,
   );
@@ -64,6 +68,7 @@ export function CrewPage({ assessments, dose, weather, cmeInHours, done, feed, s
         </h2>
         <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
           {radiation && <IndicatorCard result={radiation} age={0} dose={dose} />}
+          <EarthLink delay={delay} />
         </div>
       </section>
       <SpaceWeatherPanel weather={weather} />

@@ -103,6 +103,12 @@ export const SOURCES = {
     title:
       'Rafkin SCR et al. Diurnal variations of energetic particle radiation at the surface of Mars as observed by the Mars Science Laboratory Radiation Assessment Detector. J Geophys Res Planets 2014;119.',
   },
+  'jpl-approx-pos': {
+    short: 'NASA JPL SSD',
+    title:
+      'Standish EM. Keplerian Elements for Approximate Positions of the Major Planets (NASA Jet Propulsion Laboratory, Solar System Dynamics), Table 1, valid 1800–2050. Pulsar computes the Earth–Mars distance and the signal delay of the day from them.',
+    url: 'https://ssd.jpl.nasa.gov/planets/approx_pos.html',
+  },
   'mars24': {
     short: 'NASA GISS Mars24',
     title: 'Allison M, McEwen M. Mars24 Sunclock: algorithm and worked examples (NASA Goddard Institute for Space Studies).',

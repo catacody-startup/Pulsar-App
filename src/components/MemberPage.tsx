@@ -28,6 +28,8 @@ interface Props {
   done: Record<string, number>;
   /** Who is signed in on this device, if anyone: only the crew member changes their own data. */
   signedInAs: string | null;
+  /** Earth–habitat round trip today, seconds. */
+  roundTripSeconds: number;
   onSignIn: () => void;
   onDone: (rule: string) => void;
   onUndo: (rule: string) => void;
@@ -38,7 +40,7 @@ interface Props {
 /** One crew member: "Am I OK?", "What do I do now?", indicators, check-in and trends. */
 export function MemberPage(props: Props) {
   const { assessment: a, sim, now, missionSol, dose, weather, cmeInHours, connection, checkInWaiting, onSaveCheckIn, onBack } = props;
-  const { done, onDone, onUndo, signedInAs, onSignIn } = props;
+  const { done, onDone, onUndo, signedInAs, onSignIn, roundTripSeconds } = props;
   const mine = signedInAs === a.crew.id;
   const first = a.crew.name.split(' ')[0] ?? a.crew.name;
   return (
@@ -71,6 +73,7 @@ export function MemberPage(props: Props) {
         cmeInHours={cmeInHours}
         done={done}
         canAct={mine}
+        roundTripSeconds={roundTripSeconds}
         onDone={onDone}
         onUndo={onUndo}
       />
