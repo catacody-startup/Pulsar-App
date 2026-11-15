@@ -18,12 +18,14 @@ interface Props {
   assessment: Assessment;
   /** Alerts whose action is marked as done: rule → when. */
   done: Record<string, number>;
+  /** The crew member signed in on this device. */
+  isYou: boolean;
   href: string;
   onOpen: () => void;
 }
 
 /** One crew member on the crew page: how they are, what they are doing and the most urgent alert. */
-export function CrewCard({ assessment: a, done, href, onOpen }: Props) {
+export function CrewCard({ assessment: a, done, isYou, href, onOpen }: Props) {
   const style = STATUS_STYLE[a.overall.status];
   const r = a.reading;
   const sleep = a.indicators.find((i) => i.id === 'sleep');
@@ -46,7 +48,10 @@ export function CrewCard({ assessment: a, done, href, onOpen }: Props) {
           {initials(a.crew.name)}
         </span>
         <div className="min-w-0 flex-1">
-          <h3 className="truncate font-semibold text-slate-100 group-hover:text-white">{a.crew.name}</h3>
+          <h3 className="truncate font-semibold text-slate-100 group-hover:text-white">
+            {a.crew.name}
+            {isYou && <span className="ml-2 rounded bg-sky-500/20 px-1.5 py-0.5 text-[11px] font-medium text-sky-300">You</span>}
+          </h3>
           <p className="truncate text-sm text-slate-400">
             {a.crew.role} · {ACTIVITY_LABEL[r.activity]}
           </p>

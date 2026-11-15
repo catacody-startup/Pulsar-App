@@ -10,6 +10,10 @@ interface Props {
   missionSol: number;
   eastLongitudeDeg: number;
   connection: Connection;
+  /** Someone else's check-in: shown, not answered. */
+  readOnly: boolean;
+  /** First name of the crew member. */
+  name: string;
   /** The saved check-in has not reached the habitat server yet. */
   waiting: boolean;
   onSave: (answers: CheckInAnswers) => void;
@@ -18,7 +22,7 @@ interface Props {
 type Draft = Partial<CheckInAnswers>;
 
 /** Daily wellbeing check-in: four questions, 1 to 5. */
-export function CheckInForm({ today, missionSol, eastLongitudeDeg, connection, waiting, onSave }: Props) {
+export function CheckInForm({ today, missionSol, eastLongitudeDeg, connection, readOnly, name, waiting, onSave }: Props) {
   const where =
     connection === 'live'
       ? 'Saved on the habitat server: every device sees it.'
@@ -33,6 +37,22 @@ export function CheckInForm({ today, missionSol, eastLongitudeDeg, connection, w
     onSave(draft as CheckInAnswers);
     setEditing(false);
   };
+
+  if (readOnly) {
+    return (
+      <section aria-labelledby="checkin" className="rounded-lg border border-slate-800 bg-slate-900/60 px-4 py-3">
+        <h3 id="checkin" className="text-xs uppercase tracking-wide text-slate-400">
+          Daily check-in · Sol {missionSol}
+        </h3>
+        <p className="mt-2 text-sm text-slate-200">
+          {today
+            ? `${name} did it at ${formatMarsClock(localMeanSolarHours(today.t, eastLongitudeDeg))} LMST.`
+            : `${name} has not done it yet.`}
+        </p>
+        <p className="mt-1 text-[11px] text-slate-500">Only {name}, signed in, can answer it.</p>
+      </section>
+    );
+  }
 
   if (today && !editing) {
     return (

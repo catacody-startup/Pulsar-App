@@ -7,3 +7,4 @@ coverage/
 *.tsbuildinfo
 dist-server/
 data/
+public/models/

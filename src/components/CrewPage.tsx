@@ -18,6 +18,7 @@ interface Props {
   /** Alerts each crew member marked as done: crew id → rule → when. */
   done: Record<string, Record<string, number>>;
   feed: FeedItem[];
+  signedInAs: string | null;
   hrefOf: (crewId: string) => string;
   onOpen: (crewId: string) => void;
 }
@@ -25,7 +26,7 @@ interface Props {
 const ORDER: Status[] = ['act', 'watch', 'ok'];
 
 /** The whole crew at a glance, and the habitat they share. */
-export function CrewPage({ assessments, dose, weather, cmeInHours, done, feed, hrefOf, onOpen }: Props) {
+export function CrewPage({ assessments, dose, weather, cmeInHours, done, feed, signedInAs, hrefOf, onOpen }: Props) {
   const counts = ORDER.map((s) => [s, assessments.filter((a) => a.overall.status === s).length] as const).filter(
     ([, n]) => n > 0,
   );
@@ -47,6 +48,7 @@ export function CrewPage({ assessments, dose, weather, cmeInHours, done, feed, h
               key={a.crew.id}
               assessment={a}
               done={done[a.crew.id] ?? {}}
+              isYou={signedInAs === a.crew.id}
               href={hrefOf(a.crew.id)}
               onOpen={() => onOpen(a.crew.id)}
             />

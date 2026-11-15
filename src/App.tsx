@@ -1,13 +1,15 @@
 import { useMemo } from 'react';
 import { SPACE_WEATHER_HEADS_UP } from './config/actions';
-import { CREW } from './config/crew';
+import { CREW, crewMember } from './config/crew';
 import { MISSION } from './config/mission';
 import { About } from './components/About';
 import { CrewPage } from './components/CrewPage';
 import { DemoBar } from './components/DemoBar';
 import { MemberPage } from './components/MemberPage';
 import { HabitatStatus } from './components/HabitatStatus';
+import { SignInPage } from './components/SignInPage';
 import { useHabitat } from './hooks/useHabitat';
+import { useSession } from './hooks/useSession';
 import { useMinuteClock } from './hooks/useMinuteClock';
 import { usePath } from './hooks/usePath';
 import { useScenario } from './hooks/useScenario';
@@ -46,10 +48,12 @@ export function App() {
   const [cme] = upcomingMarsArrivals(weather.events, weather.now, SPACE_WEATHER_HEADS_UP.withinHours);
   const cmeInHours = cme ? Math.max(1, Math.round((cme.marsArrival! - weather.now) / 3_600_000)) : undefined;
   const habitat = useHabitat();
+  const { session, signIn, signOut, forgetFace } = useSession();
+  const me = session ? crewMember(session.crewId) : undefined;
   const byCrew = habitat.data.checkIns;
 
   // Only the crew members on screen are evaluated.
-  const shownId = route.page === 'member' ? route.crewId : route.page === 'about' ? 'none' : 'all';
+  const shownId = route.page === 'member' ? route.crewId : route.page === 'about' || route.page === 'signIn' ? 'none' : 'all';
   const shown = useMemo(
     () => (shownId === 'all' ? sims : sims.filter((s) => s.crew.id === shownId)),
     [sims, shownId],
@@ -93,6 +97,28 @@ export function App() {
             </a>
           ))}
         </nav>
+        {session && me ? (
+          <a
+            href={routePath({ page: 'signIn' })}
+            onClick={(e) => (e.preventDefault(), go({ page: 'signIn' }))}
+            className="ml-2 flex items-center gap-1.5 rounded-full border border-slate-700 py-0.5 pl-0.5 pr-2.5 text-sm text-slate-200 hover:border-slate-500"
+            title="Signed in on this device"
+          >
+            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-sky-500/25 text-[11px] font-semibold text-sky-200" aria-hidden>
+              {me.name.split(' ').map((w) => w[0]).join('').slice(0, 2)}
+            </span>
+            {me.name.split(' ')[0]}
+          </a>
+        ) : (
+          <a
+            href={routePath({ page: 'signIn' })}
+            aria-current={route.page === 'signIn' ? 'page' : undefined}
+            onClick={(e) => (e.preventDefault(), go({ page: 'signIn' }))}
+            className="ml-2 rounded-full border border-sky-700 px-3 py-0.5 text-sm text-sky-300 hover:border-sky-500 hover:text-sky-200"
+          >
+            Sign in
+          </a>
+        )}
         <div className="ml-auto flex flex-col items-end">
           <p className="text-right text-sm tabular-nums text-slate-300">
             Sol {sol} · {clock} <span className="text-slate-500">LMST · {MISSION.site.name}</span>
@@ -100,9 +126,18 @@ export function App() {
           <HabitatStatus connection={habitat.connection} waiting={habitat.waiting} />
         </div>
       </header>
-      {route.page !== 'about' && <DemoBar scenario={scenario} onChoose={choose} />}
+      {route.page !== 'about' && route.page !== 'signIn' && <DemoBar scenario={scenario} onChoose={choose} />}
       <main className="mx-auto w-full max-w-5xl flex-1 space-y-5 px-4 py-5">
         {route.page === 'about' && <About />}
+        {route.page === 'signIn' && (
+          <SignInPage
+            session={session}
+            onSignedIn={signIn}
+            onSignOut={() => void signOut()}
+            onForgetFace={forgetFace}
+            onGoToPanel={(crewId) => go({ page: 'member', crewId })}
+          />
+        )}
         {(route.page === 'crew' || route.page === 'notFound') && (
           <CrewPage
             assessments={assessments}
@@ -111,6 +146,7 @@ export function App() {
             cmeInHours={cmeInHours}
             done={done}
             feed={feed}
+            signedInAs={session?.crewId ?? null}
             hrefOf={(crewId) => routePath({ page: 'member', crewId })}
             onOpen={(crewId) => go({ page: 'member', crewId })}
           />
@@ -127,9 +163,13 @@ export function App() {
             connection={habitat.connection}
             checkInWaiting={habitat.checkInWaitingFor.has(route.crewId)}
             done={done[route.crewId] ?? {}}
-            onDone={(rule) => habitat.markDone(route.crewId, rule, Date.now())}
-            onUndo={(rule) => habitat.undoDone(route.crewId, rule)}
-            onSaveCheckIn={(answers) => habitat.saveCheckIn(route.crewId, answers, assessments[0]!.localSol, Date.now())}
+            signedInAs={session?.crewId ?? null}
+            onSignIn={() => go({ page: 'signIn' })}
+            onDone={(rule) => session && habitat.markDone(session.token, route.crewId, rule, Date.now())}
+            onUndo={(rule) => session && habitat.undoDone(session.token, route.crewId, rule)}
+            onSaveCheckIn={(answers) =>
+              session && habitat.saveCheckIn(session.token, route.crewId, answers, assessments[0]!.localSol, Date.now())
+            }
             onBack={() => go({ page: 'crew' })}
           />
         )}

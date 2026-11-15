@@ -7,18 +7,20 @@
   "license": "Apache-2.0",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build && vite build --config vite.server.config.ts",
+    "build": "node scripts/face/copy-models.mjs && tsc -b && vite build && vite build --config vite.server.config.ts",
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
     "typecheck": "tsc -b",
     "build:server": "vite build --config vite.server.config.ts",
-    "server": "npm run build:server && node dist-server/main.mjs"
+    "server": "npm run build:server && node dist-server/main.mjs",
+    "predev": "node scripts/face/copy-models.mjs"
   },
   "engines": {
     "node": ">=18"
   },
   "dependencies": {
+    "@vladmandic/face-api": "1.7.15",
     "react": "^19.3.1",
     "react-dom": "^19.3.1"
   },

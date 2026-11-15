@@ -14,6 +14,8 @@ interface Props {
   cmeInHours?: number;
   /** Alerts whose action is marked as done: rule → when. */
   done: Record<string, number>;
+  /** Only the crew member, signed in, marks their actions as done. */
+  canAct: boolean;
   onDone: (rule: string) => void;
   onUndo: (rule: string) => void;
 }
@@ -45,11 +47,12 @@ export const doneClock = (t: number) => formatMarsClock(localMeanSolarHours(t, M
 interface AlertCardProps {
   alert: Alert;
   doneAt?: number;
+  canAct: boolean;
   onDone: () => void;
   onUndo: () => void;
 }
 
-function AlertCard({ alert, doneAt, onDone, onUndo }: AlertCardProps) {
+function AlertCard({ alert, doneAt, canAct, onDone, onUndo }: AlertCardProps) {
   const style = STATUS_STYLE[alert.status];
   const { action } = alert;
   return (
@@ -73,10 +76,14 @@ function AlertCard({ alert, doneAt, onDone, onUndo }: AlertCardProps) {
               ✓
             </span>
             {ACTION_DONE.done(doneClock(doneAt))}
-            <button type="button" onClick={onUndo} className="text-xs text-slate-400 underline hover:text-slate-200">
-              {ACTION_DONE.undo}
-            </button>
+            {canAct && (
+              <button type="button" onClick={onUndo} className="text-xs text-slate-400 underline hover:text-slate-200">
+                {ACTION_DONE.undo}
+              </button>
+            )}
           </p>
+        ) : !canAct ? (
+          <span />
         ) : (
           <button
             type="button"
@@ -95,7 +102,7 @@ function AlertCard({ alert, doneAt, onDone, onUndo }: AlertCardProps) {
 }
 
 /** The answer to "What do I do now?": one concrete action per alert. */
-export function WhatNow({ alerts, next, cmeInHours, done, onDone, onUndo }: Props) {
+export function WhatNow({ alerts, next, cmeInHours, done, canAct, onDone, onUndo }: Props) {
   return (
     <section aria-labelledby="what-now" className="space-y-2">
       <h2 id="what-now" className="text-xs font-medium uppercase tracking-widest text-slate-400">
@@ -114,6 +121,7 @@ export function WhatNow({ alerts, next, cmeInHours, done, onDone, onUndo }: Prop
             key={a.rule}
             alert={a}
             doneAt={done[a.rule]}
+            canAct={canAct}
             onDone={() => onDone(a.rule)}
             onUndo={() => onUndo(a.rule)}
           />

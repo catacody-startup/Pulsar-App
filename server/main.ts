@@ -13,6 +13,7 @@ const crewIds = CREW.map((c) => c.id);
 const app = createApp({
   store: createFileStore(file, crewIds),
   crewIds,
+  crewNames: Object.fromEntries(CREW.map((c) => [c.id, c.name])),
   eastLongitudeDeg: MISSION.site.eastLongitudeDeg,
   version: typeof __PULSAR_VERSION__ === 'string' ? __PULSAR_VERSION__ : 'dev',
 });
