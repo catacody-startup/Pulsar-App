@@ -6,7 +6,8 @@ import { About } from './components/About';
 import { CrewPage } from './components/CrewPage';
 import { DemoBar } from './components/DemoBar';
 import { MemberPage } from './components/MemberPage';
-import { useCheckIns } from './hooks/useCheckIns';
+import { HabitatStatus } from './components/HabitatStatus';
+import { useHabitat } from './hooks/useHabitat';
 import { useMinuteClock } from './hooks/useMinuteClock';
 import { usePath } from './hooks/usePath';
 import { useScenario } from './hooks/useScenario';
@@ -43,7 +44,8 @@ export function App() {
   const weather = useSpaceWeather(now, replay ? replay.start : null);
   const [cme] = upcomingMarsArrivals(weather.events, weather.now, SPACE_WEATHER_HEADS_UP.withinHours);
   const cmeInHours = cme ? Math.max(1, Math.round((cme.marsArrival! - weather.now) / 3_600_000)) : undefined;
-  const { byCrew, save: saveCheckIn } = useCheckIns();
+  const habitat = useHabitat();
+  const byCrew = habitat.data.checkIns;
 
   // Only the crew members on screen are evaluated.
   const shownId = route.page === 'member' ? route.crewId : route.page === 'about' ? 'none' : 'all';
@@ -82,9 +84,12 @@ export function App() {
             </a>
           ))}
         </nav>
-        <p className="ml-auto text-right text-sm tabular-nums text-slate-300">
-          Sol {sol} · {clock} <span className="text-slate-500">LMST · {MISSION.site.name}</span>
-        </p>
+        <div className="ml-auto flex flex-col items-end">
+          <p className="text-right text-sm tabular-nums text-slate-300">
+            Sol {sol} · {clock} <span className="text-slate-500">LMST · {MISSION.site.name}</span>
+          </p>
+          <HabitatStatus connection={habitat.connection} waiting={habitat.waiting} />
+        </div>
       </header>
       {route.page !== 'about' && <DemoBar scenario={scenario} onChoose={choose} />}
       <main className="mx-auto w-full max-w-5xl flex-1 space-y-5 px-4 py-5">
@@ -108,7 +113,9 @@ export function App() {
             dose={dose}
             weather={weather}
             cmeInHours={cmeInHours}
-            onSaveCheckIn={(answers) => saveCheckIn(route.crewId, answers, assessments[0]!.localSol, Date.now())}
+            connection={habitat.connection}
+            checkInWaiting={habitat.waitingFor.has(route.crewId)}
+            onSaveCheckIn={(answers) => habitat.saveCheckIn(route.crewId, answers, assessments[0]!.localSol, Date.now())}
             onBack={() => go({ page: 'crew' })}
           />
         )}

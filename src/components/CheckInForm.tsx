@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from 'react';
 import { CHECKIN_QUESTIONS } from '../config/checkin';
+import type { Connection } from '../hooks/useHabitat';
 import { formatMarsClock, localMeanSolarHours } from '../logic/marsTime';
 import type { CheckIn, CheckInAnswers } from '../logic/types';
 
@@ -8,13 +9,20 @@ interface Props {
   today?: CheckIn;
   missionSol: number;
   eastLongitudeDeg: number;
+  connection: Connection;
+  /** The saved check-in has not reached the habitat server yet. */
+  waiting: boolean;
   onSave: (answers: CheckInAnswers) => void;
 }
 
 type Draft = Partial<CheckInAnswers>;
 
 /** Daily wellbeing check-in: four questions, 1 to 5. */
-export function CheckInForm({ today, missionSol, eastLongitudeDeg, onSave }: Props) {
+export function CheckInForm({ today, missionSol, eastLongitudeDeg, connection, waiting, onSave }: Props) {
+  const where =
+    connection === 'live'
+      ? 'Saved on the habitat server: every device sees it.'
+      : 'No habitat server right now: it stays on this device and is sent when the server is back.';
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState<Draft>({});
   const complete = CHECKIN_QUESTIONS.every((q) => draft[q.id] !== undefined);
@@ -34,6 +42,9 @@ export function CheckInForm({ today, missionSol, eastLongitudeDeg, onSave }: Pro
         </h3>
         <p className="mt-2 text-sm text-slate-200">
           Done at {formatMarsClock(localMeanSolarHours(today.t, eastLongitudeDeg))} LMST. Thanks — see you tomorrow.
+        </p>
+        <p className="mt-1 text-[11px] text-slate-500">
+          {waiting ? 'Waiting on this device to reach the habitat server.' : 'On the habitat server: every device sees it.'}
         </p>
         <button
           type="button"
@@ -101,7 +112,7 @@ export function CheckInForm({ today, missionSol, eastLongitudeDeg, onSave }: Pro
             Cancel
           </button>
         )}
-        <span className="text-[11px] text-slate-500">Stays on this device for now.</span>
+        <span className="text-[11px] text-slate-500">{where}</span>
       </div>
     </form>
   );

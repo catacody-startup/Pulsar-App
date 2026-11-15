@@ -1,5 +1,6 @@
 import { ACTIVITY_LABEL } from '../config/indicators';
 import { MISSION } from '../config/mission';
+import type { Connection } from '../hooks/useHabitat';
 import type { SpaceWeather } from '../hooks/useSpaceWeather';
 import type { Assessment } from '../logic/assess';
 import type { MissionDose } from '../logic/missionDose';
@@ -20,12 +21,16 @@ interface Props {
   dose: MissionDose;
   weather: SpaceWeather;
   cmeInHours?: number;
+  connection: Connection;
+  /** Today's check-in is saved on this device but has not reached the habitat server yet. */
+  checkInWaiting: boolean;
   onSaveCheckIn: (answers: CheckInAnswers) => void;
   onBack: () => void;
 }
 
 /** One crew member: "Am I OK?", "What do I do now?", indicators, check-in and trends. */
-export function MemberPage({ assessment: a, sim, now, missionSol, dose, weather, cmeInHours, onSaveCheckIn, onBack }: Props) {
+export function MemberPage(props: Props) {
+  const { assessment: a, sim, now, missionSol, dose, weather, cmeInHours, connection, checkInWaiting, onSaveCheckIn, onBack } = props;
   return (
     <>
       <p className="text-sm text-slate-400">
@@ -54,6 +59,8 @@ export function MemberPage({ assessment: a, sim, now, missionSol, dose, weather,
               today={a.todaysCheckIn}
               missionSol={missionSol}
               eastLongitudeDeg={MISSION.site.eastLongitudeDeg}
+              connection={connection}
+              waiting={checkInWaiting}
               onSave={onSaveCheckIn}
             />
           </div>
