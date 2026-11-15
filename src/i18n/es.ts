@@ -231,6 +231,8 @@ export const ES: Record<string, string> = {
   "A server on the habitat’s network keeps the crew’s data, so every tablet and phone sees the same; each crew member signs in with their face and changes only their own data.": "Un servidor en la red del hábitat guarda los datos de la tripulación, así cada tablet y cada teléfono ve lo mismo; cada tripulante entra con su cara y cambia solo lo suyo.",
   "Each indicator gets a traffic light (all good, attention, act now) from thresholds with a cited source, and each alert comes with concrete steps the crew can take without waiting for Earth.": "Cada indicador tiene un semáforo (todo bien, atención, actuá ya) según umbrales con fuente citada, y cada alerta trae pasos concretos que la tripulación puede hacer sin esperar a la Tierra.",
   "Mission control on Earth sees the crew one signal delay late and gets a health report every 6 Mars hours.": "Control de misión en la Tierra ve a la tripulación con la demora de la señal y recibe un reporte de salud cada 6 horas marcianas.",
+  "Built for Mars.": "Hecho para Marte.",
+  "Pulsar runs on the habitat’s own server, on the station’s local network, so it keeps working without Earth. On Mars, space weather and radiation would come from sources near the planet (orbiters, surface detectors) instead of from Earth, 3 to 22 minutes away. In this prototype, real NASA data stands in for them: Curiosity’s RAD, measured on Mars, and DONKI.": "Pulsar corre en el servidor del propio hábitat, en la red local de la estación, así que sigue andando sin la Tierra. En Marte, el clima espacial y la radiación vendrían de fuentes cercanas al planeta (orbitadores, detectores en la superficie) y no desde la Tierra, a entre 3 y 22 minutos. En este prototipo, datos reales de NASA ocupan su lugar: el RAD de Curiosity, medido en Marte, y DONKI.",
   "Prototype – not for medical use. Vital signs are simulated; radiation and space weather are real NASA data.": "Prototipo – no es para uso médico. Los signos vitales son simulados; la radiación y el clima espacial son datos reales de NASA.",
   "NASA data and documents used": "Datos y documentos de NASA que usa",
   "Every threshold and where it comes from": "Cada umbral y de dónde sale",
@@ -369,6 +371,7 @@ export const ES: Record<string, string> = {
   "Mars arrival forecast {time}": "Llegada a Marte pronosticada para {time}",
   "glancing blow": "de refilón",
   "No events in the last 30 days.": "Sin eventos en los últimos 30 días.",
+  "On Mars, these alerts would come from sources near the planet, such as orbiters, seconds away instead of minutes from Earth. In this prototype, NASA DONKI stands in for them.": "En Marte, estos avisos vendrían de fuentes cercanas al planeta, como orbitadores, a segundos de distancia en vez de minutos desde la Tierra. En este prototipo, NASA DONKI ocupa su lugar.",
 
   // ── Trends
   "Min {min} · avg {avg} · max {max} {unit}": "Mín {min} · prom {avg} · máx {max} {unit}",

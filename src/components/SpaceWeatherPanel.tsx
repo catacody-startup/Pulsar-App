@@ -55,6 +55,11 @@ export function SpaceWeatherPanel({ weather }: { weather: SpaceWeather }) {
           {t('No events in the last 30 days.')}
         </p>
       )}
+      <p className="text-[11px] text-slate-500">
+        {t(
+          'On Mars, these alerts would come from sources near the planet, such as orbiters, seconds away instead of minutes from Earth. In this prototype, NASA DONKI stands in for them.',
+        )}
+      </p>
     </section>
   );
 }

@@ -52,6 +52,12 @@ export function About() {
           )}{' '}
           {t('Mission control on Earth sees the crew one signal delay late and gets a health report every 6 Mars hours.')}
         </p>
+        <p>
+          <strong>{t('Built for Mars.')}</strong>{' '}
+          {t(
+            'Pulsar runs on the habitat’s own server, on the station’s local network, so it keeps working without Earth. On Mars, space weather and radiation would come from sources near the planet (orbiters, surface detectors) instead of from Earth, 3 to 22 minutes away. In this prototype, real NASA data stands in for them: Curiosity’s RAD, measured on Mars, and DONKI.',
+          )}
+        </p>
         <p className="rounded-lg border border-watch/50 bg-watch/10 px-4 py-2 text-sm">
           {t('Prototype – not for medical use. Vital signs are simulated; radiation and space weather are real NASA data.')}
         </p>
