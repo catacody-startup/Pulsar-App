@@ -1,22 +1,10 @@
 import { INDICATORS, STATUS_LABEL } from '../config/indicators';
 import { SOURCES } from '../config/sources';
 import { RULES, THRESHOLDS } from '../config/thresholds';
+import { formatIndicatorValue } from '../logic/format';
 import { maxHeartRate, type IndicatorResult } from '../logic/indicators';
 import type { MissionDose } from '../logic/missionDose';
 import { STATUS_STYLE } from './status';
-
-export function formatIndicatorValue(r: IndicatorResult): string {
-  switch (r.id) {
-    case 'bloodPressure':
-      return `${r.value}/${r.value2 ?? '–'}`;
-    case 'radiation':
-    case 'sleep':
-    case 'wellbeing':
-      return Number.isNaN(r.value) ? '–' : r.value.toFixed(1);
-    default:
-      return String(r.value);
-  }
-}
 
 interface Props {
   result: IndicatorResult;

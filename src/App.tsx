@@ -6,6 +6,7 @@ import { About } from './components/About';
 import { CrewPage } from './components/CrewPage';
 import { DemoBar } from './components/DemoBar';
 import { EarthPage } from './components/EarthPage';
+import { ReportButton } from './components/ReportButton';
 import { MemberPage } from './components/MemberPage';
 import { HabitatStatus } from './components/HabitatStatus';
 import { SignInPage } from './components/SignInPage';
@@ -21,6 +22,7 @@ import { crewFeed, currentActionsDone, habitatAsOf } from './logic/habitat';
 import { formatMarsClock, localMeanSolarHours, SOL_IN_EARTH_DAYS } from './logic/marsTime';
 import { missionDose } from './logic/missionDose';
 import { signalDelay } from './logic/planets';
+import { buildReport } from './logic/report';
 import { parseRoute, routePath, type Route } from './logic/route';
 import { resolveScenario } from './logic/scenarios';
 import { createSimulator } from './logic/simulator';
@@ -91,6 +93,20 @@ export function App() {
     },
     [habitat.data],
   );
+  /** The health report for mission control as it was at `t`. */
+  const reportAt = useCallback(
+    (t: number) =>
+      buildReport({
+        at: t,
+        crew: crewAt(t),
+        sols: Object.fromEntries(sims.map((sim) => [sim.crew.id, sim.recentSols(t, 8).slice(0, -1)])),
+        done: doneAt(t),
+        dose: missionDose(t),
+        delay: signalDelay(t),
+        ...(scenario.events.length > 0 ? { scenario: scenario.label } : {}),
+      }),
+    [crewAt, doneAt, sims, scenario],
+  );
   const sol = calendar.missionSolAt(now);
   const clock = formatMarsClock(localMeanSolarHours(now, MISSION.site.eastLongitudeDeg));
   const navPage = route.page === 'member' || route.page === 'notFound' ? 'crew' : route.page;
@@ -149,7 +165,21 @@ export function App() {
       {route.page !== 'about' && route.page !== 'signIn' && <DemoBar scenario={scenario} onChoose={choose} />}
       <main className="mx-auto w-full max-w-5xl flex-1 space-y-5 px-4 py-5">
         {route.page === 'about' && <About />}
-        {route.page === 'earth' && <EarthPage now={now} delay={delay} crewAt={crewAt} doneAt={doneAt} />}
+        {route.page === 'earth' && (
+          <EarthPage
+            now={now}
+            delay={delay}
+            crewAt={crewAt}
+            doneAt={doneAt}
+            reportButton={(r) => (
+              <ReportButton
+                make={() => reportAt(r.sentAt)}
+                label="PDF"
+                className="rounded border border-slate-600 px-2 py-0.5 text-xs text-slate-200 hover:bg-slate-800 disabled:opacity-50"
+              />
+            )}
+          />
+        )}
         {route.page === 'signIn' && (
           <SignInPage
             session={session}
@@ -170,6 +200,7 @@ export function App() {
             signedInAs={session?.crewId ?? null}
             delay={delay}
             now={now}
+            reportButton={<ReportButton make={() => reportAt(Date.now())} label="Health report for mission control (PDF)" />}
             hrefOf={(crewId) => routePath({ page: 'member', crewId })}
             onOpen={(crewId) => go({ page: 'member', crewId })}
           />

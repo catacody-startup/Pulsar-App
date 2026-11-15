@@ -43,13 +43,13 @@ Cada uno entra con la cara y solo cambia lo suyo (check-in, acciones). Todos ven
 
 1. ✅ **Entrar con la cara** (`/sign-in`): face-api.js (`@vladmandic/face-api`, MIT) lee la cara en el dispositivo y saca 128 números (la foto nunca sale del dispositivo). El servidor del hábitat los compara con las caras enroladas (distancia euclídea < 0,5; face-api.js y dlib usan 0,6) y abre una sesión de 12 h (token guardado como SHA-256). Si la cara no está enrolada, se elige quién es entre los lugares libres y se sacan 3 fotos. Una cara enrolada solo la reemplaza su dueño ya adentro, y una cara no puede tener dos lugares. En la demo pública, las caras se olvidan a las 2 h sin uso (o cuando el tripulante lo pide: *Forget my face*), así se liberan los lugares. Leer sigue abierto; cambiar un check-in o una acción pide la sesión de ese tripulante (401/403 si no). Para jurados sin cámara, un ingreso de demo sin cara (`FACE.demoSignIn`, se apaga en la config). Los modelos (~7 MB) se copian de `node_modules` a `public/models/` al armar y se cargan solo al entrar. Probado de punta a punta con dos retratos oficiales distintos de un astronauta de la ESA (NASA, dominio público): enrolado con uno, reconocido con el otro; otro astronauta no entra.
 
-## Etapa 4 — Lejos de la Tierra
+## Etapa 4 — Lejos de la Tierra ✅
 
 Modo *Mars delay* (demora de la señal del día), reporte para control de misión (PDF) y envío periódico a la Tierra.
 
 1. ✅ **Demora de la señal del día:** posiciones de la Tierra y Marte con los elementos keplerianos aproximados del JPL (Standish, tabla 1, 1800–2050; probado contra los acercamientos de 2003, 2018 y 2020 con error < 0,001 UA). La página de la tripulación muestra el enlace con la Tierra (ida, ida y vuelta, distancia) y, con una alerta de *actuar ya*, *What do I do now?* recuerda que la respuesta de control de misión tarda al menos la ida y vuelta del día.
 2. ✅ **Control de misión** (`/earth`) y **envío periódico a la Tierra:** la tripulación vista desde la Tierra con la demora del día (el estado de hace una demora de señal, con los check-ins y acciones que ya habían llegado; los escenarios también se ven con demora) y cuándo llega a la tripulación un mensaje y su respuesta. El hábitat manda un reporte de salud cada 6 horas marcianas (00, 06, 12 y 18 LMST, en `src/config/earth.ts`): control de misión ve los últimos recibidos, el que está en viaje y el próximo; en el hábitat, el enlace con la Tierra dice cuándo salió el último y cuándo sale el próximo. Todo es determinista: sin servidor extra.
-3. **Reporte en PDF** para control de misión.
+3. ✅ **Reporte en PDF** para control de misión (jsPDF, se carga solo al bajar uno): hábitat (radiación, dosis de la misión, demora de la señal), y por tripulante sus siete indicadores con estado y regla, alertas con si se marcaron hechas, check-in y sueño y ejercicio de los últimos 7 soles; dice si hay un escenario de demo en juego. Se baja desde la página de la tripulación (ahora) y desde cada reporte recibido en control de misión (como era al salir del hábitat). El contenido sale de `src/logic/report.ts` (con tests) y el dibujo de `src/report/pdf.ts`.
 
 ## Etapa 5 — Pulido
 

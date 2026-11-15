@@ -21,7 +21,7 @@ Built during the hackathon (14–15 November 2026), in stages (see `PLAN.md`, in
 - **Trends** over 24 hours and 7 days with the normal range marked, on Mars local time.
 - **Daily wellbeing check-in**: four questions, under a minute.
 - **Real radiation from Mars**: the habitat sits in Gale Crater and its dose rate is the one NASA's Curiosity rover measured there with its RAD instrument.
-- **Far from Earth**: today's signal delay between the habitat and mission control (from NASA JPL planet positions), so the crew knows how soon an answer can arrive. A **mission control** view (`/earth`) sees the crew one signal delay late and receives a health report from the habitat every 6 Mars hours.
+- **Far from Earth**: today's signal delay between the habitat and mission control (from NASA JPL planet positions), so the crew knows how soon an answer can arrive. A **mission control** view (`/earth`) sees the crew one signal delay late and receives a health report from the habitat every 6 Mars hours, downloadable as a PDF.
 - **Real space weather**: coronal mass ejections forecast to reach Mars, solar particle events and geomagnetic storms from NASA DONKI, with a heads-up before a CME arrives.
 - **Demo scenarios** (outside the astronaut's interface): a real solar storm (the event of 10 September 2017, as RAD measured it), low cabin oxygen, fever, a sleepless night, missed workouts and feeling isolated. They can be shared as links, e.g. https://pulsar.catacody.com/?scenario=solar-storm
 
@@ -69,4 +69,4 @@ React 19, TypeScript, Vite 6, Tailwind CSS 3, Vitest; the habitat server uses on
 
 Pulsar is released under the [Apache License 2.0](LICENSE), the default license of the NASA Space Apps Challenge for original content.
 
-Third-party software used to build it, all under OSI-approved licenses: React, Vite, Tailwind CSS, PostCSS, Autoprefixer, Vitest and face-api.js with its models (`@vladmandic/face-api`, MIT; it bundles TensorFlow.js, Apache-2.0), and TypeScript (Apache-2.0). NASA data are public; their sources are listed above and in the app's About page.
+Third-party software used to build it, all under OSI-approved licenses: React, Vite, Tailwind CSS, PostCSS, Autoprefixer, Vitest, jsPDF and its dependencies (MIT; DOMPurify, MPL-2.0 or Apache-2.0) and face-api.js with its models (`@vladmandic/face-api`, MIT; it bundles TensorFlow.js, Apache-2.0), and TypeScript (Apache-2.0). NASA data are public; their sources are listed above and in the app's About page.

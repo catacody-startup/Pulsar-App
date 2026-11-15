@@ -23,6 +23,7 @@ interface Props {
   signedInAs: string | null;
   delay: SignalDelay;
   now: number;
+  reportButton: React.ReactNode;
   hrefOf: (crewId: string) => string;
   onOpen: (crewId: string) => void;
 }
@@ -31,7 +32,7 @@ const ORDER: Status[] = ['act', 'watch', 'ok'];
 
 /** The whole crew at a glance, and the habitat they share. */
 export function CrewPage(props: Props) {
-  const { assessments, dose, weather, cmeInHours, done, feed, signedInAs, delay, now, hrefOf, onOpen } = props;
+  const { assessments, dose, weather, cmeInHours, done, feed, signedInAs, delay, now, reportButton, hrefOf, onOpen } = props;
   const counts = ORDER.map((s) => [s, assessments.filter((a) => a.overall.status === s).length] as const).filter(
     ([, n]) => n > 0,
   );
@@ -59,7 +60,10 @@ export function CrewPage(props: Props) {
             />
           ))}
         </div>
-        <p className="text-[11px] text-slate-500">Vital signs are simulated; open a crew member to see their indicators, trends and check-in.</p>
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <p className="text-[11px] text-slate-500">Vital signs are simulated; open a crew member to see their indicators, trends and check-in.</p>
+          {reportButton}
+        </div>
       </section>
       {cmeInHours !== undefined && <HeadsUp hours={cmeInHours} />}
       <CrewFeed items={feed} />
