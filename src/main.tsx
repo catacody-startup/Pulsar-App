@@ -2,6 +2,9 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import './index.css';
 import { App } from './App';
+import { initialLocale, setLocale } from './i18n/i18n';
+
+setLocale(initialLocale());
 
 const root = document.getElementById('root');
 if (!root) throw new Error('Missing #root element');

@@ -7,6 +7,7 @@ import { formatMarsClock, localMeanSolarHours } from '../logic/marsTime';
 import { formatDuration } from '../logic/planets';
 import type { PlanItem } from '../logic/plan';
 import { STATUS_STYLE } from './status';
+import { t } from '../i18n/i18n';
 
 interface Props {
   alerts: Alert[];
@@ -29,23 +30,23 @@ export function HeadsUp({ hours }: { hours: number }) {
   return (
     <article className="rounded-lg border border-l-4 border-sky-900/70 border-l-sky-500 bg-slate-900/70 px-4 py-3">
       <header className="flex flex-wrap items-center gap-x-2 gap-y-1">
-        <span className="rounded-full bg-sky-500/15 px-2 py-0.5 text-[11px] font-medium text-sky-300">Heads-up</span>
+        <span className="rounded-full bg-sky-500/15 px-2 py-0.5 text-[11px] font-medium text-sky-300">{t('Heads-up')}</span>
         <h3 className="font-semibold text-slate-100">{h.title(hours)}</h3>
-        <span className="text-xs text-slate-500">Space weather</span>
+        <span className="text-xs text-slate-500">{t('Space weather')}</span>
       </header>
       <ol className="mt-2 list-decimal space-y-1 pl-5 text-sm text-slate-200 marker:text-slate-500">
         {h.steps.map((step) => (
-          <li key={step}>{step}</li>
+          <li key={step}>{t(step)}</li>
         ))}
       </ol>
-      <p className="mt-2 text-[11px] text-slate-500">Based on: {h.sources.map((id) => SOURCES[id].short).join(' · ')}</p>
+      <p className="mt-2 text-[11px] text-slate-500">{t('Based on:')} {h.sources.map((id) => SOURCES[id].short).join(' · ')}</p>
     </article>
   );
 }
 
 const ALERT_BORDER = { watch: 'border-l-watch', act: 'border-l-act' } as const;
 
-export const doneClock = (t: number) => formatMarsClock(localMeanSolarHours(t, MISSION.site.eastLongitudeDeg));
+export const doneClock = (ms: number) => formatMarsClock(localMeanSolarHours(ms, MISSION.site.eastLongitudeDeg));
 
 interface AlertCardProps {
   alert: Alert;
@@ -62,14 +63,14 @@ function AlertCard({ alert, doneAt, canAct, onDone, onUndo }: AlertCardProps) {
     <article className={`rounded-lg border border-l-4 bg-slate-900/70 px-4 py-3 ${style.border} ${ALERT_BORDER[alert.status]}`}>
       <header className="flex flex-wrap items-center gap-x-2 gap-y-1">
         <span className={`rounded-full px-2 py-0.5 text-[11px] font-medium ${style.chip}`}>
-          {STATUS_LABEL[alert.status]}
+          {t(STATUS_LABEL[alert.status])}
         </span>
-        <h3 className="font-semibold text-slate-100">{action.title}</h3>
-        <span className="text-xs text-slate-500">{INDICATORS[alert.indicator].label}</span>
+        <h3 className="font-semibold text-slate-100">{t(action.title)}</h3>
+        <span className="text-xs text-slate-500">{t(INDICATORS[alert.indicator].label)}</span>
       </header>
       <ol className="mt-2 list-decimal space-y-1 pl-5 text-sm text-slate-200 marker:text-slate-500">
         {action.steps.map((step) => (
-          <li key={step}>{step}</li>
+          <li key={step}>{t(step)}</li>
         ))}
       </ol>
       <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
@@ -81,7 +82,7 @@ function AlertCard({ alert, doneAt, canAct, onDone, onUndo }: AlertCardProps) {
             {ACTION_DONE.done(doneClock(doneAt))}
             {canAct && (
               <button type="button" onClick={onUndo} className="text-xs text-slate-400 underline hover:text-slate-200">
-                {ACTION_DONE.undo}
+                {t(ACTION_DONE.undo)}
               </button>
             )}
           </p>
@@ -93,11 +94,11 @@ function AlertCard({ alert, doneAt, canAct, onDone, onUndo }: AlertCardProps) {
             onClick={onDone}
             className="rounded-md border border-slate-600 px-3 py-1 text-sm text-slate-100 hover:border-slate-400 hover:bg-slate-800"
           >
-            {ACTION_DONE.button}
+            {t(ACTION_DONE.button)}
           </button>
         )}
         {action.sources && (
-          <p className="text-[11px] text-slate-500">Based on: {action.sources.map((id) => SOURCES[id].short).join(' · ')}</p>
+          <p className="text-[11px] text-slate-500">{t('Based on:')} {action.sources.map((id) => SOURCES[id].short).join(' · ')}</p>
         )}
       </div>
     </article>
@@ -109,13 +110,13 @@ export function WhatNow({ alerts, next, cmeInHours, done, canAct, onDone, onUndo
   return (
     <section aria-labelledby="what-now" className="space-y-2">
       <h2 id="what-now" className="text-xs font-medium uppercase tracking-widest text-slate-400">
-        What do I do now?
+        {t('What do I do now?')}
       </h2>
       {alerts.length === 0 ? (
         <p className="rounded-lg border border-slate-800 bg-slate-900/60 px-4 py-3 text-slate-200">
-          {NO_ALERTS_TEXT}{' '}
+          {t(NO_ALERTS_TEXT)}{' '}
           <span className="text-slate-400">
-            Next: {PLAN_ITEM_LABEL[next.kind].toLowerCase()} at {formatMarsClock(next.hour)} LMST.
+            {t('Next: {item} at {clock} LMST.', { item: t(PLAN_ITEM_LABEL[next.kind]).toLowerCase(), clock: formatMarsClock(next.hour) })}
           </span>
         </p>
       ) : (
@@ -132,8 +133,10 @@ export function WhatNow({ alerts, next, cmeInHours, done, canAct, onDone, onUndo
       )}
       {alerts.some((a) => a.status === 'act') && (
         <p className="px-1 text-xs text-slate-400">
-          An answer from mission control takes at least {formatDuration(roundTripSeconds)} today (signal there and back):
-          act now with your crew and the crew medical officer.
+          {t(
+            'An answer from mission control takes at least {time} today (signal there and back): act now with your crew and the crew medical officer.',
+            { time: formatDuration(roundTripSeconds) },
+          )}
         </p>
       )}
       {/* After the alerts: a forecast is less urgent than what is happening now. */}

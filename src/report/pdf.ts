@@ -5,6 +5,7 @@
 import type { Report } from '../logic/report';
 import type { Status } from '../logic/types';
 import { STATUS_LABEL } from '../config/indicators';
+import { t } from '../i18n/i18n';
 
 const PAGE = { width: 210, height: 297, margin: 15 };
 const COLOR: Record<Status, [number, number, number]> = {
@@ -55,7 +56,7 @@ export async function downloadReportPdf(report: Report): Promise<void> {
     return lines.length * lineHeight(size);
   };
   const chip = (status: Status, x: number, top: number) => {
-    const label = STATUS_LABEL[status];
+    const label = pdfText(t(STATUS_LABEL[status]));
     font(8, 'bold');
     const w = doc.getTextWidth(label) + 4;
     doc.setFillColor(...COLOR[status]);
@@ -76,7 +77,7 @@ export async function downloadReportPdf(report: Report): Promise<void> {
 
   // Habitat.
   color(INK);
-  y += text('Habitat', PAGE.margin, 11, width, 'bold') + 1;
+  y += text(t('Habitat'), PAGE.margin, 11, width, 'bold') + 1;
   for (const [k, v] of report.habitat) {
     color(MUTED);
     text(k, PAGE.margin, 9, 32);
@@ -106,7 +107,7 @@ export async function downloadReportPdf(report: Report): Promise<void> {
     const cols = [PAGE.margin, PAGE.margin + 34, PAGE.margin + 62, PAGE.margin + 84];
     font(7.5, 'bold');
     color(MUTED);
-    ['Indicator', 'Value', 'Status', 'Reading'].forEach((h, i) => doc.text(h, cols[i]!, y + 3));
+    [t('Indicator'), t('Value'), t('Status'), t('Reading')].forEach((h, i) => doc.text(pdfText(h), cols[i]!, y + 3));
     y += 4.5;
     for (const r of c.indicators) {
       font(8.5);
@@ -118,7 +119,7 @@ export async function downloadReportPdf(report: Report): Promise<void> {
       doc.text(pdfText(r.value), cols[1]!, y + 3);
       doc.setTextColor(...COLOR[r.status]);
       font(8.5, 'bold');
-      doc.text(STATUS_LABEL[r.status], cols[2]!, y + 3);
+      doc.text(pdfText(t(STATUS_LABEL[r.status])), cols[2]!, y + 3);
       font(8.5);
       color(INK);
       doc.text(lines, cols[3]!, y + 3);
@@ -129,18 +130,18 @@ export async function downloadReportPdf(report: Report): Promise<void> {
     // Alerts and actions.
     color(INK);
     if (c.alerts.length === 0) {
-      y += text('Alerts: none.', PAGE.margin, 9, width);
+      y += text(t('Alerts: none.'), PAGE.margin, 9, width);
     } else {
-      y += text('Alerts and actions', PAGE.margin, 9, width, 'bold');
+      y += text(t('Alerts and actions'), PAGE.margin, 9, width, 'bold');
       for (const a of c.alerts) {
         ensure(5);
         doc.setFillColor(...COLOR[a.status]);
         doc.circle(PAGE.margin + 1.2, y + 1.9, 0.9, 'F');
-        y += text(`${a.title}${a.done ? ` — ${a.done}` : ' — not marked as done'}`, PAGE.margin + 4, 9, width - 4);
+        y += text(`${a.title} — ${a.done ?? t('not marked as done')}`, PAGE.margin + 4, 9, width - 4);
       }
     }
     y += 1;
-    y += text(`Daily check-in: ${c.checkIn}`, PAGE.margin, 9, width);
+    y += text(`${t('Daily check-in:')} ${c.checkIn}`, PAGE.margin, 9, width);
 
     // Last sols.
     if (c.sols.length > 0) {
@@ -154,8 +155,8 @@ export async function downloadReportPdf(report: Report): Promise<void> {
       font(8);
       color(INK);
       c.sols.forEach((s, i) => {
-        doc.text(`Sleep ${s.sleepHours.toFixed(1)} h`, PAGE.margin + i * colWidth, y + 3);
-        doc.text(`Exercise ${s.exerciseMinutes} min`, PAGE.margin + i * colWidth, y + 6.5);
+        doc.text(pdfText(t('Sleep {n} h', { n: s.sleepHours.toFixed(1) })), PAGE.margin + i * colWidth, y + 3);
+        doc.text(pdfText(t('Exercise {n} min', { n: s.exerciseMinutes })), PAGE.margin + i * colWidth, y + 6.5);
       });
       y += 9;
     }
@@ -165,7 +166,7 @@ export async function downloadReportPdf(report: Report): Promise<void> {
   // Sources.
   ensure(25);
   color(INK);
-  y += text('Data and standards', PAGE.margin, 9, width, 'bold') + 0.5;
+  y += text(t('Data and standards'), PAGE.margin, 9, width, 'bold') + 0.5;
   color(MUTED);
   for (const s of report.sources) {
     ensure(5);
@@ -178,8 +179,8 @@ export async function downloadReportPdf(report: Report): Promise<void> {
     doc.setPage(p);
     font(7.5);
     color(MUTED);
-    doc.text(pdfText('Pulsar · Prototype – not for medical use'), PAGE.margin, PAGE.height - 8);
-    doc.text(`Page ${p} of ${pages}`, right, PAGE.height - 8, { align: 'right' });
+    doc.text(pdfText(`Pulsar · ${t('Prototype – not for medical use')}`), PAGE.margin, PAGE.height - 8);
+    doc.text(pdfText(t('Page {p} of {n}', { p, n: pages })), right, PAGE.height - 8, { align: 'right' });
   }
 
   doc.save(report.fileName);

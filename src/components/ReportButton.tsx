@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import type { Report } from '../logic/report';
+import { t } from '../i18n/i18n';
 
 interface Props {
   /** Builds the report when the button is pressed. */
@@ -32,7 +33,7 @@ export function ReportButton({ make, label, className }: Props) {
         'rounded-md border border-slate-600 px-3 py-1 text-sm text-slate-100 hover:border-slate-400 hover:bg-slate-800 disabled:opacity-50'
       }
     >
-      {state === 'busy' ? 'Preparing…' : state === 'error' ? 'Try again' : label}
+      {state === 'busy' ? t('Preparing…') : state === 'error' ? t('Try again') : label}
     </button>
   );
 }

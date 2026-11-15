@@ -2,6 +2,7 @@ import { ACTIVITY_LABEL, STATUS_LABEL } from '../config/indicators';
 import type { Assessment } from '../logic/assess';
 import { STATUS_STYLE } from './status';
 import { doneClock } from './WhatNow';
+import { t } from '../i18n/i18n';
 
 const LEFT_BORDER = { ok: 'border-l-ok', watch: 'border-l-watch', act: 'border-l-act' } as const;
 
@@ -44,39 +45,39 @@ export function CrewCard({ assessment: a, done, isYou, href, onOpen }: Props) {
         <div className="min-w-0 flex-1">
           <h3 className="truncate font-semibold text-slate-100 group-hover:text-white">
             {a.crew.name}
-            {isYou && <span className="ml-2 rounded bg-sky-500/20 px-1.5 py-0.5 text-[11px] font-medium text-sky-300">You</span>}
+            {isYou && <span className="ml-2 rounded bg-sky-500/20 px-1.5 py-0.5 text-[11px] font-medium text-sky-300">{t('You')}</span>}
           </h3>
           <p className="truncate text-sm text-slate-400">
-            {a.crew.role} · {ACTIVITY_LABEL[r.activity]}
+            {t(a.crew.role)} · {t(ACTIVITY_LABEL[r.activity])}
           </p>
         </div>
         <span className={`flex shrink-0 items-center gap-1.5 rounded-full px-2 py-0.5 text-xs font-medium ${style.chip}`}>
           <span className={`h-2 w-2 rounded-full ${style.dot} ${a.overall.status === 'act' ? 'animate-pulse' : ''}`} aria-hidden />
-          {STATUS_LABEL[a.overall.status]}
+          {t(STATUS_LABEL[a.overall.status])}
         </span>
       </div>
       <p className="text-sm text-slate-200">
         {first ? (
           <>
-            {first.action.title}
+            {t(first.action.title)}
             {done[first.rule] !== undefined && (
-              <span className="text-ok"> · ✓ done {doneClock(done[first.rule]!)}</span>
+              <span className="text-ok"> · ✓ {t('done {clock}', { clock: doneClock(done[first.rule]!) })}</span>
             )}
-            {more.length > 0 && <span className="text-slate-400"> · +{more.length} more</span>}
+            {more.length > 0 && <span className="text-slate-400"> · {t('+{n} more', { n: more.length })}</span>}
           </>
         ) : (
-          <span className="text-slate-300">All {a.indicators.length} indicators in range.</span>
+          <span className="text-slate-300">{t('All {n} indicators in range.', { n: a.indicators.length })}</span>
         )}
       </p>
       <p className="flex flex-wrap gap-x-3 text-xs tabular-nums text-slate-400">
-        <span>HR {r.heartRate} bpm</span>
+        <span>{t('HR {n} bpm', { n: r.heartRate })}</span>
         <span>SpO₂ {r.spo2}%</span>
         <span>
-          BP {r.systolic}/{r.diastolic}
+          {t('BP {sys}/{dia}', { sys: r.systolic, dia: r.diastolic })}
         </span>
-        {sleep && !Number.isNaN(sleep.value) && <span>Slept {sleep.value.toFixed(1)} h</span>}
+        {sleep && !Number.isNaN(sleep.value) && <span>{t('Slept {n} h', { n: sleep.value.toFixed(1) })}</span>}
         <span className={a.todaysCheckIn ? 'text-slate-400' : 'text-slate-500'}>
-          {a.todaysCheckIn ? 'Check-in done' : 'Check-in pending'}
+          {a.todaysCheckIn ? t('Check-in done') : t('Check-in pending')}
         </span>
       </p>
     </>

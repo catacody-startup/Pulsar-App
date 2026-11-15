@@ -12,6 +12,7 @@ import { SpaceWeatherPanel } from './SpaceWeatherPanel';
 import { StatusHero } from './StatusHero';
 import { Trends } from './Trends';
 import { WhatNow } from './WhatNow';
+import { t } from '../i18n/i18n';
 
 interface Props {
   assessment: Assessment;
@@ -51,20 +52,19 @@ export function MemberPage(props: Props) {
           onClick={(e) => (e.preventDefault(), onBack())}
           className="mr-2 text-sky-400 hover:text-sky-300"
         >
-          ← Crew
+          ← {t('Crew')}
         </a>
-        <span className="font-medium text-slate-200">{a.crew.name}</span> · {a.crew.role} · {ACTIVITY_LABEL[a.reading.activity]}
+        <span className="font-medium text-slate-200">{a.crew.name}</span> · {t(a.crew.role)} · {t(ACTIVITY_LABEL[a.reading.activity])}
       </p>
       <StatusHero overall={a.overall} total={a.indicators.length} />
       {!mine && (
         <p className="rounded-lg border border-dashed border-slate-700 px-4 py-2 text-sm text-slate-300">
-          {signedInAs ? `This is ${first}’s panel: only ${first} can change it.` : `Viewing ${first}’s panel. `}
+          {signedInAs ? t('This is {name}’s panel: only {name} can change it.', { name: first }) : t('Viewing {name}’s panel.', { name: first })}{' '}
           {!signedInAs && (
             <button type="button" onClick={onSignIn} className="text-sky-400 hover:text-sky-300">
-              Sign in with your face
+              {t('Sign in with your face to answer your check-in and mark your actions as done.')}
             </button>
           )}
-          {!signedInAs && ' to answer your check-in and mark your actions as done.'}
         </p>
       )}
       <WhatNow
@@ -79,7 +79,7 @@ export function MemberPage(props: Props) {
       />
       <section aria-labelledby="indicators">
         <h2 id="indicators" className="mb-2 text-sm text-slate-400">
-          Indicators · vitals update every minute (simulated)
+          {t('Indicators · vitals update every minute (simulated)')}
         </h2>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {a.indicators.map((r) => (

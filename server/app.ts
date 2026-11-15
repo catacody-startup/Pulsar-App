@@ -39,12 +39,14 @@ export interface AppOptions {
   face?: typeof FACE;
 }
 
+/** An error for the device: `key` is an English template ({name}) the app can translate with `vars`. */
 class HttpError extends Error {
   constructor(
     readonly status: number,
-    message: string,
+    readonly key: string,
+    readonly vars?: Record<string, string>,
   ) {
-    super(message);
+    super(key.replace(/\{(\w+)\}/g, (m: string, k: string) => vars?.[k] ?? m));
   }
 }
 
@@ -178,7 +180,7 @@ export function createApp(options: AppOptions) {
     const t0 = now();
     const today = Math.floor(localSolDate(t0, eastLongitudeDeg));
     if (localSol > today || localSol < today - config.acceptSolsBack) {
-      throw new HttpError(422, `Check-ins are for sol ${today - config.acceptSolsBack} to ${today}`);
+      throw new HttpError(422, 'Check-ins are for sol {from} to {to}', { from: String(today - config.acceptSolsBack), to: String(today) });
     }
     const checkIn = { ...answers, localSol, t: believableTime(body, t0), simulated: false };
     await commit({ kind: 'checkIn', crewId, checkIn });
@@ -200,7 +202,7 @@ export function createApp(options: AppOptions) {
 
   async function identify(req: IncomingMessage, res: ServerResponse) {
     const descriptor = parseDescriptor(field(await readJson(req, FACE_BODY_BYTES), 'descriptor'), face.descriptorLength);
-    if (!descriptor) throw new HttpError(400, `A descriptor is ${face.descriptorLength} numbers`);
+    if (!descriptor) throw new HttpError(400, 'A descriptor is {n} numbers', { n: String(face.descriptorLength) });
     const current = prune(state, now(), face);
     const match = bestMatch(current.faces, descriptor, face);
     if (!match) throw new HttpError(404, 'Face not recognized');
@@ -218,7 +220,7 @@ export function createApp(options: AppOptions) {
     const raw = field(body, 'descriptors');
     const descriptors = Array.isArray(raw) ? raw.map((d) => parseDescriptor(d, face.descriptorLength)) : [];
     if (descriptors.length === 0 || descriptors.length > 5 || descriptors.some((d) => d === null)) {
-      throw new HttpError(400, `Send 1 to 5 descriptors of ${face.descriptorLength} numbers`);
+      throw new HttpError(400, 'Send 1 to 5 descriptors of {n} numbers', { n: String(face.descriptorLength) });
     }
     const faces = descriptors as number[][];
     const current = prune(state, now(), face);
@@ -230,13 +232,13 @@ export function createApp(options: AppOptions) {
       } catch {
         mine = false;
       }
-      if (!mine) throw new HttpError(409, `${crewNames[crewId] ?? crewId} already has a face enrolled`);
+      if (!mine) throw new HttpError(409, '{name} already has a face enrolled', { name: crewNames[crewId] ?? crewId });
     }
     // One face, one crew member.
     for (const d of faces) {
       const other = bestMatch(current.faces, d, face);
       if (other && other.crewId !== crewId) {
-        throw new HttpError(409, `This face is already enrolled as ${crewNames[other.crewId] ?? other.crewId}`);
+        throw new HttpError(409, 'This face is already enrolled as {name}', { name: crewNames[other.crewId] ?? other.crewId });
       }
     }
     const t = now();
@@ -304,7 +306,7 @@ export function createApp(options: AppOptions) {
       throw new HttpError(404, 'Not found');
     } catch (e) {
       if (res.headersSent) return res.end();
-      if (e instanceof HttpError) return send(res, e.status, { error: e.message });
+      if (e instanceof HttpError) return send(res, e.status, { error: e.message, key: e.key, ...(e.vars ? { vars: e.vars } : {}) });
       console.error(e);
       return send(res, 500, { error: 'Habitat server error' });
     }

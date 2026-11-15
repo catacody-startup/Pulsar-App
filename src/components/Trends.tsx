@@ -9,6 +9,7 @@ import { bucketMeans, marsClockTicks, solTicks, stats, type Stats } from '../log
 import type { VitalsReading } from '../logic/types';
 import { LineChart, type LineSeries } from './charts/LineChart';
 import { SolBarChart } from './charts/SolBarChart';
+import { t } from '../i18n/i18n';
 
 interface Props {
   sim: Simulator;
@@ -36,7 +37,14 @@ function Card({ title, note, summary, children }: { title: string; note: string;
 
 const fmt = (digits: number) => (v: number) => v.toFixed(digits);
 const summaryOf = (s: Stats | null, unit: string, digits = 0) =>
-  s ? `Min ${s.min.toFixed(digits)} · avg ${s.mean.toFixed(digits)} · max ${s.max.toFixed(digits)} ${unit}` : undefined;
+  s
+    ? t('Min {min} · avg {avg} · max {max} {unit}', {
+        min: s.min.toFixed(digits),
+        avg: s.mean.toFixed(digits),
+        max: s.max.toFixed(digits),
+        unit: t(unit),
+      })
+    : undefined;
 
 /** Trends of 24 h or 7 days, each with its normal range marked. */
 export function Trends({ sim, now }: Props) {
@@ -59,7 +67,8 @@ export function Trends({ sim, now }: Props) {
   const bp = THRESHOLDS.bloodPressure;
   const rad = THRESHOLDS.radiation;
   const elevated = rad.baselineDoseRate * rad.elevatedFactor;
-  const averaged = `${range.bucketMinutes}-min averages`;
+  const averaged = t('{n}-min averages', { n: range.bucketMinutes });
+  const over = t('over the last {range}', { range: t(range.label) });
 
   const nights = sols.filter((s) => s.nightComplete);
   const days = sols;
@@ -68,9 +77,9 @@ export function Trends({ sim, now }: Props) {
     <section aria-labelledby="trends" className="space-y-3">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h2 id="trends" className="text-xs font-medium uppercase tracking-widest text-slate-400">
-          Trends
+          {t('Trends')}
         </h2>
-        <div role="radiogroup" aria-label="Time range" className="flex rounded-md border border-slate-700 p-0.5 text-sm">
+        <div role="radiogroup" aria-label={t('Time range')} className="flex rounded-md border border-slate-700 p-0.5 text-sm">
           {TREND_RANGES.map((r) => (
             <button
               key={r.id}
@@ -79,16 +88,20 @@ export function Trends({ sim, now }: Props) {
               onClick={() => setRangeId(r.id)}
               className={`rounded px-3 py-1 ${r.id === rangeId ? 'bg-slate-700 text-slate-50' : 'text-slate-400 hover:text-slate-200'}`}
             >
-              {r.label}
+              {t(r.label)}
             </button>
           ))}
         </div>
       </div>
       <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
-        <Card title={`${INDICATORS.heartRate.label} (bpm)`} note={`Shaded: normal ${hr.normal.min}–${hr.normal.max} · ${averaged}`} summary={summaryOf(pickStats((r) => r.heartRate), 'bpm')}>
+        <Card
+          title={`${t(INDICATORS.heartRate.label)} (${t('bpm')})`}
+          note={`${t('Shaded: normal {min}–{max}', { min: hr.normal.min, max: hr.normal.max })} · ${averaged}`}
+          summary={summaryOf(pickStats((r) => r.heartRate), 'bpm')}
+        >
           <LineChart
-            ariaLabel={`Heart rate over the last ${range.label}`}
-            series={[line('hr', 'Heart rate', CHART_COLORS.series1, (r) => r.heartRate)]}
+            ariaLabel={`${t('Heart rate')} ${over}`}
+            series={[line('hr', t('Heart rate'), CHART_COLORS.series1, (r) => r.heartRate)]}
             band={{ from: hr.normal.min, to: hr.normal.max }}
             xRange={xRange}
             xTicks={xTicks}
@@ -96,12 +109,16 @@ export function Trends({ sim, now }: Props) {
             formatTime={formatTime}
           />
         </Card>
-        <Card title={`${INDICATORS.spo2.label} (%)`} note={`Shaded: normal ≥ ${THRESHOLDS.spo2.hypoxicAtOrBelow + 1}% · ${averaged}`} summary={summaryOf(pickStats((r) => r.spo2), '%')}>
+        <Card
+          title={`${t(INDICATORS.spo2.label)} (%)`}
+          note={`${t('Shaded: normal ≥ {n}%', { n: THRESHOLDS.spo2.hypoxicAtOrBelow + 1 })} · ${averaged}`}
+          summary={summaryOf(pickStats((r) => r.spo2), '%')}
+        >
           <LineChart
-            ariaLabel={`SpO₂ over the last ${range.label}`}
+            ariaLabel={`SpO₂ ${over}`}
             series={[line('spo2', 'SpO₂', CHART_COLORS.series1, (r) => r.spo2)]}
             band={{ from: THRESHOLDS.spo2.hypoxicAtOrBelow + 1, to: 100 }}
-            refLines={[{ value: THRESHOLDS.spo2.emergencyBelow, label: `Emergency < ${THRESHOLDS.spo2.emergencyBelow}%` }]}
+            refLines={[{ value: THRESHOLDS.spo2.emergencyBelow, label: t('Emergency < {n}%', { n: THRESHOLDS.spo2.emergencyBelow }) }]}
             xRange={xRange}
             xTicks={xTicks}
             formatValue={fmt(0)}
@@ -109,31 +126,38 @@ export function Trends({ sim, now }: Props) {
           />
         </Card>
         <Card
-          title={`${INDICATORS.bloodPressure.label} (mmHg)`}
+          title={`${t(INDICATORS.bloodPressure.label)} (mmHg)`}
           note={averaged}
           summary={(() => {
             const s = pickStats((r) => r.systolic);
             const d = pickStats((r) => r.diastolic);
-            return s && d ? `Avg ${s.mean.toFixed(0)}/${d.mean.toFixed(0)} · max ${s.max}/${d.max} mmHg` : undefined;
+            return s && d
+              ? t('Avg {sys}/{dia} · max {maxSys}/{maxDia} mmHg', {
+                  sys: s.mean.toFixed(0),
+                  dia: d.mean.toFixed(0),
+                  maxSys: s.max,
+                  maxDia: d.max,
+                })
+              : undefined;
           })()}
         >
           <div className="mb-1 flex gap-3 px-1 text-[11px] text-slate-400">
             <span className="flex items-center gap-1">
-              <span className="inline-block h-0.5 w-3 rounded" style={{ background: CHART_COLORS.series1 }} /> Systolic
+              <span className="inline-block h-0.5 w-3 rounded" style={{ background: CHART_COLORS.series1 }} /> {t('Systolic')}
             </span>
             <span className="flex items-center gap-1">
-              <span className="inline-block h-0.5 w-3 rounded" style={{ background: CHART_COLORS.series2 }} /> Diastolic
+              <span className="inline-block h-0.5 w-3 rounded" style={{ background: CHART_COLORS.series2 }} /> {t('Diastolic')}
             </span>
           </div>
           <LineChart
-            ariaLabel={`Blood pressure over the last ${range.label}`}
+            ariaLabel={`${t('Blood pressure')} ${over}`}
             series={[
-              line('sys', 'Sys', CHART_COLORS.series1, (r) => r.systolic),
-              line('dia', 'Dia', CHART_COLORS.series2, (r) => r.diastolic),
+              line('sys', t('Sys'), CHART_COLORS.series1, (r) => r.systolic),
+              line('dia', t('Dia'), CHART_COLORS.series2, (r) => r.diastolic),
             ]}
             refLines={[
-              { value: bp.high.systolic, label: `Systolic ${bp.high.systolic}` },
-              { value: bp.high.diastolic, label: `Diastolic ${bp.high.diastolic}` },
+              { value: bp.high.systolic, label: `${t('Systolic')} ${bp.high.systolic}` },
+              { value: bp.high.diastolic, label: `${t('Diastolic')} ${bp.high.diastolic}` },
             ]}
             xRange={xRange}
             xTicks={xTicks}
@@ -141,12 +165,16 @@ export function Trends({ sim, now }: Props) {
             formatTime={formatTime}
           />
         </Card>
-        <Card title={`${INDICATORS.radiation.label} (µGy/h)`} note={`Shaded: normal < ${elevated.toFixed(1)} · ${averaged}`} summary={summaryOf(pickStats((r) => r.doseRate), 'µGy/h', 1)}>
+        <Card
+          title={`${t(INDICATORS.radiation.label)} (µGy/h)`}
+          note={`${t('Shaded: normal < {n}', { n: elevated.toFixed(1) })} · ${averaged}`}
+          summary={summaryOf(pickStats((r) => r.doseRate), 'µGy/h', 1)}
+        >
           <LineChart
-            ariaLabel={`Radiation dose rate over the last ${range.label}`}
-            series={[line('dose', 'Dose rate', CHART_COLORS.series1, (r) => r.doseRate)]}
+            ariaLabel={`${t('Radiation dose rate')} ${over}`}
+            series={[line('dose', t('Dose rate'), CHART_COLORS.series1, (r) => r.doseRate)]}
             band={{ from: 0, to: elevated }}
-            refLines={[{ value: rad.baselineDoseRate * rad.stormFactor, label: `Shelter ≥ ${(rad.baselineDoseRate * rad.stormFactor).toFixed(1)}` }]}
+            refLines={[{ value: rad.baselineDoseRate * rad.stormFactor, label: t('Shelter ≥ {n}', { n: (rad.baselineDoseRate * rad.stormFactor).toFixed(1) }) }]}
             xRange={xRange}
             xTicks={xTicks}
             formatValue={fmt(0)}
@@ -154,23 +182,26 @@ export function Trends({ sim, now }: Props) {
             fromZero
           />
         </Card>
-        <Card title="Sleep per night (h)" note={`Line: ${THRESHOLDS.sleep.recommendedHours} h recommended`}>
+        <Card title={t('Sleep per night (h)')} note={t('Line: {n} h recommended', { n: THRESHOLDS.sleep.recommendedHours })}>
           <SolBarChart
-            ariaLabel="Hours of sleep per night over the last sols"
+            ariaLabel={t('Hours of sleep per night over the last sols')}
             bars={nights.map((s) => ({ key: String(s.localSol), label: `Sol ${s.missionSol}`, value: s.sleepHours }))}
             refLines={[{ value: THRESHOLDS.sleep.recommendedHours, label: `${THRESHOLDS.sleep.recommendedHours} h` }]}
             formatValue={fmt(1)}
           />
         </Card>
         <Card
-          title="Exercise per sol (min)"
-          note={`Lines: prescribed ${THRESHOLDS.exercise.prescribedMinutes}, minimum ${THRESHOLDS.exercise.minimumMinutes} · today in progress`}
+          title={t('Exercise per sol (min)')}
+          note={t('Lines: prescribed {p}, minimum {m} · today in progress', {
+            p: THRESHOLDS.exercise.prescribedMinutes,
+            m: THRESHOLDS.exercise.minimumMinutes,
+          })}
         >
           <SolBarChart
-            ariaLabel="Minutes of exercise per sol over the last sols"
+            ariaLabel={t('Minutes of exercise per sol over the last sols')}
             bars={days.map((s) => ({
               key: String(s.localSol),
-              label: s.complete ? `Sol ${s.missionSol}` : 'Today',
+              label: s.complete ? `Sol ${s.missionSol}` : t('Today'),
               value: s.exerciseMinutes,
               partial: !s.complete,
             }))}

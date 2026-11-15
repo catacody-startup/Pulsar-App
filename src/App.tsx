@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { SPACE_WEATHER_HEADS_UP } from './config/actions';
 import { CREW, crewMember } from './config/crew';
 import { MISSION } from './config/mission';
@@ -26,6 +26,7 @@ import { buildReport } from './logic/report';
 import { parseRoute, routePath, type Route } from './logic/route';
 import { resolveScenario } from './logic/scenarios';
 import { createSimulator } from './logic/simulator';
+import { getLocale, setLocale, t, type Locale } from './i18n/i18n';
 
 const CREW_IDS = CREW.map((c) => c.id);
 /** Calendar and daily plans only: they don't depend on events. */
@@ -38,6 +39,11 @@ const NAV: [Route, string][] = [
 ];
 
 export function App() {
+  const [locale, setLocaleState] = useState<Locale>(getLocale);
+  const changeLocale = (next: Locale) => {
+    setLocale(next);
+    setLocaleState(next);
+  };
   const now = useMinuteClock();
   const [path, navigate] = usePath();
   const route = parseRoute(path, CREW_IDS);
@@ -120,7 +126,7 @@ export function App() {
             Pulsar
           </a>
         </h1>
-        <nav className="ml-4 flex gap-3 text-sm" aria-label="Pages">
+        <nav className="ml-4 flex gap-3 text-sm" aria-label={t('Pages')}>
           {NAV.map(([r, label]) => (
             <a
               key={label}
@@ -129,7 +135,7 @@ export function App() {
               onClick={(e) => (e.preventDefault(), go(r))}
               className={navPage === r.page ? 'text-slate-100' : 'text-slate-400 hover:text-slate-200'}
             >
-              {label}
+              {t(label)}
             </a>
           ))}
         </nav>
@@ -138,7 +144,7 @@ export function App() {
             href={routePath({ page: 'signIn' })}
             onClick={(e) => (e.preventDefault(), go({ page: 'signIn' }))}
             className="ml-2 flex items-center gap-1.5 rounded-full border border-slate-700 py-0.5 pl-0.5 pr-2.5 text-sm text-slate-200 hover:border-slate-500"
-            title="Signed in on this device"
+            title={t('Signed in on this device')}
           >
             <span className="flex h-6 w-6 items-center justify-center rounded-full bg-sky-500/25 text-[11px] font-semibold text-sky-200" aria-hidden>
               {me.name.split(' ').map((w) => w[0]).join('').slice(0, 2)}
@@ -152,12 +158,21 @@ export function App() {
             onClick={(e) => (e.preventDefault(), go({ page: 'signIn' }))}
             className="ml-2 rounded-full border border-sky-700 px-3 py-0.5 text-sm text-sky-300 hover:border-sky-500 hover:text-sky-200"
           >
-            Sign in
+            {t('Sign in')}
           </a>
         )}
+        <button
+          type="button"
+          onClick={() => changeLocale(locale === 'en' ? 'es' : 'en')}
+          className="ml-1 rounded-full px-2 py-0.5 text-xs text-slate-400 hover:text-slate-200"
+          lang={locale === 'en' ? 'es' : 'en'}
+          title={locale === 'en' ? 'Ver en español' : 'View in English'}
+        >
+          {locale === 'en' ? 'ES' : 'EN'}
+        </button>
         <div className="ml-auto flex flex-col items-end">
           <p className="text-right text-sm tabular-nums text-slate-300">
-            Sol {sol} · {clock} <span className="text-slate-500">LMST · {MISSION.site.name}</span>
+            Sol {sol} · {clock} <span className="text-slate-500">LMST · {t(MISSION.site.name)}</span>
           </p>
           <HabitatStatus connection={habitat.connection} waiting={habitat.waiting} />
         </div>
@@ -174,7 +189,7 @@ export function App() {
             reportButton={(r) => (
               <ReportButton
                 make={() => reportAt(r.sentAt)}
-                label="PDF"
+                label={t('PDF')}
                 className="rounded border border-slate-600 px-2 py-0.5 text-xs text-slate-200 hover:bg-slate-800 disabled:opacity-50"
               />
             )}
@@ -200,7 +215,7 @@ export function App() {
             signedInAs={session?.crewId ?? null}
             delay={delay}
             now={now}
-            reportButton={<ReportButton make={() => reportAt(Date.now())} label="Health report for mission control (PDF)" />}
+            reportButton={<ReportButton make={() => reportAt(Date.now())} label={t('Health report for mission control (PDF)')} />}
             hrefOf={(crewId) => routePath({ page: 'member', crewId })}
             onOpen={(crewId) => go({ page: 'member', crewId })}
           />
@@ -230,7 +245,7 @@ export function App() {
         )}
       </main>
       <footer className="border-t border-slate-800 px-4 py-2 text-xs text-slate-400">
-        Prototype – not for medical use.
+        {t('Prototype – not for medical use.')}
       </footer>
     </div>
   );

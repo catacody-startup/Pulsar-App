@@ -11,6 +11,7 @@ import { EarthLink } from './EarthLink';
 import { IndicatorCard } from './IndicatorCard';
 import { SpaceWeatherPanel } from './SpaceWeatherPanel';
 import { HeadsUp } from './WhatNow';
+import { t } from '../i18n/i18n';
 
 interface Props {
   assessments: Assessment[];
@@ -42,7 +43,7 @@ export function CrewPage(props: Props) {
       <section aria-labelledby="crew" className="space-y-2">
         <div className="flex flex-wrap items-baseline justify-between gap-2">
           <h2 id="crew" className="text-xs font-medium uppercase tracking-widest text-slate-400">
-            Crew
+            {t('Crew')}
           </h2>
           <p className="text-sm text-slate-300" role="status">
             {counts.map(([s, n]) => CREW_SUMMARY[s](n)).join(' · ')}
@@ -61,7 +62,7 @@ export function CrewPage(props: Props) {
           ))}
         </div>
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <p className="text-[11px] text-slate-500">Vital signs are simulated; open a crew member to see their indicators, trends and check-in.</p>
+          <p className="text-[11px] text-slate-500">{t('Vital signs are simulated; open a crew member to see their indicators, trends and check-in.')}</p>
           {reportButton}
         </div>
       </section>
@@ -69,7 +70,7 @@ export function CrewPage(props: Props) {
       <CrewFeed items={feed} />
       <section aria-labelledby="habitat" className="space-y-2">
         <h2 id="habitat" className="text-xs font-medium uppercase tracking-widest text-slate-400">
-          Habitat · shared by the crew
+          {t('Habitat · shared by the crew')}
         </h2>
         <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
           {radiation && <IndicatorCard result={radiation} age={0} dose={dose} />}

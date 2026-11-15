@@ -1,5 +1,6 @@
 import type { SourceId } from './sources';
 import { RULES, THRESHOLDS, type RuleId } from './thresholds';
+import { t } from '../i18n/i18n';
 
 /** Rules that raise an alert: every rule whose status is not "ok". */
 export type AlertRuleId = {
@@ -188,7 +189,7 @@ export const ACTIONS: Record<AlertRuleId, Action> = {
 export const SPACE_WEATHER_HEADS_UP = {
   /** How far ahead a forecast arrival is worth a heads-up, hours. */
   withinHours: 72,
-  title: (hours: number) => `CME forecast to reach Mars in about ${hours} h`,
+  title: (hours: number) => t('CME forecast to reach Mars in about {hours} h', { hours }),
   steps: [
     'Plan EVAs so they end well before the arrival.',
     'Check that the storm shelter is stocked and clear.',
@@ -205,7 +206,7 @@ export const ACTION_DONE = {
   validHours: 12,
   button: 'Mark as done',
   undo: 'Undo',
-  done: (clock: string) => `Done at ${clock} LMST`,
+  done: (clock: string) => t('Done at {clock} LMST', { clock }),
 };
 
 /** Shown under "What do I do now?" when there are no alerts. */

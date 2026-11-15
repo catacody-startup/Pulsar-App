@@ -1,4 +1,5 @@
 import type { Connection } from '../hooks/useHabitat';
+import { t } from '../i18n/i18n';
 
 interface Props {
   connection: Connection;
@@ -12,12 +13,12 @@ const DOT: Record<Connection, string> = { live: 'bg-ok', connecting: 'bg-slate-5
 export function HabitatStatus({ connection, waiting }: Props) {
   const text =
     connection === 'live'
-      ? 'Habitat server · live'
+      ? t('Habitat server · live')
       : connection === 'connecting'
-        ? 'Habitat server · connecting…'
+        ? t('Habitat server · connecting…')
         : waiting > 0
-          ? `Offline · ${waiting} change${waiting === 1 ? '' : 's'} waiting on this device`
-          : 'Offline · showing the last data received';
+          ? t(waiting === 1 ? 'Offline · {n} change waiting on this device' : 'Offline · {n} changes waiting on this device', { n: waiting })
+          : t('Offline · showing the last data received');
   return (
     <p className="flex items-center gap-1.5 text-[11px] text-slate-400" role="status">
       <span className={`h-1.5 w-1.5 rounded-full ${DOT[connection]}`} aria-hidden />

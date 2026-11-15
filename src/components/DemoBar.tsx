@@ -1,4 +1,5 @@
 import { SCENARIOS, type Scenario } from '../config/scenarios';
+import { t } from '../i18n/i18n';
 
 interface Props {
   scenario: Scenario;
@@ -11,7 +12,7 @@ export function DemoBar({ scenario, onChoose }: Props) {
     <div className="border-b border-dashed border-slate-700 bg-slate-900/50">
       <div className="mx-auto flex w-full max-w-5xl flex-wrap items-center gap-x-3 gap-y-1 px-4 py-2 text-sm">
         <label htmlFor="scenario" className="text-xs font-medium uppercase tracking-wide text-slate-400">
-          Demo · simulate
+          {t('Demo · simulate')}
         </label>
         <select
           id="scenario"
@@ -21,11 +22,11 @@ export function DemoBar({ scenario, onChoose }: Props) {
         >
           {SCENARIOS.map((s) => (
             <option key={s.id} value={s.id}>
-              {s.label}
+              {t(s.label)}
             </option>
           ))}
         </select>
-        <span className="text-slate-400">{scenario.description}</span>
+        <span className="text-slate-400">{t(scenario.description)}</span>
       </div>
     </div>
   );

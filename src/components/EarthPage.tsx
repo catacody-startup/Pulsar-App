@@ -8,6 +8,7 @@ import { formatDuration, type SignalDelay } from '../logic/planets';
 import { reportSchedule, type Transmission } from '../logic/transmissions';
 import type { Status } from '../logic/types';
 import { CrewCard } from './CrewCard';
+import { dateLocale, t } from '../i18n/i18n';
 
 interface Props {
   now: number;
@@ -24,7 +25,7 @@ const LON = MISSION.site.eastLongitudeDeg;
 const ORDER: Status[] = ['act', 'watch', 'ok'];
 
 export const formatUtc = (ms: number) =>
-  `${new Date(ms).toLocaleString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', timeZone: 'UTC' })} UTC`;
+  `${new Date(ms).toLocaleString(dateLocale(), { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', timeZone: 'UTC' })} UTC`;
 
 const marsTime = (ms: number) =>
   `Sol ${missionSol(ms, MISSION.landingMs, LON)} · ${formatMarsClock(localMeanSolarHours(ms, LON))} LMST`;
@@ -54,18 +55,23 @@ export function EarthPage({ now, delay, crewAt, doneAt, reportButton }: Props) {
       <section aria-labelledby="earth" className="space-y-3">
         <div className="flex flex-wrap items-baseline justify-between gap-2">
           <h2 id="earth" className="text-xl font-semibold">
-            Mission control · Earth
+            {t('Mission control · Earth')}
           </h2>
           <p className="text-sm tabular-nums text-slate-300">{formatUtc(now)}</p>
         </div>
         <div className="rounded-lg border border-l-4 border-sky-900/70 border-l-sky-500 bg-slate-900/70 px-4 py-3 text-sm text-slate-200">
           <p>
-            You see the habitat as it was <strong>{formatDuration(delay.oneWaySeconds)} ago</strong> ({marsTime(seenAt)}):
-            that is how long its signal takes to cross {Math.round(delay.distanceMillionKm)} million km today.
+            {t('You see the habitat as it was {ago} ago ({when}): that is how long its signal takes to cross {km} million km today.', {
+              ago: formatDuration(delay.oneWaySeconds),
+              when: marsTime(seenAt),
+              km: Math.round(delay.distanceMillionKm),
+            })}
           </p>
           <p className="mt-1 text-slate-400">
-            A message sent now reaches the crew at {formatUtc(now + oneWayMs)}; their answer is back at{' '}
-            {formatUtc(now + 2 * oneWayMs)} at the earliest.
+            {t('A message sent now reaches the crew at {arrives}; their answer is back at {back} at the earliest.', {
+              arrives: formatUtc(now + oneWayMs),
+              back: formatUtc(now + 2 * oneWayMs),
+            })}
           </p>
         </div>
       </section>
@@ -73,7 +79,7 @@ export function EarthPage({ now, delay, crewAt, doneAt, reportButton }: Props) {
       <section aria-labelledby="earth-crew" className="space-y-2">
         <div className="flex flex-wrap items-baseline justify-between gap-2">
           <h2 id="earth-crew" className="text-xs font-medium uppercase tracking-widest text-slate-400">
-            Crew · as received
+            {t('Crew · as received')}
           </h2>
           <p className="text-sm text-slate-300">{summary(crew)}</p>
         </div>
@@ -86,29 +92,35 @@ export function EarthPage({ now, delay, crewAt, doneAt, reportButton }: Props) {
 
       <section aria-labelledby="reports" className="space-y-2">
         <h2 id="reports" className="text-xs font-medium uppercase tracking-widest text-slate-400">
-          Health reports from the habitat · every {MISSION_CONTROL.reportEveryMarsHours} Mars hours
+          {t('Health reports from the habitat · every {n} Mars hours', { n: MISSION_CONTROL.reportEveryMarsHours })}
         </h2>
         <ul className="space-y-1 text-sm text-slate-300">
           {schedule.inTransit && (
             <li>
               <span className="mr-2 inline-block h-2 w-2 animate-pulse rounded-full bg-sky-400" aria-hidden />
-              Report of {marsTime(schedule.inTransit.sentAt)} is on its way: arrives at {formatUtc(schedule.inTransit.arrivesAt)}{' '}
-              (in {inMinutes(schedule.inTransit.arrivesAt - now)}).
+              {t('Report of {when} is on its way: arrives at {arrives} (in {left}).', {
+                when: marsTime(schedule.inTransit.sentAt),
+                arrives: formatUtc(schedule.inTransit.arrivesAt),
+                left: inMinutes(schedule.inTransit.arrivesAt - now),
+              })}
             </li>
           )}
           <li className="text-slate-400">
-            Next report leaves the habitat at {marsTime(schedule.next.sentAt)} (in {inMinutes(schedule.next.sentAt - now)}).
+            {t('Next report leaves the habitat at {when} (in {left}).', {
+              when: marsTime(schedule.next.sentAt),
+              left: inMinutes(schedule.next.sentAt - now),
+            })}
           </li>
         </ul>
         <div className="overflow-x-auto rounded-lg border border-slate-800">
           <table className="w-full min-w-[34rem] text-left text-sm">
             <thead className="bg-slate-900 text-xs text-slate-400">
               <tr>
-                <th className="px-3 py-2 font-medium">Report</th>
-                <th className="px-3 py-2 font-medium">Sent</th>
-                <th className="px-3 py-2 font-medium">Received</th>
-                <th className="px-3 py-2 font-medium">Crew</th>
-                {reportButton && <th className="px-3 py-2 font-medium" aria-label="Download" />}
+                <th className="px-3 py-2 font-medium">{t('Report')}</th>
+                <th className="px-3 py-2 font-medium">{t('Sent')}</th>
+                <th className="px-3 py-2 font-medium">{t('Received')}</th>
+                <th className="px-3 py-2 font-medium">{t('Crew')}</th>
+                {reportButton && <th className="px-3 py-2 font-medium" aria-label={t('Download')} />}
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-800 bg-slate-900/60">
@@ -125,8 +137,9 @@ export function EarthPage({ now, delay, crewAt, doneAt, reportButton }: Props) {
           </table>
         </div>
         <p className="text-[11px] text-slate-500">
-          Alerts that need action reach mission control with the live data, one signal delay late; reports bring the whole
-          picture of each crew member at a fixed time.
+          {t(
+            'Alerts that need action reach mission control with the live data, one signal delay late; reports bring the whole picture of each crew member at a fixed time.',
+          )}
         </p>
       </section>
     </>

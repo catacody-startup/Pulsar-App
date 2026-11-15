@@ -3,6 +3,7 @@ import { CREW, crewMember } from '../config/crew';
 import { FACE } from '../config/face';
 import { loadFaceApi, readFace, startCamera } from '../face/faceId';
 import type { Session } from '../hooks/useSession';
+import { t } from '../i18n/i18n';
 
 interface Props {
   session: Session | null;
@@ -22,6 +23,14 @@ type Step =
   | { name: 'error'; message: string };
 
 const firstName = (crewId: string) => crewMember(crewId)?.name.split(' ')[0] ?? crewId;
+
+/** The server's message, translated from its template, or a generic one. */
+function serverError(json: Record<string, unknown> | undefined): string {
+  const key = json?.key ?? json?.error;
+  if (typeof key !== 'string') return t('The habitat server did not answer. Try again.');
+  const vars = json?.vars && typeof json.vars === 'object' ? (json.vars as Record<string, string>) : undefined;
+  return t(key, vars);
+}
 const pause = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 async function post(path: string, body: unknown): Promise<{ ok: boolean; status: number; json: Record<string, unknown> }> {
@@ -36,10 +45,10 @@ function asSession(json: Record<string, unknown>): Session {
 function cameraError(e: unknown): string {
   console.error('Face sign-in:', e);
   const name = e instanceof DOMException ? e.name : '';
-  if (name === 'NotAllowedError') return 'The camera is blocked for this page. Allow it in the browser and try again.';
-  if (name === 'NotFoundError' || name === 'OverconstrainedError') return 'No camera found on this device.';
-  if (!window.isSecureContext) return 'The camera only works over HTTPS.';
-  return 'Could not start the camera or the face recognition. Try again, or use the demo sign-in below.';
+  if (name === 'NotAllowedError') return t('The camera is blocked for this page. Allow it in the browser and try again.');
+  if (name === 'NotFoundError' || name === 'OverconstrainedError') return t('No camera found on this device.');
+  if (!window.isSecureContext) return t('The camera only works over HTTPS.');
+  return t('Could not start the camera or the face recognition. Try again, or use the demo sign-in below.');
 }
 
 /** Sign in with the face: recognize an enrolled crew member, or enroll a new face. */
@@ -101,7 +110,7 @@ export function SignInPage({ session, onSignedIn, onSignOut, onForgetFace, onGoT
         refreshEnrolled();
         return setStep({ name: 'unknown' });
       }
-      setStep({ name: 'error', message: String(res.json.error ?? 'The habitat server did not answer. Try again.') });
+      setStep({ name: 'error', message: serverError(res.json) });
     } catch (e) {
       if (!active.current) return;
       setStep({ name: 'error', message: cameraError(e) });
@@ -121,7 +130,7 @@ export function SignInPage({ session, onSignedIn, onSignOut, onForgetFace, onGoT
       if (res.ok) return finish(res.json);
       refreshEnrolled();
       setStep({ name: 'unknown' });
-      setMessage(String(res.json.error ?? 'The habitat server did not answer. Try again.'));
+      setMessage(serverError(res.json));
     } catch (e) {
       if (!active.current) return;
       setStep({ name: 'error', message: cameraError(e) });
@@ -132,7 +141,7 @@ export function SignInPage({ session, onSignedIn, onSignOut, onForgetFace, onGoT
     setMessage(null);
     const res = await post('/api/session/demo', { crewId }).catch(() => null);
     if (res?.ok) return finish(res.json);
-    setMessage(String(res?.json.error ?? 'The habitat server did not answer. Try again.'));
+    setMessage(serverError(res?.json));
   };
 
   if (session) {
@@ -140,26 +149,26 @@ export function SignInPage({ session, onSignedIn, onSignOut, onForgetFace, onGoT
     return (
       <section aria-labelledby="sign-in" className="mx-auto max-w-md space-y-4">
         <h2 id="sign-in" className="text-xl font-semibold">
-          Signed in as {crewMember(session.crewId)?.name}
+          {t('Signed in as {name}', { name: crewMember(session.crewId)?.name ?? session.crewId })}
         </h2>
         <p className="text-sm text-slate-300">
-          {session.demo ? 'Demo sign-in, without a face.' : 'Signed in with your face.'} You can change your own check-in and
-          actions; everyone sees everyone.
+          {session.demo ? t('Demo sign-in, without a face.') : t('Signed in with your face.')}{' '}
+          {t('You can change your own check-in and actions; everyone sees everyone.')}
         </p>
         <div className="flex flex-wrap gap-2">
           <button type="button" onClick={() => onGoToPanel(session.crewId)} className="rounded-md bg-sky-600 px-4 py-1.5 text-sm font-medium text-white">
-            Go to {name}’s panel
+            {t('Go to {name}’s panel', { name })}
           </button>
           <button type="button" onClick={onSignOut} className="rounded-md border border-slate-600 px-4 py-1.5 text-sm text-slate-100 hover:bg-slate-800">
-            Sign out
+            {t('Sign out')}
           </button>
           {!session.demo && (
             <button
               type="button"
-              onClick={async () => setMessage((await onForgetFace()) ? null : 'The habitat server did not answer. Try again.')}
+              onClick={async () => setMessage((await onForgetFace()) ? null : serverError(undefined))}
               className="rounded-md border border-slate-700 px-4 py-1.5 text-sm text-slate-300 hover:bg-slate-800"
             >
-              Forget my face
+              {t('Forget my face')}
             </button>
           )}
         </div>
@@ -170,12 +179,19 @@ export function SignInPage({ session, onSignedIn, onSignOut, onForgetFace, onGoT
 
   const free = CREW.filter((c) => !enrolled.includes(c.id));
   const status: Record<Step['name'], string> = {
-    idle: 'The camera is off.',
-    loading: 'Loading face recognition (about 7 MB the first time)…',
-    looking: 'Look at the camera.',
-    checking: 'Checking with the habitat server…',
-    unknown: 'This face is not enrolled yet.',
-    enrolling: step.name === 'enrolling' ? `Enrolling ${firstName(step.crewId)}: picture ${step.taken + 1} of ${FACE.enrollSamples}. Move your head a little.` : '',
+    idle: t('The camera is off.'),
+    loading: t('Loading face recognition (about 7 MB the first time)…'),
+    looking: t('Look at the camera.'),
+    checking: t('Checking with the habitat server…'),
+    unknown: t('This face is not enrolled yet.'),
+    enrolling:
+      step.name === 'enrolling'
+        ? t('Enrolling {name}: picture {n} of {total}. Move your head a little.', {
+            name: firstName(step.crewId),
+            n: step.taken + 1,
+            total: FACE.enrollSamples,
+          })
+        : '',
     error: step.name === 'error' ? step.message : '',
   };
   const cameraOn = step.name !== 'idle' && step.name !== 'error';
@@ -184,10 +200,10 @@ export function SignInPage({ session, onSignedIn, onSignOut, onForgetFace, onGoT
     <section aria-labelledby="sign-in" className="mx-auto max-w-md space-y-4">
       <div>
         <h2 id="sign-in" className="text-xl font-semibold">
-          Sign in with your face
+          {t('Sign in with your face')}
         </h2>
         <p className="mt-1 text-sm text-slate-300">
-          Each crew member changes only their own check-in and actions. Reading is open: everyone sees everyone.
+          {t('Each crew member changes only their own check-in and actions. Reading is open: everyone sees everyone.')}
         </p>
       </div>
 
@@ -196,7 +212,7 @@ export function SignInPage({ session, onSignedIn, onSignOut, onForgetFace, onGoT
         {!cameraOn && (
           <div className="absolute inset-0 flex items-center justify-center">
             <button type="button" onClick={start} className="rounded-md bg-sky-600 px-5 py-2 font-medium text-white hover:bg-sky-500">
-              {step.name === 'error' ? 'Try again' : 'Start camera'}
+              {step.name === 'error' ? t('Try again') : t('Start camera')}
             </button>
           </div>
         )}
@@ -210,7 +226,7 @@ export function SignInPage({ session, onSignedIn, onSignOut, onForgetFace, onGoT
 
       {step.name === 'unknown' && (
         <div className="space-y-2 rounded-lg border border-slate-800 bg-slate-900/60 px-4 py-3">
-          <p className="text-sm text-slate-200">Who are you? Enrolling takes {FACE.enrollSamples} pictures.</p>
+          <p className="text-sm text-slate-200">{t('Who are you? Enrolling takes {n} pictures.', { n: FACE.enrollSamples })}</p>
           <div className="flex flex-wrap gap-2">
             {CREW.map((c) => {
               const taken = enrolled.includes(c.id);
@@ -222,30 +238,35 @@ export function SignInPage({ session, onSignedIn, onSignOut, onForgetFace, onGoT
                   onClick={() => enroll(c.id)}
                   className="rounded-md border border-slate-600 px-3 py-1 text-sm text-slate-100 hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-40"
                 >
-                  I’m {c.name.split(' ')[0]}
-                  {taken ? ' · taken' : ''}
+                  {t('I’m {name}', { name: c.name.split(' ')[0] ?? c.name })}
+                  {taken ? ` · ${t('taken')}` : ''}
                 </button>
               );
             })}
           </div>
-          {free.length === 0 && <p className="text-xs text-slate-400">Every crew member has a face enrolled; seats free up after {FACE.enrollmentTtlHours} h without use.</p>}
+          {free.length === 0 && (
+            <p className="text-xs text-slate-400">
+              {t('Every crew member has a face enrolled; seats free up after {n} h without use.', { n: FACE.enrollmentTtlHours })}
+            </p>
+          )}
           <button type="button" onClick={start} className="text-sm text-sky-400 hover:text-sky-300">
-            Try recognizing again
+            {t('Try recognizing again')}
           </button>
         </div>
       )}
       {message && <p className="text-sm text-watch">{message}</p>}
 
       <p className="text-[11px] text-slate-500">
-        Your picture never leaves this device: Pulsar sends only {FACE.descriptorLength} numbers that describe your face. The
-        habitat server keeps them to recognize you and forgets them after {FACE.enrollmentTtlHours} h without use, or when you
-        ask. Face recognition: face-api.js.
+        {t(
+          'Your picture never leaves this device: Pulsar sends only {n} numbers that describe your face. The habitat server keeps them to recognize you and forgets them after {h} h without use, or when you ask. Face recognition: face-api.js.',
+          { n: FACE.descriptorLength, h: FACE.enrollmentTtlHours },
+        )}
       </p>
 
       {FACE.demoSignIn && (
         <div className="space-y-2 rounded-lg border border-dashed border-slate-700 px-4 py-3">
-          <p className="text-xs font-medium uppercase tracking-wide text-slate-400">Demo · no camera?</p>
-          <p className="text-sm text-slate-300">Sign in as a crew member without a face:</p>
+          <p className="text-xs font-medium uppercase tracking-wide text-slate-400">{t('Demo · no camera?')}</p>
+          <p className="text-sm text-slate-300">{t('Sign in as a crew member without a face:')}</p>
           <div className="flex flex-wrap gap-2">
             {CREW.map((c) => (
               <button
