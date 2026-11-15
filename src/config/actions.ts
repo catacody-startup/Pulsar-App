@@ -197,6 +197,17 @@ export const SPACE_WEATHER_HEADS_UP = {
   sources: ['donki', 'ochmo-tb-020'] as SourceId[],
 };
 
+/**
+ * A crew member can mark an alert's action as done; the whole crew sees it.
+ * It counts for a while: if the alert is still there after that, it asks again.
+ */
+export const ACTION_DONE = {
+  validHours: 12,
+  button: 'Mark as done',
+  undo: 'Undo',
+  done: (clock: string) => `Done at ${clock} LMST`,
+};
+
 /** Shown under "What do I do now?" when there are no alerts. */
 export const NO_ALERTS_TEXT = 'Nothing to act on. Keep to your plan.';
 

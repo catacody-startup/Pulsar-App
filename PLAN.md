@@ -29,13 +29,13 @@ Responde "¿estoy bien?" y "¿qué hago ahora?" para un astronauta en Marte. Un 
 
 Infra aparte, en `_docker_infra`: ✅ el proxy de DONKI en el Nginx de `app-pulsar`, con la key en `app-pulsar/.env` (fuera de git; mientras no esté, `DEMO_KEY`, que tiene pocos pedidos por hora).
 
-## Etapa 2 — Tripulación y servidor del hábitat
+## Etapa 2 — Tripulación y servidor del hábitat ✅
 
 Varios tripulantes. Un servidor en la red local del hábitat guarda los datos: cualquier tablet o teléfono los ve, y si se rompe un dispositivo no se pierde nada.
 
 1. ✅ **Tripulación de cuatro:** Lucía (ingeniera de vuelo), Kenji (comandante), Amara (oficial médica) y Erik (geólogo), con valores y horarios propios (los entrenamientos van escalonados porque comparten el equipo). La página principal (`/`) muestra a toda la tripulación: estado, qué está haciendo, la alerta más urgente, signos vitales y si hizo el check-in; cada tarjeta abre su panel (`/crew/<id>`). La radiación y el clima espacial son del hábitat, compartidos. En los escenarios, la radiación y el aire de la cabina afectan a todos; fiebre, noche sin dormir, entrenamientos salteados y aislamiento le pasan a Lucía.
 2. ✅ **Servidor del hábitat:** un servidor de Node sin dependencias (`server/`, se arma en `dist-server/main.mjs`) guarda los check-ins en un archivo JSON (escritura atómica) y avisa cada cambio en vivo por server-sent events (`/api/stream`): todos los dispositivos ven lo mismo al instante y, si uno se rompe, no se pierde nada. Valida todo (tripulante conocido, respuestas de 1 a 5, sol de hoy o de ayer), limita los cambios por minuto y por IP y guarda los últimos 30 soles. En la app, cada cambio se ve enseguida y espera en el dispositivo hasta que el servidor lo confirma: sin conexión, queda guardado y se manda al volver. La cabecera muestra si el servidor está en vivo o cuántos cambios esperan. En producción corre en su propio contenedor (`app-pulsar-api`), detrás del Nginx y sin salida a internet.
-3. **Acciones hechas:** cada alerta se puede marcar como hecha; la tripulación ve quién está actuando.
+3. ✅ **Acciones hechas:** cada alerta de *What do I do now?* se puede marcar como hecha (y deshacer); vale 12 h y, si la alerta sigue, vuelve a pedirla. Queda en el servidor del hábitat: la tarjeta del tripulante en la página de la tripulación muestra "✓ done" junto a su alerta, y *Latest from the crew* lista lo último que hizo cada uno (check-ins y acciones) en el último sol.
 
 ## Etapa 3 — Identificación facial
 

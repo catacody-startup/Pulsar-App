@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { CREW } from '../config/crew';
 import { HABITAT_SERVER } from '../config/habitat';
-import { applyChanges, emptyHabitat, parseHabitatData, type Change, type HabitatData } from '../logic/habitat';
+import { ACTION_RULES, applyChanges, emptyHabitat, parseHabitatData, type Change, type HabitatData } from '../logic/habitat';
 import type { CheckInAnswers } from '../logic/types';
 
 /** Last data received from the habitat server, to show while offline. */
@@ -35,21 +35,39 @@ function write(key: string, value: unknown) {
 function parseOutbox(value: unknown): Change[] {
   if (!Array.isArray(value)) return [];
   return value.flatMap((c: unknown): Change[] => {
-    const { crewId, checkIn } = (c ?? {}) as { crewId?: unknown; checkIn?: unknown };
-    if (typeof crewId !== 'string') return [];
-    const valid = parseHabitatData({ checkIns: { [crewId]: [checkIn] } }, CREW_IDS).checkIns[crewId]?.[0];
-    return valid ? [{ kind: 'checkIn', crewId, checkIn: valid }] : [];
+    const { kind, crewId, checkIn, rule, t } = (c ?? {}) as Record<string, unknown>;
+    if (typeof crewId !== 'string' || !CREW_IDS.includes(crewId)) return [];
+    if (kind === 'checkIn') {
+      const valid = parseHabitatData({ checkIns: { [crewId]: [checkIn] } }, CREW_IDS).checkIns[crewId]?.[0];
+      return valid ? [{ kind, crewId, checkIn: valid }] : [];
+    }
+    if (typeof rule !== 'string' || !ACTION_RULES.includes(rule)) return [];
+    if (kind === 'actionDone' && typeof t === 'number') return [{ kind, crewId, rule, t }];
+    if (kind === 'actionUndone') return [{ kind, crewId, rule }];
+    return [];
   });
 }
 
 function send(change: Change): Promise<Response> {
-  const { crewId, checkIn } = change;
-  const { mood, stress, sleepQuality, isolation, t } = checkIn;
-  return fetch(`/api/crew/${crewId}/check-ins/${checkIn.localSol}`, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ mood, stress, sleepQuality, isolation, t }),
-  });
+  const json = { 'Content-Type': 'application/json' };
+  switch (change.kind) {
+    case 'checkIn': {
+      const { mood, stress, sleepQuality, isolation, t, localSol } = change.checkIn;
+      return fetch(`/api/crew/${change.crewId}/check-ins/${localSol}`, {
+        method: 'PUT',
+        headers: json,
+        body: JSON.stringify({ mood, stress, sleepQuality, isolation, t }),
+      });
+    }
+    case 'actionDone':
+      return fetch(`/api/crew/${change.crewId}/actions-done/${change.rule}`, {
+        method: 'PUT',
+        headers: json,
+        body: JSON.stringify({ t: change.t }),
+      });
+    case 'actionUndone':
+      return fetch(`/api/crew/${change.crewId}/actions-done/${change.rule}`, { method: 'DELETE' });
+  }
 }
 
 /**
@@ -143,18 +161,30 @@ export function useHabitat() {
     };
   }, [outbox.length, flush]);
 
-  const saveCheckIn = useCallback(
-    (crewId: string, answers: CheckInAnswers, localSol: number, t: number) => {
-      const change: Change = { kind: 'checkIn', crewId, checkIn: { ...answers, localSol, t, simulated: false } };
+  const queue = useCallback(
+    (change: Change) => {
       replaceOutbox([...outboxRef.current, change]);
       void flush();
     },
     [flush, replaceOutbox],
   );
+  const saveCheckIn = useCallback(
+    (crewId: string, answers: CheckInAnswers, localSol: number, t: number) =>
+      queue({ kind: 'checkIn', crewId, checkIn: { ...answers, localSol, t, simulated: false } }),
+    [queue],
+  );
+  const markDone = useCallback(
+    (crewId: string, rule: string, t: number) => queue({ kind: 'actionDone', crewId, rule, t }),
+    [queue],
+  );
+  const undoDone = useCallback((crewId: string, rule: string) => queue({ kind: 'actionUndone', crewId, rule }), [queue]);
 
   const data = useMemo(() => applyChanges(server, outbox, HABITAT_SERVER.keepSols), [server, outbox]);
-  /** Crew members with changes still waiting on this device. */
-  const waitingFor = useMemo(() => new Set(outbox.map((c) => c.crewId)), [outbox]);
+  /** Crew members whose check-in is still waiting on this device. */
+  const checkInWaitingFor = useMemo(
+    () => new Set(outbox.filter((c) => c.kind === 'checkIn').map((c) => c.crewId)),
+    [outbox],
+  );
 
-  return { data, connection, waiting: outbox.length, waitingFor, saveCheckIn };
+  return { data, connection, waiting: outbox.length, checkInWaitingFor, saveCheckIn, markDone, undoDone };
 }

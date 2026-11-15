@@ -24,6 +24,10 @@ interface Props {
   connection: Connection;
   /** Today's check-in is saved on this device but has not reached the habitat server yet. */
   checkInWaiting: boolean;
+  /** Alerts whose action is marked as done: rule → when. */
+  done: Record<string, number>;
+  onDone: (rule: string) => void;
+  onUndo: (rule: string) => void;
   onSaveCheckIn: (answers: CheckInAnswers) => void;
   onBack: () => void;
 }
@@ -31,6 +35,7 @@ interface Props {
 /** One crew member: "Am I OK?", "What do I do now?", indicators, check-in and trends. */
 export function MemberPage(props: Props) {
   const { assessment: a, sim, now, missionSol, dose, weather, cmeInHours, connection, checkInWaiting, onSaveCheckIn, onBack } = props;
+  const { done, onDone, onUndo } = props;
   return (
     <>
       <p className="text-sm text-slate-400">
@@ -44,7 +49,7 @@ export function MemberPage(props: Props) {
         <span className="font-medium text-slate-200">{a.crew.name}</span> · {a.crew.role} · {ACTIVITY_LABEL[a.reading.activity]}
       </p>
       <StatusHero overall={a.overall} total={a.indicators.length} />
-      <WhatNow alerts={a.alerts} next={a.next} cmeInHours={cmeInHours} />
+      <WhatNow alerts={a.alerts} next={a.next} cmeInHours={cmeInHours} done={done} onDone={onDone} onUndo={onUndo} />
       <section aria-labelledby="indicators">
         <h2 id="indicators" className="mb-2 text-sm text-slate-400">
           Indicators · vitals update every minute (simulated)

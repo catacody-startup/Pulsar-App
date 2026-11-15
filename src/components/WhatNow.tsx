@@ -1,8 +1,9 @@
-import { NO_ALERTS_TEXT, PLAN_ITEM_LABEL, SPACE_WEATHER_HEADS_UP } from '../config/actions';
+import { ACTION_DONE, NO_ALERTS_TEXT, PLAN_ITEM_LABEL, SPACE_WEATHER_HEADS_UP } from '../config/actions';
+import { MISSION } from '../config/mission';
 import { INDICATORS, STATUS_LABEL } from '../config/indicators';
 import { SOURCES } from '../config/sources';
 import type { Alert } from '../logic/alerts';
-import { formatMarsClock } from '../logic/marsTime';
+import { formatMarsClock, localMeanSolarHours } from '../logic/marsTime';
 import type { PlanItem } from '../logic/plan';
 import { STATUS_STYLE } from './status';
 
@@ -11,6 +12,10 @@ interface Props {
   next: PlanItem;
   /** Hours until a CME forecast by DONKI reaches Mars, if one is coming soon. */
   cmeInHours?: number;
+  /** Alerts whose action is marked as done: rule → when. */
+  done: Record<string, number>;
+  onDone: (rule: string) => void;
+  onUndo: (rule: string) => void;
 }
 
 /** Heads-up before a CME forecast by DONKI reaches Mars. */
@@ -35,7 +40,16 @@ export function HeadsUp({ hours }: { hours: number }) {
 
 const ALERT_BORDER = { watch: 'border-l-watch', act: 'border-l-act' } as const;
 
-function AlertCard({ alert }: { alert: Alert }) {
+export const doneClock = (t: number) => formatMarsClock(localMeanSolarHours(t, MISSION.site.eastLongitudeDeg));
+
+interface AlertCardProps {
+  alert: Alert;
+  doneAt?: number;
+  onDone: () => void;
+  onUndo: () => void;
+}
+
+function AlertCard({ alert, doneAt, onDone, onUndo }: AlertCardProps) {
   const style = STATUS_STYLE[alert.status];
   const { action } = alert;
   return (
@@ -52,17 +66,36 @@ function AlertCard({ alert }: { alert: Alert }) {
           <li key={step}>{step}</li>
         ))}
       </ol>
-      {action.sources && (
-        <p className="mt-2 text-[11px] text-slate-500">
-          Based on: {action.sources.map((id) => SOURCES[id].short).join(' · ')}
-        </p>
-      )}
+      <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
+        {doneAt !== undefined ? (
+          <p className="flex items-center gap-2 text-sm text-slate-200">
+            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-ok/20 text-xs text-ok" aria-hidden>
+              ✓
+            </span>
+            {ACTION_DONE.done(doneClock(doneAt))}
+            <button type="button" onClick={onUndo} className="text-xs text-slate-400 underline hover:text-slate-200">
+              {ACTION_DONE.undo}
+            </button>
+          </p>
+        ) : (
+          <button
+            type="button"
+            onClick={onDone}
+            className="rounded-md border border-slate-600 px-3 py-1 text-sm text-slate-100 hover:border-slate-400 hover:bg-slate-800"
+          >
+            {ACTION_DONE.button}
+          </button>
+        )}
+        {action.sources && (
+          <p className="text-[11px] text-slate-500">Based on: {action.sources.map((id) => SOURCES[id].short).join(' · ')}</p>
+        )}
+      </div>
     </article>
   );
 }
 
 /** The answer to "What do I do now?": one concrete action per alert. */
-export function WhatNow({ alerts, next, cmeInHours }: Props) {
+export function WhatNow({ alerts, next, cmeInHours, done, onDone, onUndo }: Props) {
   return (
     <section aria-labelledby="what-now" className="space-y-2">
       <h2 id="what-now" className="text-xs font-medium uppercase tracking-widest text-slate-400">
@@ -76,7 +109,15 @@ export function WhatNow({ alerts, next, cmeInHours }: Props) {
           </span>
         </p>
       ) : (
-        alerts.map((a) => <AlertCard key={a.rule} alert={a} />)
+        alerts.map((a) => (
+          <AlertCard
+            key={a.rule}
+            alert={a}
+            doneAt={done[a.rule]}
+            onDone={() => onDone(a.rule)}
+            onUndo={() => onUndo(a.rule)}
+          />
+        ))
       )}
       {/* After the alerts: a forecast is less urgent than what is happening now. */}
       {cmeInHours !== undefined && <HeadsUp hours={cmeInHours} />}

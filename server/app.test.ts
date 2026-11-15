@@ -89,10 +89,20 @@ describe('habitat server', () => {
       while (!text.includes('\n\n')) text += decoder.decode((await reader.read()).value);
       return JSON.parse(/data: (.*)/.exec(text)![1]!);
     };
-    expect((await nextEvent()).data).toEqual({ checkIns: {} });
+    expect((await nextEvent()).data).toEqual({ checkIns: {}, actionsDone: {} });
     await put(base, `/api/crew/kenji/check-ins/${TODAY}`, answers);
     expect((await nextEvent()).data.checkIns.kenji).toHaveLength(1);
     await reader.cancel();
+  });
+
+  it('keeps the actions marked as done, and their undo', async () => {
+    const base = await start();
+    expect((await put(base, '/api/crew/lucia/actions-done/radiation.storm', { t: NOW - 1000 })).status).toBe(200);
+    expect((await json(await fetch(`${base}/api/habitat`))).data.actionsDone).toEqual({ lucia: { 'radiation.storm': NOW - 1000 } });
+    expect((await put(base, '/api/crew/lucia/actions-done/heartRate.normal', {})).status).toBe(404);
+    expect((await put(base, '/api/crew/nobody/actions-done/radiation.storm', {})).status).toBe(404);
+    expect((await fetch(`${base}/api/crew/lucia/actions-done/radiation.storm`, { method: 'DELETE' })).status).toBe(200);
+    expect((await json(await fetch(`${base}/api/habitat`))).data.actionsDone).toEqual({ lucia: {} });
   });
 
   it('survives a restart: the data is in the file', async () => {

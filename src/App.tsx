@@ -14,7 +14,8 @@ import { useScenario } from './hooks/useScenario';
 import { useSpaceWeather } from './hooks/useSpaceWeather';
 import { assessCrewMember } from './logic/assess';
 import { upcomingMarsArrivals } from './logic/donki';
-import { formatMarsClock, localMeanSolarHours } from './logic/marsTime';
+import { crewFeed, currentActionsDone } from './logic/habitat';
+import { formatMarsClock, localMeanSolarHours, SOL_IN_EARTH_DAYS } from './logic/marsTime';
 import { missionDose } from './logic/missionDose';
 import { parseRoute, routePath, type Route } from './logic/route';
 import { resolveScenario } from './logic/scenarios';
@@ -56,6 +57,14 @@ export function App() {
   const assessments = useMemo(
     () => shown.map((sim) => assessCrewMember(sim, now, byCrew[sim.crew.id] ?? [])),
     [shown, now, byCrew],
+  );
+  const done = useMemo(
+    () => Object.fromEntries(CREW_IDS.map((id) => [id, currentActionsDone(habitat.data, id, now)])),
+    [habitat.data, now],
+  );
+  const feed = useMemo(
+    () => crewFeed(habitat.data, now - SOL_IN_EARTH_DAYS * 86_400_000, now + 60_000).slice(0, 6),
+    [habitat.data, now],
   );
   const dose = missionDose(now);
   const sol = calendar.missionSolAt(now);
@@ -100,6 +109,8 @@ export function App() {
             dose={dose}
             weather={weather}
             cmeInHours={cmeInHours}
+            done={done}
+            feed={feed}
             hrefOf={(crewId) => routePath({ page: 'member', crewId })}
             onOpen={(crewId) => go({ page: 'member', crewId })}
           />
@@ -114,7 +125,10 @@ export function App() {
             weather={weather}
             cmeInHours={cmeInHours}
             connection={habitat.connection}
-            checkInWaiting={habitat.waitingFor.has(route.crewId)}
+            checkInWaiting={habitat.checkInWaitingFor.has(route.crewId)}
+            done={done[route.crewId] ?? {}}
+            onDone={(rule) => habitat.markDone(route.crewId, rule, Date.now())}
+            onUndo={(rule) => habitat.undoDone(route.crewId, rule)}
             onSaveCheckIn={(answers) => habitat.saveCheckIn(route.crewId, answers, assessments[0]!.localSol, Date.now())}
             onBack={() => go({ page: 'crew' })}
           />

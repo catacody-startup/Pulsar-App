@@ -16,6 +16,7 @@ Built during the hackathon (14–15 November 2026), in stages (see `PLAN.md`, in
 - **The whole crew at a glance**: four crew members, each with their status, what they are doing and their most urgent alert; open one to see their full panel.
 - **Am I OK?** One overall answer (*All good / Attention / Act now*) from seven indicators: heart rate, SpO₂, blood pressure, radiation, sleep, exercise and wellbeing. Every threshold cites its source (NASA-STD-3001 technical briefs, WHO, ACC/AHA, ACSM); where a cut-off is Pulsar's own choice, the app says so.
 - **What do I do now?** Each alert comes with concrete steps the crew can take without waiting for Earth: put on an oxygen mask, go to the storm shelter, stop exercising, talk to the crew medical officer, ask for a private psychological conference…
+- **Mark as done**: each crew member marks the action of an alert as done, and the whole crew sees who is acting.
 - **Trends** over 24 hours and 7 days with the normal range marked, on Mars local time.
 - **Daily wellbeing check-in**: four questions, under a minute.
 - **Real radiation from Mars**: the habitat sits in Gale Crater and its dose rate is the one NASA's Curiosity rover measured there with its RAD instrument.
@@ -39,7 +40,7 @@ The full list of references is on the app's About page.
 ## How it is built
 
 - A React app; thresholds, recommendation texts and simulator parameters live in `src/config/`, pure logic with unit tests in `src/logic/`.
-- **The habitat server** (`server/`): a dependency-free Node server that would sit on the habitat's local network. It keeps the crew's data (check-ins) in a JSON file and pushes every change live to all devices (server-sent events), so every tablet and phone sees the same and nothing is lost if one breaks. While a device is offline its changes wait on it and are sent when the server is back.
+- **The habitat server** (`server/`): a dependency-free Node server that would sit on the habitat's local network. It keeps the crew's data (check-ins and actions marked as done) in a JSON file and pushes every change live to all devices (server-sent events), so every tablet and phone sees the same and nothing is lost if one breaks. While a device is offline its changes wait on it and are sent when the server is back.
 - Nginx serves the app, passes `/api/` to the habitat server and proxies DONKI adding the NASA API key, so the key never reaches the browser; DONKI responses are cached for an hour.
 - Data pipelines, kept in the repo with their outputs:
   - `scripts/rad/fetch.sh 1780 1830` streams the RAD files from the PDS (~86 MB per sol) and keeps one line per observation in `scripts/rad/raw/`; `node scripts/rad/build.mjs` averages them every half hour of Mars local time into `src/data/radGale.json`.

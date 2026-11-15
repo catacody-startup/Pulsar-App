@@ -1,6 +1,7 @@
 import { ACTIVITY_LABEL, STATUS_LABEL } from '../config/indicators';
 import type { Assessment } from '../logic/assess';
 import { STATUS_STYLE } from './status';
+import { doneClock } from './WhatNow';
 
 const LEFT_BORDER = { ok: 'border-l-ok', watch: 'border-l-watch', act: 'border-l-act' } as const;
 
@@ -15,12 +16,14 @@ function initials(name: string): string {
 
 interface Props {
   assessment: Assessment;
+  /** Alerts whose action is marked as done: rule → when. */
+  done: Record<string, number>;
   href: string;
   onOpen: () => void;
 }
 
 /** One crew member on the crew page: how they are, what they are doing and the most urgent alert. */
-export function CrewCard({ assessment: a, href, onOpen }: Props) {
+export function CrewCard({ assessment: a, done, href, onOpen }: Props) {
   const style = STATUS_STYLE[a.overall.status];
   const r = a.reading;
   const sleep = a.indicators.find((i) => i.id === 'sleep');
@@ -57,6 +60,9 @@ export function CrewCard({ assessment: a, href, onOpen }: Props) {
         {first ? (
           <>
             {first.action.title}
+            {done[first.rule] !== undefined && (
+              <span className="text-ok"> · ✓ done {doneClock(done[first.rule]!)}</span>
+            )}
             {more.length > 0 && <span className="text-slate-400"> · +{more.length} more</span>}
           </>
         ) : (

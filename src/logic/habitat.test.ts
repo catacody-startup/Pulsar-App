@@ -1,8 +1,17 @@
 import { describe, expect, it } from 'vitest';
-import { applyChange, applyChanges, emptyHabitat, parseAnswers, parseHabitatData, type Change } from './habitat';
+import {
+  applyChange,
+  applyChanges,
+  crewFeed,
+  currentActionsDone,
+  emptyHabitat,
+  parseAnswers,
+  parseHabitatData,
+  type Change,
+} from './habitat';
 
 const answers = { mood: 4, stress: 2, sleepQuality: 4, isolation: 2 };
-const checkIn = (localSol: number, mood = 4): Change => ({
+const checkIn = (localSol: number, mood = 4): Extract<Change, { kind: 'checkIn' }> => ({
   kind: 'checkIn',
   crewId: 'lucia',
   checkIn: { ...answers, mood, localSol, t: localSol * 1000, simulated: false },
@@ -39,10 +48,43 @@ describe('habitat data', () => {
   it('drops anything malformed or of an unknown crew member when reading', () => {
     const good = checkIn(10).checkIn;
     const data = parseHabitatData(
-      { checkIns: { lucia: [good, { ...good, mood: 9 }, 'junk'], intruder: [good] } },
+      { checkIns: { lucia: [good, { ...good, mood: 9 }, 'junk'], intruder: [good] }, actionsDone: { lucia: { 'not.a.rule': 5 } } },
       ['lucia', 'kenji'],
     );
-    expect(data).toEqual({ checkIns: { lucia: [good] } });
+    expect(data).toEqual({ checkIns: { lucia: [good] }, actionsDone: {} });
     expect(parseHabitatData('nonsense', ['lucia'])).toEqual(emptyHabitat());
+  });
+});
+
+describe('actions marked as done', () => {
+  const HOUR = 3_600_000;
+  const now = 100 * HOUR;
+  const done = (rule: string, t: number): Change => ({ kind: 'actionDone', crewId: 'lucia', rule, t });
+
+  it('keeps the latest time per alert, and can be undone', () => {
+    let data = applyChanges(emptyHabitat(), [done('radiation.storm', now - HOUR), done('radiation.storm', now)], 30);
+    expect(data.actionsDone.lucia).toEqual({ 'radiation.storm': now });
+    data = applyChange(data, { kind: 'actionUndone', crewId: 'lucia', rule: 'radiation.storm' }, 30);
+    expect(data.actionsDone.lucia).toEqual({});
+  });
+
+  it('counts for 12 hours', () => {
+    const data = applyChanges(emptyHabitat(), [done('radiation.storm', now - 2 * HOUR), done('sleep.short', now - 13 * HOUR)], 30);
+    expect(currentActionsDone(data, 'lucia', now)).toEqual({ 'radiation.storm': now - 2 * HOUR });
+    expect(currentActionsDone(data, 'kenji', now)).toEqual({});
+  });
+
+  it('reads only known alerts', () => {
+    const data = parseHabitatData({ actionsDone: { lucia: { 'radiation.storm': now, 'heartRate.normal': now, junk: now } } }, ['lucia']);
+    expect(data.actionsDone).toEqual({ lucia: { 'radiation.storm': now } });
+  });
+
+  it('lists what the crew did, newest first', () => {
+    const data = applyChanges(emptyHabitat(), [checkIn(10), done('radiation.storm', 20_000)], 30);
+    expect(crewFeed(data, 0, 30_000)).toEqual([
+      { kind: 'actionDone', crewId: 'lucia', rule: 'radiation.storm', t: 20_000 },
+      { kind: 'checkIn', crewId: 'lucia', t: 10_000 },
+    ]);
+    expect(crewFeed(data, 15_000, 30_000)).toHaveLength(1);
   });
 });

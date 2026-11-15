@@ -5,10 +5,12 @@
  *   GET /api/habitat                         → { data, serverTime }
  *   GET /api/stream                          → server-sent events: `habitat` with { data, serverTime } on every change
  *   PUT /api/crew/<id>/check-ins/<localSol>  ← the four answers (and `t`, when it was answered)
+ *   PUT /api/crew/<id>/actions-done/<rule>   ← { t }: the action of an alert is done
+ *   DELETE /api/crew/<id>/actions-done/<rule>  → undo
  */
 import type { IncomingMessage, ServerResponse } from 'node:http';
 import { HABITAT_SERVER } from '../src/config/habitat';
-import { applyChange, parseAnswers, type Change, type HabitatData } from '../src/logic/habitat';
+import { ACTION_RULES, applyChange, parseAnswers, type Change, type HabitatData } from '../src/logic/habitat';
 import { localSolDate, SOL_IN_EARTH_DAYS } from '../src/logic/marsTime';
 import { createRateLimiter } from './rateLimit';
 import type { Store } from './store';
@@ -111,15 +113,29 @@ export function createApp(options: AppOptions) {
     if (localSol > today || localSol < today - config.acceptSolsBack) {
       throw new HttpError(422, `Check-ins are for sol ${today - config.acceptSolsBack} to ${today}`);
     }
-    // When it was answered, as the device says, if it is believable; otherwise now.
-    const claimed = (body as { t?: unknown }).t;
-    const t =
-      typeof claimed === 'number' && claimed <= t0 + 5 * 60_000 && claimed >= t0 - (config.acceptSolsBack + 1) * SOL_MS
-        ? Math.round(claimed)
-        : t0;
-    const checkIn = { ...answers, localSol, t, simulated: false };
+    const checkIn = { ...answers, localSol, t: believableTime(body, t0), simulated: false };
     await commit({ kind: 'checkIn', crewId, checkIn });
     send(res, 200, checkIn);
+  }
+
+  /** When it happened, as the device says, if it is believable (a device that was offline); otherwise now. */
+  function believableTime(body: unknown, t0: number): number {
+    const claimed = (body as { t?: unknown } | null)?.t;
+    return typeof claimed === 'number' && claimed <= t0 + 5 * 60_000 && claimed >= t0 - (config.acceptSolsBack + 1) * SOL_MS
+      ? Math.round(claimed)
+      : t0;
+  }
+
+  async function actionDone(req: IncomingMessage, res: ServerResponse, crewId: string, rule: string, done: boolean) {
+    if (!crewIds.includes(crewId)) throw new HttpError(404, 'Unknown crew member');
+    if (!ACTION_RULES.includes(rule)) throw new HttpError(404, 'Unknown alert');
+    if (done) {
+      const t = believableTime(await readJson(req, config.maxBodyBytes), now());
+      await commit({ kind: 'actionDone', crewId, rule, t });
+      return send(res, 200, { rule, t });
+    }
+    await commit({ kind: 'actionUndone', crewId, rule });
+    return send(res, 200, { rule });
   }
 
   async function handle(req: IncomingMessage, res: ServerResponse) {
@@ -130,11 +146,14 @@ export function createApp(options: AppOptions) {
       if (pathname === '/api/habitat' && method === 'GET') return send(res, 200, { data, serverTime: now() });
       if (pathname === '/api/stream' && method === 'GET') return stream(req, res);
       const checkIn = /^\/api\/crew\/([a-z0-9-]+)\/check-ins\/(-?\d{1,7})$/.exec(pathname);
-      if (checkIn) {
-        if (method !== 'PUT') return send(res, 405, { error: 'Use PUT' }, { Allow: 'PUT' });
+      const done = /^\/api\/crew\/([a-z0-9-]+)\/actions-done\/([A-Za-z0-9.]{1,64})$/.exec(pathname);
+      if (checkIn || done) {
+        const allowed = checkIn ? ['PUT'] : ['PUT', 'DELETE'];
+        if (!allowed.includes(method)) return send(res, 405, { error: `Use ${allowed.join(' or ')}` }, { Allow: allowed.join(', ') });
         const client = String(req.headers['x-real-ip'] ?? req.socket.remoteAddress ?? '?');
         if (!allowWrite(client)) throw new HttpError(429, 'Too many changes; try again in a minute');
-        return await putCheckIn(req, res, checkIn[1]!, Number(checkIn[2]));
+        if (checkIn) return await putCheckIn(req, res, checkIn[1]!, Number(checkIn[2]));
+        return await actionDone(req, res, done![1]!, done![2]!, method === 'PUT');
       }
       throw new HttpError(404, 'Not found');
     } catch (e) {
