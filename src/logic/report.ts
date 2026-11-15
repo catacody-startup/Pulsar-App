@@ -61,13 +61,14 @@ export interface Report {
 const LON = MISSION.site.eastLongitudeDeg;
 const clock = (ms: number) => formatMarsClock(localMeanSolarHours(ms, LON));
 const utc = (ms: number) =>
-  `${new Date(ms).toLocaleString(dateLocale(), { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', timeZone: 'UTC' })} UTC`;
+  `${new Date(ms).toLocaleString(dateLocale(), { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', hourCycle: 'h23', timeZone: 'UTC' })} UTC`;
 
 const REPORT_SOURCES: SourceId[] = ['nasa-std-3001-v1', 'msl-rad-pds', 'donki', 'mars24', 'jpl-approx-pos'];
 
 export function buildReport({ at, crew, sols, done, dose, delay, scenario }: ReportInput): Report {
-  const sol = missionSol(at, MISSION.landingMs, LON);
-  const time = clock(at);
+  // +1 s: a report sent on the hour reads 06:00, not 05:59 (floating point).
+  const sol = missionSol(at + 1000, MISSION.landingMs, LON);
+  const time = clock(at + 1000);
   const radiation = crew[0]?.indicators.find((r) => r.id === 'radiation');
   const counts = (['act', 'watch', 'ok'] as Status[])
     .map((s) => [s, crew.filter((a) => a.overall.status === s).length] as const)

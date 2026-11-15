@@ -3,7 +3,7 @@ import type { SpaceWeather } from '../hooks/useSpaceWeather';
 import { dateLocale, t } from '../i18n/i18n';
 
 const formatUtc = (ms: number) =>
-  `${new Date(ms).toLocaleString(dateLocale(), { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', timeZone: 'UTC' })} UTC`;
+  `${new Date(ms).toLocaleString(dateLocale(), { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', hourCycle: 'h23', timeZone: 'UTC' })} UTC`;
 
 /** Latest space weather from NASA DONKI, flagging what is headed for Mars. */
 export function SpaceWeatherPanel({ weather }: { weather: SpaceWeather }) {

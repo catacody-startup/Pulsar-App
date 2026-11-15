@@ -11,7 +11,7 @@ import { IndicatorCard } from './IndicatorCard';
 import { SpaceWeatherPanel } from './SpaceWeatherPanel';
 import { StatusHero } from './StatusHero';
 import { Trends } from './Trends';
-import { WhatNow } from './WhatNow';
+import { doneClock, WhatNow } from './WhatNow';
 import { t } from '../i18n/i18n';
 
 interface Props {
@@ -38,6 +38,13 @@ interface Props {
   onBack: () => void;
 }
 
+/** If every alert that asks to act now is marked as done, when the last one was (local time). */
+function actedAt(a: Assessment, done: Record<string, number>): string | undefined {
+  const urgent = a.alerts.filter((al) => al.status === 'act');
+  if (urgent.length === 0 || urgent.some((al) => done[al.rule] === undefined)) return undefined;
+  return doneClock(Math.max(...urgent.map((al) => done[al.rule]!)));
+}
+
 /** One crew member: "Am I OK?", "What do I do now?", indicators, check-in and trends. */
 export function MemberPage(props: Props) {
   const { assessment: a, sim, now, missionSol, dose, weather, cmeInHours, connection, checkInWaiting, onSaveCheckIn, onBack } = props;
@@ -56,7 +63,7 @@ export function MemberPage(props: Props) {
         </a>
         <span className="font-medium text-slate-200">{a.crew.name}</span> · {t(a.crew.role)} · {t(ACTIVITY_LABEL[a.reading.activity])}
       </p>
-      <StatusHero overall={a.overall} total={a.indicators.length} />
+      <StatusHero overall={a.overall} total={a.indicators.length} actedAt={actedAt(a, done)} />
       {!mine && (
         <p className="rounded-lg border border-dashed border-slate-700 px-4 py-2 text-sm text-slate-300">
           {signedInAs ? t('This is {name}’s panel: only {name} can change it.', { name: first }) : t('Viewing {name}’s panel.', { name: first })}{' '}

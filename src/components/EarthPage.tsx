@@ -25,7 +25,11 @@ const LON = MISSION.site.eastLongitudeDeg;
 const ORDER: Status[] = ['act', 'watch', 'ok'];
 
 export const formatUtc = (ms: number) =>
-  `${new Date(ms).toLocaleString(dateLocale(), { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', timeZone: 'UTC' })} UTC`;
+  `${new Date(ms).toLocaleString(dateLocale(), { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', hourCycle: 'h23', timeZone: 'UTC' })} UTC`;
+
+/** A scheduled report: its sol and its exact local time (no rounding down to xx:59). */
+const reportTime = (r: Transmission) =>
+  `Sol ${missionSol(r.sentAt + 1000, MISSION.landingMs, LON)} · ${formatMarsClock(r.hour % 24)} LMST`;
 
 const marsTime = (ms: number) =>
   `Sol ${missionSol(ms, MISSION.landingMs, LON)} · ${formatMarsClock(localMeanSolarHours(ms, LON))} LMST`;
@@ -99,7 +103,7 @@ export function EarthPage({ now, delay, crewAt, doneAt, reportButton }: Props) {
             <li>
               <span className="mr-2 inline-block h-2 w-2 animate-pulse rounded-full bg-sky-400" aria-hidden />
               {t('Report of {when} is on its way: arrives at {arrives} (in {left}).', {
-                when: marsTime(schedule.inTransit.sentAt),
+                when: reportTime(schedule.inTransit),
                 arrives: formatUtc(schedule.inTransit.arrivesAt),
                 left: inMinutes(schedule.inTransit.arrivesAt - now),
               })}
@@ -107,7 +111,7 @@ export function EarthPage({ now, delay, crewAt, doneAt, reportButton }: Props) {
           )}
           <li className="text-slate-400">
             {t('Next report leaves the habitat at {when} (in {left}).', {
-              when: marsTime(schedule.next.sentAt),
+              when: reportTime(schedule.next),
               left: inMinutes(schedule.next.sentAt - now),
             })}
           </li>
@@ -126,7 +130,7 @@ export function EarthPage({ now, delay, crewAt, doneAt, reportButton }: Props) {
             <tbody className="divide-y divide-slate-800 bg-slate-900/60">
               {reports.map(({ r, crew: c }) => (
                 <tr key={r.sentAt}>
-                  <td className="whitespace-nowrap px-3 py-2 tabular-nums text-slate-200">{marsTime(r.sentAt)}</td>
+                  <td className="whitespace-nowrap px-3 py-2 tabular-nums text-slate-200">{reportTime(r)}</td>
                   <td className="whitespace-nowrap px-3 py-2 tabular-nums text-slate-400">{formatUtc(r.sentAt)}</td>
                   <td className="whitespace-nowrap px-3 py-2 tabular-nums text-slate-400">{formatUtc(r.arrivesAt)}</td>
                   <td className="px-3 py-2 text-slate-200">{summary(c)}</td>

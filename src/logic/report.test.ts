@@ -41,3 +41,20 @@ describe('report for mission control', () => {
     expect(r.notes.join(' ')).toContain('Solar storm');
   });
 });
+
+describe('report time', () => {
+  it('a report sent on the hour reads on the hour', async () => {
+    const { reportAt } = await import('./transmissions');
+    const r = reportAt(NOW, 6, 137.4417);
+    const sims = CREW.map((crew) => createSimulator({ crew }));
+    const report = buildReport({
+      at: r.sentAt,
+      crew: sims.map((s) => assessCrewMember(s, r.sentAt)),
+      sols: {},
+      done: {},
+      dose: missionDose(r.sentAt),
+      delay: signalDelay(r.sentAt),
+    });
+    expect(report.subtitle).toContain(`${String(r.hour % 24).padStart(2, '0')}:00 LMST`);
+  });
+});
