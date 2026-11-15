@@ -63,8 +63,9 @@ Inglés y español, funciona sin conexión e instalable, guion de la demo.
 ## Pendientes del equipo
 
 - ✅ Key de NASA del equipo en `/root/services/app-pulsar/.env` (15/11): DONKI en vivo anda. Para cambiarla: editar `NASA_API_KEY=…` y correr `docker compose up -d` dentro de `/root/services/app-pulsar`.
-- Confirmar que todo el equipo está registrado en la misma locación.
-- ✅ Video en YouTube (https://youtu.be/yOTw-MYNs4k). Falta: pegar el link en *Project Demonstration* y enviar con *Submit for Judging*.
+- ✅ Equipo (2 integrantes) registrado en la misma sede: Salto (online).
+- ✅ Video en YouTube (https://youtu.be/yOTw-MYNs4k), cargado en *Project Demonstration*.
+- ✅ **Proyecto enviado** con *Submit for Judging* el 15/11 a las 05:16 (hora de Salto); certificado de participación disponible en el perfil. Después de las 23:59 del 15/11 la app queda congelada: solo arreglos si se cae, nada de features nuevos.
 
 ## Video demo ✅
 
