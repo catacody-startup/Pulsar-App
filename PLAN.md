@@ -27,7 +27,7 @@ Responde "¿estoy bien?" y "¿qué hago ahora?" para un astronauta en Marte. Un 
 10. ✅ **Página About con References:** qué es Pulsar, qué datos de NASA usa y para qué, la tabla con todos los umbrales (regla, estado, fuente y si el corte es decisión de Pulsar, generada de `src/config/thresholds.ts`) y las referencias completas con link. En `/about` (Nginx ya devuelve `index.html` para cualquier ruta).
 11. **(Opcional) Signos vitales calibrados con OSDR**, solo si aparece un dataset con signos vitales de astronautas que sirva. Por ahora no: lo público de Inspiration4 en OSDR son datos ómicos y análisis clínicos, y no se encontró una serie abierta de frecuencia cardíaca o SpO₂ de astronautas. Queda pendiente.
 
-Infra aparte, en `_docker_infra`: ✅ el proxy de DONKI en el Nginx de `app-pulsar`, con la key en `app-pulsar/.env` (fuera de git; mientras no esté, `DEMO_KEY`, que tiene pocos pedidos por hora).
+Infra aparte, en `_docker_infra`: ✅ el proxy de DONKI en el Nginx de `app-pulsar`, con la key en `app-pulsar/.env` (fuera de git; sin ella usa `DEMO_KEY`, que tiene pocos pedidos por hora).
 
 ## Etapa 2 — Tripulación y servidor del hábitat ✅
 
@@ -61,7 +61,7 @@ Inglés y español, funciona sin conexión e instalable, guion de la demo.
 
 ## Pendientes del equipo
 
-- Pedir la key gratis en https://api.nasa.gov (nombre y mail, llega al instante) y ponerla en `/root/services/app-pulsar/.env` (`NASA_API_KEY=…`, después `docker compose up -d` en esa carpeta). Hasta entonces, `DEMO_KEY`: con pocos pedidos por hora, el panel de clima espacial en vivo puede quedar sin datos (la repetición de 2017 no depende de la API).
+- ✅ Key de NASA del equipo en `/root/services/app-pulsar/.env` (15/11): DONKI en vivo anda. Para cambiarla: editar `NASA_API_KEY=…` y correr `docker compose up -d` dentro de `/root/services/app-pulsar`.
 - Confirmar que todo el equipo está registrado en la misma locación.
 - Al final: la página del proyecto en inglés y subir el video a YouTube (ver *Video demo*).
 
