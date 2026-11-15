@@ -33,6 +33,10 @@ Infra aparte, en `_docker_infra`: ✅ el proxy de DONKI en el Nginx de `app-puls
 
 Varios tripulantes. Un servidor en la red local del hábitat guarda los datos: cualquier tablet o teléfono los ve, y si se rompe un dispositivo no se pierde nada.
 
+1. ✅ **Tripulación de cuatro:** Lucía (ingeniera de vuelo), Kenji (comandante), Amara (oficial médica) y Erik (geólogo), con valores y horarios propios (los entrenamientos van escalonados porque comparten el equipo). La página principal (`/`) muestra a toda la tripulación: estado, qué está haciendo, la alerta más urgente, signos vitales y si hizo el check-in; cada tarjeta abre su panel (`/crew/<id>`). La radiación y el clima espacial son del hábitat, compartidos. En los escenarios, la radiación y el aire de la cabina afectan a todos; fiebre, noche sin dormir, entrenamientos salteados y aislamiento le pasan a Lucía.
+2. **Servidor del hábitat:** guarda los check-ins; todos los dispositivos ven lo mismo al instante y, si uno se rompe, no se pierde nada. Sin conexión, los cambios esperan en el dispositivo y se mandan al volver.
+3. **Acciones hechas:** cada alerta se puede marcar como hecha; la tripulación ve quién está actuando.
+
 ## Etapa 3 — Identificación facial
 
 Cada uno entra con la cara y solo cambia lo suyo (check-in, acciones). Todos ven a todos.

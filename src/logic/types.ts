@@ -48,6 +48,8 @@ export type EventKind =
 
 export interface SimEvent {
   kind: EventKind;
+  /** Crew member it happens to; without it, it happens to the whole habitat (radiation, cabin air). */
+  crewId?: string;
   /** Earth time when it starts, ms since the Unix epoch. */
   start: number;
   durationMin: number;

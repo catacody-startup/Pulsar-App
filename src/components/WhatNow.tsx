@@ -13,7 +13,8 @@ interface Props {
   cmeInHours?: number;
 }
 
-function HeadsUp({ hours }: { hours: number }) {
+/** Heads-up before a CME forecast by DONKI reaches Mars. */
+export function HeadsUp({ hours }: { hours: number }) {
   const h = SPACE_WEATHER_HEADS_UP;
   return (
     <article className="rounded-lg border border-l-4 border-sky-900/70 border-l-sky-500 bg-slate-900/70 px-4 py-3">

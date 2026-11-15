@@ -24,21 +24,20 @@ function write(store: Store) {
 }
 
 /**
- * Check-ins answered in the app, kept in this browser for now
- * (stage 2 moves them to the habitat server).
+ * Check-ins answered in the app, per crew member, kept in this browser for now
+ * (the habitat server takes them over next).
  */
-export function useCheckIns(crewId: string) {
-  const [list, setList] = useState<CheckIn[]>(() => read()[crewId] ?? []);
-  const save = useCallback(
-    (answers: CheckInAnswers, localSol: number, t: number) => {
-      const entry: CheckIn = { ...answers, localSol, t, simulated: false };
-      setList((prev) => {
-        const next = [...prev.filter((c) => c.localSol !== localSol), entry].sort((a, b) => a.localSol - b.localSol);
-        write({ ...read(), [crewId]: next });
-        return next;
-      });
-    },
-    [crewId],
-  );
-  return { checkIns: list, save };
+export function useCheckIns() {
+  const [store, setStore] = useState<Store>(read);
+  const save = useCallback((crewId: string, answers: CheckInAnswers, localSol: number, t: number) => {
+    const entry: CheckIn = { ...answers, localSol, t, simulated: false };
+    setStore((prev) => {
+      const list = prev[crewId] ?? [];
+      const nextList = [...list.filter((c) => c.localSol !== localSol), entry].sort((a, b) => a.localSol - b.localSol);
+      const next = { ...prev, [crewId]: nextList };
+      write(next);
+      return next;
+    });
+  }, []);
+  return { byCrew: store, save };
 }

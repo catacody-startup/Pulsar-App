@@ -27,6 +27,8 @@ export function resolveScenario(
     } else {
       start = anchor - (e.startMinutesAgo ?? 0) * MINUTE_MS;
     }
-    return { kind: e.kind, start: floorToMinute(start), durationMin: e.durationMin, intensity: e.intensity };
+    const event: SimEvent = { kind: e.kind, start: floorToMinute(start), durationMin: e.durationMin, intensity: e.intensity };
+    if (e.crewId !== undefined) event.crewId = e.crewId;
+    return event;
   });
 }

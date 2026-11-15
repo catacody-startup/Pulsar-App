@@ -49,6 +49,7 @@ export interface SolPlan {
 
 export interface SimulatorOptions {
   crew: CrewProfile;
+  /** Events of the simulation; personal ones for other crew members are ignored. */
   events?: readonly SimEvent[];
   /** Measured dose-rate series and how to replay it (defaults: RAD at Gale). */
   radiation?: { series: RadSeries; replay: typeof RAD_REPLAY };
@@ -86,12 +87,14 @@ function clamp(value: number, min: number, max: number): number {
 export function createSimulator(options: SimulatorOptions) {
   const {
     crew,
-    events = [],
+    events: allEvents = [],
     eastLongitudeDeg = MISSION.site.eastLongitudeDeg,
     landingMs = MISSION.landingMs,
     params = SIMULATOR,
     radiation = { series: RAD_SERIES, replay: RAD_REPLAY },
   } = options;
+  // Habitat-wide events reach everyone; personal ones only their crew member.
+  const events = allEvents.filter((e) => e.crewId === undefined || e.crewId === crew.id);
   const seed = hashString(crew.id);
   const { schedule } = crew;
   const jitter = params.schedule;

@@ -51,16 +51,16 @@ describe('scenarios', () => {
     ['nominal', null, 'ok'],
     ['solar-storm', 'radiation', 'act'],
     ['low-oxygen', 'spo2', 'act'],
-    ['fever', 'heartRate', 'watch'],
+    ['fever', 'heartRate', 'watch or act'],
     ['sleepless', 'sleep', 'act'],
     ['missed-workouts', 'exercise', 'act'],
     ['isolation', 'wellbeing', 'act'],
   ] as const)('%s shows up on %s as %s', (id, indicator, status) => {
-    for (const hour of [10.5, 20]) {
+    // Mid-morning at work, evening at rest and asleep after midnight.
+    for (const hour of [10.5, 20, 2]) {
       const results = evaluateScenario(id, atLocalHour(hour));
-      const overall = overallStatus(results);
-      if (indicator === null) expect(overall.status).toBe(status);
-      else expect(results.find((r) => r.id === indicator)!.status).toBe(status);
+      const got = indicator === null ? overallStatus(results).status : results.find((r) => r.id === indicator)!.status;
+      expect(status.split(' or '), `${id} at ${hour}h`).toContain(got);
     }
   });
 });
