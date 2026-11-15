@@ -23,6 +23,7 @@ Built during the hackathon (14–15 November 2026), in stages (see `PLAN.md`, in
 - **Real radiation from Mars**: the habitat sits in Gale Crater and its dose rate is the one NASA's Curiosity rover measured there with its RAD instrument.
 - **Far from Earth**: today's signal delay between the habitat and mission control (from NASA JPL planet positions), so the crew knows how soon an answer can arrive. A **mission control** view (`/earth`) sees the crew one signal delay late and receives a health report from the habitat every 6 Mars hours, downloadable as a PDF.
 - **Real space weather**: coronal mass ejections forecast to reach Mars, solar particle events and geomagnetic storms from NASA DONKI, with a heads-up before a CME arrives.
+- **Works offline and installs** like an app on phones, tablets and computers (a service worker keeps the app; the habitat data and pending changes stay on the device).
 - **Demo scenarios** (outside the astronaut's interface): a real solar storm (the event of 10 September 2017, as RAD measured it), low cabin oxygen, fever, a sleepless night, missed workouts and feeling isolated. They can be shared as links, e.g. https://pulsar.catacody.com/?scenario=solar-storm
 
 Vital signs come from a deterministic simulator (the same data on every device); radiation and space weather are real NASA data.

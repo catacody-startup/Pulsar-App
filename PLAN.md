@@ -55,6 +55,10 @@ Modo *Mars delay* (demora de la señal del día), reporte para control de misió
 
 Inglés y español, funciona sin conexión e instalable, guion de la demo.
 
+1. ✅ **Sin conexión e instalable:** manifiesto (`public/manifest.webmanifest`) y un service worker propio que arma el build (`pwa/plugin.ts` + `pwa/sw.template.js`): guarda la app al instalarse, los archivos con hash (scripts perezosos, modelos de la cara) la primera vez que se usan, páginas con red primero y copia sin conexión; `/api/` va siempre a la red (la app ya guarda los datos del hábitat y la cola de cambios), salvo DONKI, que sin red muestra su última respuesta. El video de la demo no se guarda.
+2. **Inglés y español.**
+3. **Guion de la demo.**
+
 ## Pendientes del equipo
 
 - Pedir la key gratis en https://api.nasa.gov (nombre y mail, llega al instante) y ponerla en `/root/services/app-pulsar/.env` (`NASA_API_KEY=…`, después `docker compose up -d` en esa carpeta). Hasta entonces, `DEMO_KEY`: con pocos pedidos por hora, el panel de clima espacial en vivo puede quedar sin datos (la repetición de 2017 no depende de la API).
