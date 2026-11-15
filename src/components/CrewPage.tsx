@@ -22,6 +22,7 @@ interface Props {
   feed: FeedItem[];
   signedInAs: string | null;
   delay: SignalDelay;
+  now: number;
   hrefOf: (crewId: string) => string;
   onOpen: (crewId: string) => void;
 }
@@ -30,7 +31,7 @@ const ORDER: Status[] = ['act', 'watch', 'ok'];
 
 /** The whole crew at a glance, and the habitat they share. */
 export function CrewPage(props: Props) {
-  const { assessments, dose, weather, cmeInHours, done, feed, signedInAs, delay, hrefOf, onOpen } = props;
+  const { assessments, dose, weather, cmeInHours, done, feed, signedInAs, delay, now, hrefOf, onOpen } = props;
   const counts = ORDER.map((s) => [s, assessments.filter((a) => a.overall.status === s).length] as const).filter(
     ([, n]) => n > 0,
   );
@@ -68,7 +69,7 @@ export function CrewPage(props: Props) {
         </h2>
         <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
           {radiation && <IndicatorCard result={radiation} age={0} dose={dose} />}
-          <EarthLink delay={delay} />
+          <EarthLink delay={delay} now={now} />
         </div>
       </section>
       <SpaceWeatherPanel weather={weather} />

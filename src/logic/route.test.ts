@@ -13,6 +13,6 @@ describe('routes', () => {
   });
 
   it('round-trips', () => {
-    for (const path of ['/', '/about', '/sign-in', '/crew/lucia']) expect(routePath(parseRoute(path, ids))).toBe(path);
+    for (const path of ['/', '/about', '/sign-in', '/earth', '/crew/lucia']) expect(routePath(parseRoute(path, ids))).toBe(path);
   });
 });

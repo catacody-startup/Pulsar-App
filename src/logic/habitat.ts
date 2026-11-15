@@ -118,3 +118,13 @@ export function crewFeed(data: HabitatData, since: number, now: number): FeedIte
   }
   return items.sort((a, b) => b.t - a.t);
 }
+
+/** The data as it was at `t`: what someone one signal delay away sees now. */
+export function habitatAsOf(data: HabitatData, t: number): HabitatData {
+  return {
+    checkIns: Object.fromEntries(Object.entries(data.checkIns).map(([id, list]) => [id, list.filter((c) => c.t <= t)])),
+    actionsDone: Object.fromEntries(
+      Object.entries(data.actionsDone).map(([id, rules]) => [id, Object.fromEntries(Object.entries(rules).filter(([, at]) => at <= t))]),
+    ),
+  };
+}

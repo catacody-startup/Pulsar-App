@@ -32,5 +32,6 @@ describe('Earth–Mars signal delay', () => {
     expect(d.distanceMillionKm).toBeCloseTo(d.distanceAu * 149.5978707, 6);
     expect(formatDuration(754)).toBe('12 min 34 s');
     expect(formatDuration(58.4)).toBe('58 s');
+    expect(formatDuration(344 * 60 + 58)).toBe('5 h 45 min');
   });
 });

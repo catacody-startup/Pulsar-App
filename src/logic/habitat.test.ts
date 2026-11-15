@@ -5,6 +5,7 @@ import {
   crewFeed,
   currentActionsDone,
   emptyHabitat,
+  habitatAsOf,
   parseAnswers,
   parseHabitatData,
   type Change,
@@ -86,5 +87,19 @@ describe('actions marked as done', () => {
       { kind: 'checkIn', crewId: 'lucia', t: 10_000 },
     ]);
     expect(crewFeed(data, 15_000, 30_000)).toHaveLength(1);
+  });
+});
+
+describe('seen from Earth', () => {
+  it('shows only what had happened one signal delay ago', () => {
+    const data = applyChanges(
+      emptyHabitat(),
+      [checkIn(10), checkIn(11), { kind: 'actionDone', crewId: 'lucia', rule: 'radiation.storm', t: 10_500 }],
+      30,
+    );
+    const seen = habitatAsOf(data, 10_600);
+    expect(seen.checkIns.lucia!.map((c) => c.localSol)).toEqual([10]);
+    expect(seen.actionsDone.lucia).toEqual({ 'radiation.storm': 10_500 });
+    expect(habitatAsOf(data, 10_000).actionsDone.lucia).toEqual({});
   });
 });

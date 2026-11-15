@@ -1,10 +1,11 @@
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import { SPACE_WEATHER_HEADS_UP } from './config/actions';
 import { CREW, crewMember } from './config/crew';
 import { MISSION } from './config/mission';
 import { About } from './components/About';
 import { CrewPage } from './components/CrewPage';
 import { DemoBar } from './components/DemoBar';
+import { EarthPage } from './components/EarthPage';
 import { MemberPage } from './components/MemberPage';
 import { HabitatStatus } from './components/HabitatStatus';
 import { SignInPage } from './components/SignInPage';
@@ -16,7 +17,7 @@ import { useScenario } from './hooks/useScenario';
 import { useSpaceWeather } from './hooks/useSpaceWeather';
 import { assessCrewMember } from './logic/assess';
 import { upcomingMarsArrivals } from './logic/donki';
-import { crewFeed, currentActionsDone } from './logic/habitat';
+import { crewFeed, currentActionsDone, habitatAsOf } from './logic/habitat';
 import { formatMarsClock, localMeanSolarHours, SOL_IN_EARTH_DAYS } from './logic/marsTime';
 import { missionDose } from './logic/missionDose';
 import { signalDelay } from './logic/planets';
@@ -30,6 +31,7 @@ const calendar = createSimulator({ crew: CREW[0]! });
 
 const NAV: [Route, string][] = [
   [{ page: 'crew' }, 'Crew'],
+  [{ page: 'earth' }, 'Mission control'],
   [{ page: 'about' }, 'About'],
 ];
 
@@ -54,7 +56,8 @@ export function App() {
   const byCrew = habitat.data.checkIns;
 
   // Only the crew members on screen are evaluated.
-  const shownId = route.page === 'member' ? route.crewId : route.page === 'about' || route.page === 'signIn' ? 'none' : 'all';
+  const shownId =
+    route.page === 'member' ? route.crewId : route.page === 'crew' || route.page === 'notFound' ? 'all' : 'none';
   const shown = useMemo(
     () => (shownId === 'all' ? sims : sims.filter((s) => s.crew.id === shownId)),
     [sims, shownId],
@@ -73,6 +76,21 @@ export function App() {
   );
   const dose = missionDose(now);
   const delay = useMemo(() => signalDelay(now), [now]);
+  /** The crew as it was at `t`, with the habitat data of then (mission control, reports). */
+  const crewAt = useCallback(
+    (t: number) => {
+      const then = habitatAsOf(habitat.data, t);
+      return sims.map((sim) => assessCrewMember(sim, t, then.checkIns[sim.crew.id] ?? []));
+    },
+    [sims, habitat.data],
+  );
+  const doneAt = useCallback(
+    (t: number) => {
+      const then = habitatAsOf(habitat.data, t);
+      return Object.fromEntries(CREW_IDS.map((id) => [id, currentActionsDone(then, id, t)]));
+    },
+    [habitat.data],
+  );
   const sol = calendar.missionSolAt(now);
   const clock = formatMarsClock(localMeanSolarHours(now, MISSION.site.eastLongitudeDeg));
   const navPage = route.page === 'member' || route.page === 'notFound' ? 'crew' : route.page;
@@ -131,6 +149,7 @@ export function App() {
       {route.page !== 'about' && route.page !== 'signIn' && <DemoBar scenario={scenario} onChoose={choose} />}
       <main className="mx-auto w-full max-w-5xl flex-1 space-y-5 px-4 py-5">
         {route.page === 'about' && <About />}
+        {route.page === 'earth' && <EarthPage now={now} delay={delay} crewAt={crewAt} doneAt={doneAt} />}
         {route.page === 'signIn' && (
           <SignInPage
             session={session}
@@ -150,6 +169,7 @@ export function App() {
             feed={feed}
             signedInAs={session?.crewId ?? null}
             delay={delay}
+            now={now}
             hrefOf={(crewId) => routePath({ page: 'member', crewId })}
             onOpen={(crewId) => go({ page: 'member', crewId })}
           />

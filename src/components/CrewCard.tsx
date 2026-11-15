@@ -20,8 +20,9 @@ interface Props {
   done: Record<string, number>;
   /** The crew member signed in on this device. */
   isYou: boolean;
-  href: string;
-  onOpen: () => void;
+  /** Where the card leads; without it the card is not a link (mission control). */
+  href?: string;
+  onOpen?: () => void;
 }
 
 /** One crew member on the crew page: how they are, what they are doing and the most urgent alert. */
@@ -30,16 +31,9 @@ export function CrewCard({ assessment: a, done, isYou, href, onOpen }: Props) {
   const r = a.reading;
   const sleep = a.indicators.find((i) => i.id === 'sleep');
   const [first, ...more] = a.alerts;
-  return (
-    <a
-      href={href}
-      onClick={(e) => {
-        if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
-        e.preventDefault();
-        onOpen();
-      }}
-      className={`group flex flex-col gap-2 rounded-lg border border-l-4 bg-slate-900/60 px-4 py-3 transition-colors hover:bg-slate-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-sky-500 ${style.border} ${LEFT_BORDER[a.overall.status]}`}
-    >
+  const className = `group flex flex-col gap-2 rounded-lg border border-l-4 bg-slate-900/60 px-4 py-3 ${style.border} ${LEFT_BORDER[a.overall.status]}`;
+  const body = (
+    <>
       <div className="flex items-center gap-3">
         <span
           className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-slate-800 text-sm font-semibold text-slate-200"
@@ -85,6 +79,20 @@ export function CrewCard({ assessment: a, done, isYou, href, onOpen }: Props) {
           {a.todaysCheckIn ? 'Check-in done' : 'Check-in pending'}
         </span>
       </p>
+    </>
+  );
+  if (!href || !onOpen) return <div className={className}>{body}</div>;
+  return (
+    <a
+      href={href}
+      onClick={(e) => {
+        if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
+        e.preventDefault();
+        onOpen();
+      }}
+      className={`${className} transition-colors hover:bg-slate-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-sky-500`}
+    >
+      {body}
     </a>
   );
 }

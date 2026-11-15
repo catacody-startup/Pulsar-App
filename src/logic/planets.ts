@@ -100,9 +100,13 @@ export function signalDelay(ms: number): SignalDelay {
   };
 }
 
-/** "12 min 34 s", "58 s". */
+/** "12 min 34 s", "58 s", "5 h 45 min". */
 export function formatDuration(seconds: number): string {
   const s = Math.round(seconds);
+  if (s >= 3600) {
+    const totalMinutes = Math.round(s / 60);
+    return `${Math.floor(totalMinutes / 60)} h ${String(totalMinutes % 60).padStart(2, '0')} min`;
+  }
   const m = Math.floor(s / 60);
   return m === 0 ? `${s} s` : `${m} min ${String(s % 60).padStart(2, '0')} s`;
 }
