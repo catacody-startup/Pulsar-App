@@ -26,7 +26,7 @@ import { buildReport } from './logic/report';
 import { parseRoute, routePath, type Route } from './logic/route';
 import { resolveScenario } from './logic/scenarios';
 import { createSimulator } from './logic/simulator';
-import { getLocale, setLocale, t, type Locale } from './i18n/i18n';
+import { chooseLocale, getLocale, t, type Locale } from './i18n/i18n';
 
 const CREW_IDS = CREW.map((c) => c.id);
 /** Calendar and daily plans only: they don't depend on events. */
@@ -41,7 +41,7 @@ const NAV: [Route, string][] = [
 export function App() {
   const [locale, setLocaleState] = useState<Locale>(getLocale);
   const changeLocale = (next: Locale) => {
-    setLocale(next);
+    chooseLocale(next);
     setLocaleState(next);
   };
   const now = useMinuteClock();

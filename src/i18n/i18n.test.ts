@@ -12,7 +12,7 @@ import { SPACE_WEATHER_LABEL } from '../config/spaceWeather';
 import { RULES } from '../config/thresholds';
 import { TREND_RANGES } from '../config/trends';
 import { ES } from './es';
-import { setLocale, t } from './i18n';
+import { chooseLocale, initialLocale, setLocale, t } from './i18n';
 
 /** Texts of the config that the app shows (translated where they are shown). */
 function configTexts(): string[] {
@@ -90,6 +90,22 @@ describe('translations', () => {
     for (const [en, es] of Object.entries(ES)) {
       const names = (s: string) => [...s.matchAll(/\{(\w+)\}/g)].map((m) => m[1]).sort();
       expect(names(es), en).toEqual(names(en));
+    }
+  });
+
+  it('starts in English, whatever the browser says, and remembers the language picked', () => {
+    const store = new Map<string, string>();
+    const g = globalThis as { localStorage?: unknown; navigator?: unknown };
+    const saved = { localStorage: g.localStorage };
+    g.localStorage = { getItem: (k: string) => store.get(k) ?? null, setItem: (k: string, v: string) => void store.set(k, v) };
+    try {
+      expect(initialLocale()).toBe('en');
+      chooseLocale('es');
+      expect(initialLocale()).toBe('es');
+      chooseLocale('en');
+      expect(initialLocale()).toBe('en');
+    } finally {
+      g.localStorage = saved.localStorage;
     }
   });
 

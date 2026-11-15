@@ -20,14 +20,21 @@ let current: Locale = 'en';
 const browser = globalThis as {
   document?: { documentElement: { lang: string } };
   localStorage?: { getItem(key: string): string | null; setItem(key: string, value: string): void };
-  navigator?: { language: string };
 };
 
+const STORAGE_KEY = 'pulsar.locale';
+
+/** Switches the language (for the whole app). */
 export function setLocale(locale: Locale) {
   current = locale;
   if (browser.document) browser.document.documentElement.lang = locale;
+}
+
+/** The language a person picks: switched now and remembered on this device. */
+export function chooseLocale(locale: Locale) {
+  setLocale(locale);
   try {
-    browser.localStorage?.setItem('pulsar.locale', locale);
+    browser.localStorage?.setItem(STORAGE_KEY, locale);
   } catch {
     // No storage: the choice lasts while the page is open.
   }
@@ -48,13 +55,16 @@ export function t(text: string, vars?: Record<string, string | number>): string 
   return vars ? s.replace(/\{(\w+)\}/g, (m: string, k: string) => (k in vars ? String(vars[k]) : m)) : s;
 }
 
-/** The language to start in: the one chosen before, or the browser's. */
+/**
+ * The language to start in: the one picked before on this device, otherwise
+ * English (the judging is global), whatever the browser's language.
+ */
 export function initialLocale(): Locale {
   try {
-    const saved = browser.localStorage?.getItem('pulsar.locale');
+    const saved = browser.localStorage?.getItem(STORAGE_KEY);
     if (saved === 'en' || saved === 'es') return saved;
   } catch {
-    // No storage: go by the browser.
+    // No storage: English.
   }
-  return browser.navigator?.language.toLowerCase().startsWith('es') ? 'es' : 'en';
+  return 'en';
 }
