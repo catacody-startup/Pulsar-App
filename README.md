@@ -9,7 +9,7 @@ On the way to Mars, help can be up to 20 minutes away, so astronauts have to not
 
 **Live app:** https://pulsar.catacody.com · **About, thresholds and references:** https://pulsar.catacody.com/about
 
-Built during the hackathon (14–15 November 2026), in stages (see `PLAN.md`, in Spanish).
+Built during the hackathon (14–15 November 2026), in stages (see `PLAN.md`, in Spanish). Demo script: `DEMO.md` (in Spanish).
 
 ## What it does
 

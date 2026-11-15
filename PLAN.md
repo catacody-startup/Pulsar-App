@@ -51,13 +51,13 @@ Modo *Mars delay* (demora de la señal del día), reporte para control de misió
 2. ✅ **Control de misión** (`/earth`) y **envío periódico a la Tierra:** la tripulación vista desde la Tierra con la demora del día (el estado de hace una demora de señal, con los check-ins y acciones que ya habían llegado; los escenarios también se ven con demora) y cuándo llega a la tripulación un mensaje y su respuesta. El hábitat manda un reporte de salud cada 6 horas marcianas (00, 06, 12 y 18 LMST, en `src/config/earth.ts`): control de misión ve los últimos recibidos, el que está en viaje y el próximo; en el hábitat, el enlace con la Tierra dice cuándo salió el último y cuándo sale el próximo. Todo es determinista: sin servidor extra.
 3. ✅ **Reporte en PDF** para control de misión (jsPDF, se carga solo al bajar uno): hábitat (radiación, dosis de la misión, demora de la señal), y por tripulante sus siete indicadores con estado y regla, alertas con si se marcaron hechas, check-in y sueño y ejercicio de los últimos 7 soles; dice si hay un escenario de demo en juego. Se baja desde la página de la tripulación (ahora) y desde cada reporte recibido en control de misión (como era al salir del hábitat). El contenido sale de `src/logic/report.ts` (con tests) y el dibujo de `src/report/pdf.ts`.
 
-## Etapa 5 — Pulido
+## Etapa 5 — Pulido ✅
 
 Inglés y español, funciona sin conexión e instalable, guion de la demo.
 
 1. ✅ **Sin conexión e instalable:** manifiesto (`public/manifest.webmanifest`) y un service worker propio que arma el build (`pwa/plugin.ts` + `pwa/sw.template.js`): guarda la app al instalarse, los archivos con hash (scripts perezosos, modelos de la cara) la primera vez que se usan, páginas con red primero y copia sin conexión; `/api/` va siempre a la red (la app ya guarda los datos del hábitat y la cola de cambios), salvo DONKI, que sin red muestra su última respuesta. El video de la demo no se guarda.
 2. ✅ **Inglés y español:** botón ES/EN en la cabecera; arranca en el idioma del navegador y recuerda la elección. Los textos en inglés siguen donde estaban (config y componentes) y son la clave: `t('…')` los busca en `src/i18n/es.ts` (español rioplatense, con voseo) y completa los `{marcadores}`. Un test junta todos los textos de la config, cada `t('…')` del código y los mensajes del servidor, y falla si falta alguna traducción o si cambian los marcadores. También van traducidos el reporte en PDF y las fechas; las referencias bibliográficas quedan en inglés.
-3. **Guion de la demo.**
+3. ✅ **Guion de la demo** en `DEMO.md`: preparación, video de 30 s escena por escena, recorrido en vivo de 2–3 minutos, links por escenario, qué decir según cada criterio del jurado y plan B.
 
 ## Pendientes del equipo
 
