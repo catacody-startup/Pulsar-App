@@ -11,18 +11,18 @@ Para el video de 30 s y para mostrar la app en vivo. Todo pasa en https://pulsar
 - **DONKI en vivo:** necesita la key del equipo en `app-pulsar/.env`. Sin ella, el panel en vivo puede decir que DONKI no contesta. La repetición de la tormenta de 2017 anda igual.
 - **Segundo dispositivo:** tener abierta la app en un teléfono, en la página de la tripulación, para mostrar que los cambios llegan en vivo.
 
-## Video de 30 s
+## Video de 29 s ✅
 
-El texto en pantalla va en inglés. La voz puede ir en español, con subtítulos en inglés. Si se hace con IA, lleva la marca "AI-generated" visible.
+Publicado en https://youtu.be/yOTw-MYNs4k (y en https://pulsar.catacody.com/demo.mp4). Voz en español (sintética, Piper TTS) con subtítulos en inglés grabados en la imagen, como pide la regla cuando se habla en otro idioma. Lleva la marca "AI-generated voice · made with AI assistance".
 
-| Tiempo | Pantalla | Texto en pantalla |
+| Tiempo | Pantalla | Narración (subtítulo en inglés) |
 |---|---|---|
-| 0–4 s | Página de la tripulación, sol normal. | *On Mars, help from Earth is up to 20 minutes away.* |
-| 4–9 s | Cambiar a *Solar storm (real data)*: los cuatro pasan a **Act now**. | *Real radiation from NASA's Curiosity (RAD), 10 Sep 2017.* |
-| 9–15 s | Panel de Lucía: **Am I OK? → Act now** y *What do I do now?* con "take shelter". | *Am I OK? What do I do now?* |
-| 15–20 s | Entrar con la cara y tocar *Mark as done*. El teléfono muestra "✓ done" al instante. | *Each astronaut signs in with their face. The whole crew sees who is acting.* |
-| 20–26 s | *Mission control*: la tripulación con 11 min de atraso; bajar el PDF. | *Mission control sees the crew one signal delay late.* |
-| 26–30 s | Logo y URL. | *Pulsar · pulsar.catacody.com · Prototype – not for medical use* |
+| 0–3,5 s | Página de la tripulación, sol normal. | *On Mars, help from Earth can be twenty minutes away.* |
+| 3,5–9,6 s | Placa "Built for Mars, not for a link to Earth": servidor de Pulsar en la red local del hábitat, fuentes cercanas a Marte y control de misión aparte (solo reportes, 3–22 min). | *Pulsar runs on the habitat's own server, on the station's local network, so it keeps working without Earth.* |
+| 9,6–16 s | *Solar storm (real data)*: los cuatro pasan a **Act now**; radiación del RAD y registro de DONKI. | *Space weather and radiation come from sources near Mars, like this real solar storm measured by Curiosity.* |
+| 16–20,6 s | Panel de Lucía: **Act now** y *What do I do now?* con "take shelter". | *Every astronaut gets two answers: Am I OK? And what do I do now?* |
+| 20,6–25,4 s | Entrar (demo sin cámara), *Mark as done* y la tripulación ve "✓ done". | *Each one signs in with their face, and the whole crew sees who is acting.* |
+| 25,4–29 s | Logo, URL y "Prototype – not for medical use". | *Pulsar. A prototype, not for medical use.* |
 
 ## Demo en vivo (2–3 min)
 

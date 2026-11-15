@@ -63,11 +63,13 @@ Inglés y español, funciona sin conexión e instalable, guion de la demo.
 
 - ✅ Key de NASA del equipo en `/root/services/app-pulsar/.env` (15/11): DONKI en vivo anda. Para cambiarla: editar `NASA_API_KEY=…` y correr `docker compose up -d` dentro de `/root/services/app-pulsar`.
 - Confirmar que todo el equipo está registrado en la misma locación.
-- Al final: la página del proyecto en inglés y subir el video a YouTube (ver *Video demo*).
+- ✅ Video en YouTube (https://youtu.be/yOTw-MYNs4k). Falta: pegar el link en *Project Demonstration* y enviar con *Submit for Judging*.
 
-## Video demo
+## Video demo ✅
 
 Se hace al final, cuando estén los features, y se commitea **una sola vez**, ya terminado (cada versión de un binario queda para siempre en el historial).
+
+✅ Hecho el 15/11: 29 s, voz en español y subtítulos en inglés en la imagen, en YouTube (https://youtu.be/yOTw-MYNs4k) y en `public/demo.mp4`. Es una grabación real de la app (Playwright) con una placa de arquitectura: el servidor en la red local del hábitat y las fuentes cercanas a Marte (en el prototipo, el RAD de Curiosity y DONKI ocupan su lugar). La voz es sintética (Piper TTS, voz `es_AR-daniela-high`, entrenada con OpenSLR SLR61, CC BY-SA 4.0) y el video lleva la marca "AI-generated voice · made with AI assistance"; los créditos van también en la metadata del archivo. El guion final está en `DEMO.md`.
 
 - Hasta 30 s. Si se hace con IA, lleva la marca "AI-generated" visible y se declara en *Use of Super Intelligence*.
 - El archivo va en `public/demo.mp4`: la app lo sirve en https://pulsar.catacody.com/demo.mp4 y el README lo enlaza. Que pese pocos MB (720p, H.264).

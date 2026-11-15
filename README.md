@@ -7,7 +7,7 @@ NASA Space Apps Challenge 2026 · Challenge: *Create Health Monitoring Software 
 
 On the way to Mars, help can be up to 20 minutes away, so astronauts have to notice health changes themselves. Pulsar answers two questions on one screen: **"Am I OK?"** and **"What do I do now?"**
 
-**Live app:** https://pulsar.catacody.com · **About, thresholds and references:** https://pulsar.catacody.com/about
+**Live app:** https://pulsar.catacody.com · **About, thresholds and references:** https://pulsar.catacody.com/about · **Demo video (29 s):** https://youtu.be/yOTw-MYNs4k (also at https://pulsar.catacody.com/demo.mp4)
 
 Built during the hackathon (14–15 November 2026), in stages (see `PLAN.md`, in Spanish). Demo script: `DEMO.md` (in Spanish).
 
@@ -72,3 +72,5 @@ React 19, TypeScript, Vite 6, Tailwind CSS 3, Vitest; the habitat server uses on
 Pulsar is released under the [Apache License 2.0](LICENSE), the default license of the NASA Space Apps Challenge for original content.
 
 Third-party software used to build it, all under OSI-approved licenses: React, Vite, Tailwind CSS, PostCSS, Autoprefixer, Vitest, jsPDF and its dependencies (MIT; DOMPurify, MPL-2.0 or Apache-2.0) and face-api.js with its models (`@vladmandic/face-api`, MIT; it bundles TensorFlow.js, Apache-2.0), and TypeScript (Apache-2.0). NASA data are public; their sources are listed above and in the app's About page.
+
+The demo video is a screen recording of the app, scripted and edited with AI assistance (Claude, by Anthropic). Its narration is an AI-generated voice made with [Piper TTS](https://github.com/rhasspy/piper) (MIT), voice `es_AR-daniela-high`, trained on [OpenSLR SLR61](https://www.openslr.org/61/) (CC BY-SA 4.0); the video carries a visible "AI-generated voice" mark and English subtitles.
